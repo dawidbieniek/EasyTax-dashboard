@@ -4,8 +4,27 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
 	<Grid Padding="24">
-		<TextBlock
-			x:Uid="Dashboard_Placeholder"
-			Style="{StaticResource TitleTextBlockStyle}" />
+		<StackPanel Spacing="8" Visibility="{x:Bind ViewModel.HasClients, Mode=OneWay}">
+			<TextBlock
+				x:Uid="Dashboard_Placeholder"
+				Style="{StaticResource TitleTextBlockStyle}" />
+			<TextBlock Text="{x:Bind ViewModel.Selection, Mode=OneWay}" />
+		</StackPanel>
+
+		<!-- Empty state: nothing to show until the first client exists. -->
+		<StackPanel
+			HorizontalAlignment="Center"
+			VerticalAlignment="Center"
+			Spacing="12"
+			Visibility="{x:Bind ViewModel.HasNoClients, Mode=OneWay}">
+			<TextBlock
+				x:Uid="Dashboard_NoClients"
+				HorizontalAlignment="Center"
+				Style="{StaticResource SubtitleTextBlockStyle}" />
+			<Button
+				x:Uid="Dashboard_GoToClients"
+				HorizontalAlignment="Center"
+				Command="{x:Bind ViewModel.GoToClientsCommand}" />
+		</StackPanel>
 	</Grid>
 </Page>

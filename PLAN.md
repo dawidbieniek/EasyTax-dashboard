@@ -69,10 +69,13 @@ All of M2 is done and was checked with a throwaway console program (not part of 
 - Repositories done: clients (CRUD), banks (list), accounting years. Month-record and photo repositories come with the dashboard and client-page milestones.
 
 ### M3 — Shell
-- [ ] 3.1 App bar: avatar + client picker (`AutoSuggestBox`, skips suspended), prev/next, shared `ClientContext` service (selected client, year, month) persisted between runs
-- [ ] 3.2 Year picker (driven by `AccountingYear`) + month strip with green/orange/grey states
-- [ ] 3.3 "Accounted" toggle bound to the selected month
-- [ ] 3.4 Empty state when there are no clients
+All of M3 is done and checked by running the app against demo data (clicking through every control and restarting to confirm the selection is restored).
+
+- [x] 3.1 App bar with avatar (`PersonPicture`) + client picker (search box that opens the full list on focus, skips suspended clients) and prev/next; shared `ClientContext` service holds the selected client, year and month and persists them to `settings.json`. The bar shows per page via `ViewModelBase.AppBarMode` (Hidden / ClientOnly / Full); the dashboard uses Full, the client page will use ClientOnly.
+- [x] 3.2 Year picker driven by the user-managed years + month strip: green = accounted, orange = not accounted, grey and disabled = before the client joined; the selected month is underlined. Selecting a client who joined later snaps the selection to their join month.
+- [x] 3.3 "Rozliczony / Nierozliczony" toggle for the selected month (green when accounted); creates the month record on first use. `IMonthRecordRepository` added (read a client's year, upsert).
+- [x] 3.4 Empty state on the dashboard (message + button to the clients page); the app bar shows a disabled "Brak klientów" box.
+- Not done on purpose: the narrow-window fallback for the month strip (it scrolls horizontally for now); revisit in the dashboard layout task 5.6.
 
 ### M4 — Clients
 - [ ] 4.1 Clients list: grid spike (WinUI.TableView), search, sort, suspended rows greyed, row click opens client
@@ -99,7 +102,7 @@ All of M2 is done and was checked with a throwaway console program (not part of 
 - [ ] 7.2 Accessibility pass (automation names, contrast, focus order)
 - [ ] 7.3 Error handling + friendly messages for DB errors
 - [ ] 7.4 Packaging/installer and auto-update decision
-- [ ] 7.5 Demo data command for development
+- [x] 7.5 Demo data for development: `EasyTax.exe --seed-demo` (Debug builds only) fills an empty database with five sample clients and 2026 month records. `EASYTAX_DATA_DIR` redirects the data folder (database and settings), so testing never touches real data.
 
 ## Later (not in v1)
 DB encryption, backups, notifications/reminders, emails + templates, tax calculator, list filters (search + filter flyout), CSV/Excel export.

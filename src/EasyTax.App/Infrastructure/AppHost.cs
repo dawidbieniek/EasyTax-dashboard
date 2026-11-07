@@ -29,8 +29,10 @@ internal static class AppHost
 		services.AddSingleton<ISettingsService>(_ => new JsonSettingsService(AppPaths.SettingsFile));
 		services.AddSingleton<IThemeService, ThemeService>();
 		services.AddSingleton<INavigationService, NavigationService>();
+		services.AddSingleton<IClientContext, ClientContext>();
 
 		// Shell
+		services.AddSingleton<AppBarViewModel>();
 		services.AddSingleton<MainWindow>();
 
 		// Pages <-> view models. Add one line here per screen.
@@ -40,7 +42,10 @@ internal static class AppHost
 		services.AddPage<ClientsPage, ClientsViewModel>(pages);
 		services.AddPage<SettingsPage, SettingsViewModel>(pages);
 
+#if DEBUG
+		services.AddTransient<DemoDataSeeder>();
+#endif
+
 		return builder.Build();
 	}
-
 }

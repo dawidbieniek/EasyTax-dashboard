@@ -52,9 +52,12 @@ public sealed partial class MainWindow : Window
 		}
 	}
 
-	/// <summary>Keeps the highlighted rail item in sync with programmatic navigation.</summary>
-	private void OnNavigated(object? sender, Type viewModelType)
+	/// <summary>Keeps the highlighted rail item and the app bar in sync with the page that is shown.</summary>
+	private void OnNavigated(object? sender, ViewModelBase viewModel)
 	{
+		AppBarControl.SetMode(viewModel.AppBarMode);
+
+		var viewModelType = viewModel.GetType();
 		if (viewModelType == typeof(SettingsViewModel))
 		{
 			Navigation.SelectedItem = Navigation.SettingsItem;

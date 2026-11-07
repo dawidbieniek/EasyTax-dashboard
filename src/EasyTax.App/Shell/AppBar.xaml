@@ -1,0 +1,188 @@
+<UserControl
+	x:Class="EasyTax.App.Shell.AppBar"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:clients="using:EasyTax.Core.Domain.Clients"
+	xmlns:local="using:EasyTax.App.Shell"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+	<UserControl.Resources>
+		<!-- One template per month state: accounted (green), not accounted (orange), before the client joined (grey, disabled). -->
+		<DataTemplate x:Key="AccountedMonthTemplate" x:DataType="local:MonthItem">
+			<Grid>
+				<Button
+					MinWidth="42"
+					Padding="8,5"
+					Click="OnMonthClick"
+					Content="{x:Bind Label}"
+					FontWeight="SemiBold"
+					Foreground="{ThemeResource SystemFillColorSuccessBrush}"
+					Style="{StaticResource SubtleButtonStyle}"
+					Tag="{x:Bind Month}" />
+				<Border
+					Height="3"
+					Margin="8,0"
+					VerticalAlignment="Bottom"
+					Background="{ThemeResource AccentFillColorDefaultBrush}"
+					CornerRadius="1.5"
+					Visibility="{x:Bind IsSelected}" />
+			</Grid>
+		</DataTemplate>
+
+		<DataTemplate x:Key="NotAccountedMonthTemplate" x:DataType="local:MonthItem">
+			<Grid>
+				<Button
+					MinWidth="42"
+					Padding="8,5"
+					Click="OnMonthClick"
+					Content="{x:Bind Label}"
+					FontWeight="SemiBold"
+					Foreground="{ThemeResource SystemFillColorCautionBrush}"
+					Style="{StaticResource SubtleButtonStyle}"
+					Tag="{x:Bind Month}" />
+				<Border
+					Height="3"
+					Margin="8,0"
+					VerticalAlignment="Bottom"
+					Background="{ThemeResource AccentFillColorDefaultBrush}"
+					CornerRadius="1.5"
+					Visibility="{x:Bind IsSelected}" />
+			</Grid>
+		</DataTemplate>
+
+		<DataTemplate x:Key="BeforeJoinMonthTemplate" x:DataType="local:MonthItem">
+			<Button
+				MinWidth="42"
+				Padding="8,5"
+				Content="{x:Bind Label}"
+				IsEnabled="False"
+				Style="{StaticResource SubtleButtonStyle}" />
+		</DataTemplate>
+
+		<local:MonthTemplateSelector
+			x:Key="MonthTemplateSelector"
+			Accounted="{StaticResource AccountedMonthTemplate}"
+			BeforeJoin="{StaticResource BeforeJoinMonthTemplate}"
+			NotAccounted="{StaticResource NotAccountedMonthTemplate}" />
+	</UserControl.Resources>
+
+	<Border
+		Padding="16,8"
+		Background="{ThemeResource LayerFillColorDefaultBrush}"
+		BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}"
+		BorderThickness="0,0,0,1">
+
+		<Grid ColumnSpacing="12">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="Auto" />
+				<ColumnDefinition Width="*" />
+			</Grid.ColumnDefinitions>
+
+			<!-- Client picker, shared by every mode that shows the bar. -->
+			<StackPanel
+				VerticalAlignment="Center"
+				Orientation="Horizontal"
+				Spacing="8">
+				<PersonPicture
+					Width="32"
+					Height="32"
+					DisplayName="{x:Bind ViewModel.SelectedClientName, Mode=OneWay}" />
+				<AutoSuggestBox
+					x:Name="ClientBox"
+					x:Uid="AppBar_ClientBox"
+					Width="240"
+					GotFocus="OnClientBoxGotFocus"
+					IsEnabled="{x:Bind ViewModel.HasClients, Mode=OneWay}"
+					LostFocus="OnClientBoxLostFocus"
+					PlaceholderText="{x:Bind ViewModel.ClientPlaceholder, Mode=OneWay}"
+					QuerySubmitted="OnClientQuerySubmitted"
+					SuggestionChosen="OnClientSuggestionChosen"
+					Text="{x:Bind ViewModel.SelectedClientName, Mode=OneWay}"
+					TextChanged="OnClientTextChanged"
+					TextMemberPath="FullName">
+					<AutoSuggestBox.ItemTemplate>
+						<DataTemplate x:DataType="clients:Client">
+							<StackPanel Orientation="Horizontal" Spacing="8">
+								<PersonPicture
+									Width="24"
+									Height="24"
+									DisplayName="{x:Bind FullName}" />
+								<TextBlock VerticalAlignment="Center" Text="{x:Bind FullName}" />
+							</StackPanel>
+						</DataTemplate>
+					</AutoSuggestBox.ItemTemplate>
+				</AutoSuggestBox>
+				<Button
+					x:Uid="AppBar_Previous"
+					Command="{x:Bind ViewModel.SelectPreviousClientCommand}"
+					IsEnabled="{x:Bind ViewModel.CanSelectPrevious, Mode=OneWay}"
+					Style="{StaticResource SubtleButtonStyle}">
+					<FontIcon FontSize="14" Glyph="&#xE76B;" />
+				</Button>
+				<Button
+					x:Uid="AppBar_Next"
+					Command="{x:Bind ViewModel.SelectNextClientCommand}"
+					IsEnabled="{x:Bind ViewModel.CanSelectNext, Mode=OneWay}"
+					Style="{StaticResource SubtleButtonStyle}">
+					<FontIcon FontSize="14" Glyph="&#xE76C;" />
+				</Button>
+			</StackPanel>
+
+			<!-- Year, months and accounted toggle: only in Full mode and only when there is a client. -->
+			<Grid
+				x:Name="MonthControls"
+				Grid.Column="1"
+				ColumnSpacing="12"
+				Visibility="{x:Bind ViewModel.HasClients, Mode=OneWay}">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="Auto" />
+					<ColumnDefinition Width="*" />
+					<ColumnDefinition Width="Auto" />
+				</Grid.ColumnDefinitions>
+
+				<ComboBox
+					x:Uid="AppBar_Year"
+					MinWidth="100"
+					VerticalAlignment="Center"
+					ItemsSource="{x:Bind ViewModel.Years, Mode=OneWay}"
+					SelectedItem="{x:Bind ViewModel.SelectedYear, Mode=OneWay}"
+					SelectionChanged="OnYearSelectionChanged" />
+
+				<ScrollViewer
+					Grid.Column="1"
+					HorizontalScrollBarVisibility="Hidden"
+					HorizontalScrollMode="Auto"
+					VerticalScrollMode="Disabled">
+					<ItemsControl ItemTemplateSelector="{StaticResource MonthTemplateSelector}" ItemsSource="{x:Bind ViewModel.Months, Mode=OneWay}">
+						<ItemsControl.ItemsPanel>
+							<ItemsPanelTemplate>
+								<StackPanel Orientation="Horizontal" Spacing="2" />
+							</ItemsPanelTemplate>
+						</ItemsControl.ItemsPanel>
+					</ItemsControl>
+				</ScrollViewer>
+
+				<ToggleButton
+					Grid.Column="2"
+					MinWidth="140"
+					VerticalAlignment="Center"
+					Click="OnAccountedClick"
+					Content="{x:Bind ViewModel.AccountedLabel, Mode=OneWay}"
+					IsChecked="{x:Bind ViewModel.IsAccounted, Mode=OneWay}"
+					IsEnabled="{x:Bind ViewModel.CanAccount, Mode=OneWay}">
+					<ToggleButton.Resources>
+						<!-- Green instead of the accent colour when checked. -->
+						<StaticResource x:Key="ToggleButtonBackgroundChecked" ResourceKey="SystemFillColorSuccessBackgroundBrush" />
+						<StaticResource x:Key="ToggleButtonBackgroundCheckedPointerOver" ResourceKey="SystemFillColorSuccessBackgroundBrush" />
+						<StaticResource x:Key="ToggleButtonBackgroundCheckedPressed" ResourceKey="SystemFillColorSuccessBackgroundBrush" />
+						<StaticResource x:Key="ToggleButtonBorderBrushChecked" ResourceKey="SystemFillColorSuccessBrush" />
+						<StaticResource x:Key="ToggleButtonBorderBrushCheckedPointerOver" ResourceKey="SystemFillColorSuccessBrush" />
+						<StaticResource x:Key="ToggleButtonBorderBrushCheckedPressed" ResourceKey="SystemFillColorSuccessBrush" />
+						<StaticResource x:Key="ToggleButtonForegroundChecked" ResourceKey="TextFillColorPrimaryBrush" />
+						<StaticResource x:Key="ToggleButtonForegroundCheckedPointerOver" ResourceKey="TextFillColorPrimaryBrush" />
+						<StaticResource x:Key="ToggleButtonForegroundCheckedPressed" ResourceKey="TextFillColorPrimaryBrush" />
+					</ToggleButton.Resources>
+				</ToggleButton>
+			</Grid>
+		</Grid>
+	</Border>
+</UserControl>

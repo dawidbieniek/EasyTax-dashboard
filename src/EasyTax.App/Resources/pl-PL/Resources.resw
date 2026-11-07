@@ -28,6 +28,77 @@
   <data name="Dashboard_Placeholder.Text" xml:space="preserve">
     <value>Pulpit</value>
   </data>
+  <data name="Dashboard_Selection" xml:space="preserve">
+    <value>{0} · {1}</value>
+  </data>
+  <data name="Dashboard_NoClients.Text" xml:space="preserve">
+    <value>Nie masz jeszcze żadnych klientów.</value>
+  </data>
+  <data name="Dashboard_GoToClients.Content" xml:space="preserve">
+    <value>Przejdź do klientów</value>
+  </data>
+
+  <!-- App bar -->
+  <data name="AppBar_ClientBox.AutomationProperties.Name" xml:space="preserve">
+    <value>Klient</value>
+  </data>
+  <data name="AppBar_Previous.AutomationProperties.Name" xml:space="preserve">
+    <value>Poprzedni klient</value>
+  </data>
+  <data name="AppBar_Next.AutomationProperties.Name" xml:space="preserve">
+    <value>Następny klient</value>
+  </data>
+  <data name="AppBar_Year.AutomationProperties.Name" xml:space="preserve">
+    <value>Rok</value>
+  </data>
+  <data name="AppBar_ClientPlaceholder" xml:space="preserve">
+    <value>Wybierz klienta</value>
+  </data>
+  <data name="AppBar_NoClients" xml:space="preserve">
+    <value>Brak klientów</value>
+  </data>
+  <data name="AppBar_Accounted" xml:space="preserve">
+    <value>Rozliczony</value>
+  </data>
+  <data name="AppBar_NotAccounted" xml:space="preserve">
+    <value>Nierozliczony</value>
+  </data>
+  <data name="Month_1" xml:space="preserve">
+    <value>Sty</value>
+  </data>
+  <data name="Month_2" xml:space="preserve">
+    <value>Lut</value>
+  </data>
+  <data name="Month_3" xml:space="preserve">
+    <value>Mar</value>
+  </data>
+  <data name="Month_4" xml:space="preserve">
+    <value>Kwi</value>
+  </data>
+  <data name="Month_5" xml:space="preserve">
+    <value>Maj</value>
+  </data>
+  <data name="Month_6" xml:space="preserve">
+    <value>Cze</value>
+  </data>
+  <data name="Month_7" xml:space="preserve">
+    <value>Lip</value>
+  </data>
+  <data name="Month_8" xml:space="preserve">
+    <value>Sie</value>
+  </data>
+  <data name="Month_9" xml:space="preserve">
+    <value>Wrz</value>
+  </data>
+  <data name="Month_10" xml:space="preserve">
+    <value>Paź</value>
+  </data>
+  <data name="Month_11" xml:space="preserve">
+    <value>Lis</value>
+  </data>
+  <data name="Month_12" xml:space="preserve">
+    <value>Gru</value>
+  </data>
 
   <!-- Clients -->
   <data name="Clients_Title.Text" xml:space="preserve">

@@ -4,8 +4,8 @@ namespace EasyTax.App.Shell;
 
 public interface INavigationService
 {
-	/// <summary>Raised after navigation completes, with the type of the view model now displayed.</summary>
-	event EventHandler<Type>? Navigated;
+	/// <summary>Raised after navigation completes, with the view model now displayed.</summary>
+	event EventHandler<ViewModelBase>? Navigated;
 
 	/// <summary>Binds the service to the frame that hosts pages. Called once by the shell.</summary>
 	void Initialize(Frame frame);

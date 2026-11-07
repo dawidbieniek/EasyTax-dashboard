@@ -1,6 +1,7 @@
 <Window
 	x:Class="EasyTax.App.Shell.MainWindow"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:local="using:EasyTax.App.Shell"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
 	<!-- The root paints the theme-aware background; a Window has none of its own, so without it a theme switch would only recolor the controls. -->
@@ -42,7 +43,15 @@
 				</NavigationViewItem>
 			</NavigationView.MenuItems>
 
-			<Frame x:Name="ContentFrame" />
+			<Grid>
+				<Grid.RowDefinitions>
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="*" />
+				</Grid.RowDefinitions>
+
+				<local:AppBar x:Name="AppBarControl" Visibility="Collapsed" />
+				<Frame x:Name="ContentFrame" Grid.Row="1" />
+			</Grid>
 		</NavigationView>
 	</Grid>
 </Window>

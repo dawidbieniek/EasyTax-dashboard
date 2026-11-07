@@ -39,6 +39,14 @@ public partial class App : Application
 		await Services.GetRequiredService<ISettingsService>().LoadAsync();
 		await Services.GetRequiredService<IDatabaseInitializer>().InitializeAsync();
 
+#if DEBUG
+		// Development helper: `EasyTax.exe --seed-demo` fills an empty database with sample clients.
+		if (Environment.GetCommandLineArgs().Contains("--seed-demo"))
+			await Services.GetRequiredService<DemoDataSeeder>().SeedAsync();
+#endif
+
+		await Services.GetRequiredService<IClientContext>().InitializeAsync();
+
 		_window = Services.GetRequiredService<MainWindow>();
 		_window.Closed += OnWindowClosed;
 		_window.Activate();

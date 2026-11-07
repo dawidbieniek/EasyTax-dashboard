@@ -76,6 +76,13 @@ Everything else uses constructor injection.
 ## Cross-cutting pieces already in place
 - **Navigation** (`Shell/`): `INavigationService` over a `Frame`; `IPageRegistry` maps view model → page.
   `MainWindow` hosts a `NavigationView` (collapsed icon rail) and keeps the selected item in sync.
+- **Client context** (`Shell/ClientContext`): the one place that knows which client, year and month are selected.
+  It loads the selectable clients, the managed years and the month records of the selected client and year, restores the
+  last selection from `settings.json`, snaps the selection to the join month when needed, and raises `Changed`. The app bar
+  and every page showing per-client data read from it and call it to change the selection or edit the current month
+  (`UpdateCurrentRecordAsync`); nobody else talks to the month repository for the selected month.
+- **App bar** (`Shell/AppBar`): a user control above the page frame. Its view model is a thin projection of the client
+  context; pages choose how much of it to show by overriding `ViewModelBase.AppBarMode`.
 - **Settings** (`Settings/`): `ISettingsService` (`AppSettings` record, JSON file at `%LocalAppData%\EasyTax\settings.json`).
   Changing a setting raises `Changed`. A corrupt or missing file falls back to defaults.
 - **Theme** (`Settings/`): `IThemeService` applies `AppSettings.Theme` (System / Light / Dark, default Dark) to the window.
@@ -116,6 +123,11 @@ the Windows SDK projection.
 dotnet tool run dotnet-ef migrations add <Name> --project src/EasyTax.Data --output-dir Migrations
 ```
 A design-time factory (`EasyTaxDbContextFactory`) lets the tool run without starting the WinUI app.
+
+## Development helpers
+- `EASYTAX_DATA_DIR` environment variable: use another folder for the database and `settings.json` instead of `%LocalAppData%\EasyTax`.
+- `EasyTax.exe --seed-demo` (Debug builds only): fills an empty database with sample clients and 2026 month records.
+  Combine both to try things out without touching real data.
 
 ## Build and run
 ```bash

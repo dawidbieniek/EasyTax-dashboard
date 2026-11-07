@@ -11,7 +11,7 @@ public sealed class NavigationService(IPageRegistry pages, ILogger<NavigationSer
 	private Frame? _frame;
 	private ViewModelBase? _currentViewModel;
 
-	public event EventHandler<Type>? Navigated;
+	public event EventHandler<ViewModelBase>? Navigated;
 
 	public void Initialize(Frame frame)
 	{
@@ -45,7 +45,7 @@ public sealed class NavigationService(IPageRegistry pages, ILogger<NavigationSer
 			return;
 
 		_currentViewModel = viewModel;
-		Navigated?.Invoke(this, viewModel.GetType());
+		Navigated?.Invoke(this, viewModel);
 
 		try
 		{
