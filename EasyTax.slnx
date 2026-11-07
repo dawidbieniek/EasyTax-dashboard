@@ -1,0 +1,17 @@
+<Solution>
+	<Folder Name="/Solution Items/">
+		<File Path=".editorconfig" />
+		<File Path=".gitattributes" />
+		<File Path=".gitignore" />
+		<File Path="Directory.Build.props" />
+		<File Path="Directory.Packages.props" />
+		<File Path="global.json" />
+		<File Path="ARCHITECTURE.md" />
+		<File Path="PLAN.md" />
+	</Folder>
+	<Folder Name="/src/">
+		<Project Path="src/EasyTax.App/EasyTax.App.csproj" />
+		<Project Path="src/EasyTax.Core/EasyTax.Core.csproj" />
+		<Project Path="src/EasyTax.Data/EasyTax.Data.csproj" />
+	</Folder>
+</Solution>

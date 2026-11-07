@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EasyTax wireframes v2 (dark)</title>
+<style>
+:root{--bg:#1b1b1b;--pane:#242424;--card:#2e2e2e;--card2:#383838;--ink:#f3f3f3;--mut:#a8a8a8;--line:#4d4d4d;--acc:#60cdff;--ok:#6ccb5f;--warn:#fcb040;--bad:#ff99a4;--accbg:#0a3a52}
+*{box-sizing:border-box}
+body{margin:0;padding:20px;background:var(--bg);color:var(--ink);font:14px/1.45 "Segoe UI",system-ui,sans-serif}
+h1{font-size:22px;margin:0 0 4px}h2{font-size:18px;margin:44px 0 2px;padding-top:12px;border-top:1px solid var(--line)}
+h3.opt{font-size:15px;margin:24px 0 2px;color:var(--acc)}
+p.n{color:var(--mut);margin:0 0 10px;max-width:920px}
+.idx a{color:var(--acc);margin-right:14px}
+/* window */
+.win{display:grid;grid-template-columns:56px 1fr;border:2px solid var(--line);border-radius:10px;overflow:hidden;background:var(--pane);max-width:1280px}
+.nav{border-right:1px solid var(--line);padding:10px 6px;display:flex;flex-direction:column;gap:6px;align-items:center;background:#202020}
+.nav div{width:40px;height:36px;border-radius:6px;display:grid;place-items:center;font-size:11px;color:var(--mut)}
+.nav .on{background:var(--card2);color:var(--ink);border-left:3px solid var(--acc)}
+.main{min-width:0;display:flex;flex-direction:column}
+.top{display:flex;gap:10px;align-items:center;padding:10px 14px;border-bottom:1px solid var(--line);flex-wrap:wrap;background:#202020}
+.body{padding:14px;display:grid;gap:14px;min-width:0}
+.cols{display:grid;gap:14px;min-width:0}
+/* parts */
+.box{border:1px solid var(--line);border-radius:5px;padding:5px 10px;background:var(--card);min-height:30px}
+.btn{border-radius:5px;padding:6px 14px;background:var(--acc);color:#002a3d;font-weight:600}
+.btn.g{background:var(--card2);color:var(--ink);font-weight:400;border:1px solid var(--line)}
+.btn.ok{background:var(--ok);color:#10300c}.btn.bad{background:transparent;border:1px solid var(--bad);color:var(--bad);font-weight:400}
+.seg{display:flex;border:1px solid var(--line);border-radius:5px;overflow:hidden;background:var(--card)}
+.seg span{padding:5px 9px;border-right:1px solid var(--line);font-size:12px}.seg span:last-child{border:0}
+.seg .sel{background:var(--accbg);box-shadow:inset 0 -2px var(--acc)}
+.ok{color:var(--ok)}.wn{color:var(--warn)}.bd{color:var(--bad)}.dis{color:#777}.mut{color:var(--mut)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:12px;min-width:0}
+.card>h4{margin:0 0 8px;font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--mut);font-weight:600}
+.pp{border-radius:50%;background:#5b5fc7;color:#fff;display:grid;place-items:center;font-weight:600;flex:none;width:36px;height:36px;font-size:13px}
+.pp.l{width:96px;height:96px;font-size:34px}.pp.m{width:56px;height:56px;font-size:20px}.pp.s{width:28px;height:28px;font-size:11px}
+.pp.c2{background:#0f7b6c}.pp.c3{background:#b4580b}.pp.c4{background:#8a3a8a}
+.pp.photo{background:linear-gradient(135deg,#777,#aaa);color:#222}
+.chip{display:inline-block;font-size:11px;border-radius:12px;padding:2px 10px;background:var(--card2);border:1px solid var(--line);margin:0 4px 4px 0}
+.chip.w{border-color:var(--warn);color:var(--warn)}.chip.o{border-color:var(--ok);color:var(--ok)}
+.gauge{display:flex;gap:12px;align-items:center}
+.arc{width:78px;height:78px;border-radius:50%;border:11px solid var(--acc);border-bottom-color:var(--line);flex:none}
+.arc.w{border-color:var(--warn);border-bottom-color:var(--line)}.arc.off{border-color:var(--line)}.arc.sm{width:56px;height:56px;border-width:8px}
+.big{font-size:18px;font-weight:600}
+.chart{height:170px;border:1px dashed var(--line);border-radius:5px;display:flex;align-items:flex-end;gap:5px;padding:8px}
+.chart.tall{height:230px}
+.chart i{flex:1;background:var(--acc);opacity:.8;min-height:4px;border-radius:2px 2px 0 0}.chart i.b{background:var(--ok)}
+.chart.line{align-items:stretch}.chart.line svg{width:100%;height:100%;color:var(--acc)}
+.tg{display:grid;gap:6px}.tg.c4{grid-template-columns:repeat(4,1fr)}.tg.c2{grid-template-columns:repeat(2,1fr)}.tg.c8{grid-template-columns:repeat(8,1fr)}
+.tg div{border:1px solid var(--line);border-radius:5px;padding:8px 4px;text-align:center;font-size:12px;background:var(--card)}
+.tg .on{background:#1d4a1b;border-color:var(--ok);color:#d6ffd1}
+.f{display:grid;gap:10px}.f label{font-size:12px;color:var(--mut);display:block;margin-bottom:2px}.f .box{display:block}
+.row{display:flex;gap:10px}.row>*{flex:1}
+.sc{display:flex;align-items:center;gap:12px;padding:10px 12px;border:1px solid var(--line);border-radius:6px;background:var(--card);margin-bottom:6px}
+.sc .t{flex:1}.sc .t small{display:block;color:var(--mut)}.sc .box{min-width:190px}
+.tabs{display:flex;gap:18px;padding:0 14px;border-bottom:1px solid var(--line)}.tabs span{padding:9px 2px;color:var(--mut)}.tabs .on{color:var(--ink);border-bottom:2px solid var(--acc)}
+table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);font-size:13px}th{color:var(--mut);font-weight:600}
+td .pp{display:inline-grid;vertical-align:middle;margin-right:8px}
+.list>div{display:flex;gap:10px;align-items:center;padding:8px 10px;border-radius:6px}.list .on{background:var(--card2);border-left:3px solid var(--acc)}
+.pros{font-size:12px;color:var(--mut);margin:4px 0 8px}.pros b{color:var(--ok)}.pros i{color:var(--warn);font-style:normal}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+</style></head><body>
+
+<h1>EasyTax — wireframes v2 · dark</h1>
+<p class="n">Several options per screen, so we can pick or mix. Client avatar = WinUI <b>PersonPicture</b> (photo if set, otherwise initials like “JK”). Left rail is a collapsed <b>NavigationView</b> (icons only, expands on hover/click). Top bar content is shared by Dashboard and Client page.</p>
+<p class="idx"><a href="#d">1 Dashboard (A·B·C)</a><a href="#c">2 Client page (A·B·C)</a><a href="#l">3 Clients list (A·B)</a><a href="#a">4 Add client</a></p>
+
+<!-- ============ DASHBOARD ============ -->
+<h2 id="d">1 · Dashboard</h2>
+<p class="n">Top bar (all options): avatar + client picker, prev/next, year, month strip (green accounted · orange not · grey before join), “Accounted” toggle for the selected month.</p>
+
+<h3 class="opt">Option A — Overview grid (closest to the old layout, tidied)</h3>
+<p class="pros"><b>+</b> everything visible at once, no clicking around &nbsp; <i>−</i> densest option, ~7 cards on screen</p>
+<div class="win"><div class="nav"><div class="on">Dash</div><div>Clients</div><div style="margin-top:auto">Set</div></div>
+<div class="main">
+ <div class="top"><span class="pp s">JK</span><span class="box" style="min-width:190px">Jan Kowalski ▾</span><span class="btn g">‹</span><span class="btn g">›</span><span class="box">2026 ▾</span>
+  <div class="seg"><span class="dis">Sty</span><span class="ok">Lut</span><span class="ok">Mar</span><span class="ok">Kwi</span><span class="wn">Maj</span><span class="wn sel">Cze</span><span class="wn">Lip</span><span class="wn">Sie</span><span class="wn">Wrz</span><span class="wn">Paź</span><span class="wn">Lis</span><span class="wn">Gru</span></div>
+  <span style="flex:1"></span><span class="btn">☐ Mark accounted</span></div>
+ <div class="body">
+  <div class="cols" style="grid-template-columns:repeat(3,1fr)">
+   <div class="card"><h4>VAT limit</h4><div class="gauge"><div class="arc"></div><div><div class="big">139 713 zł</div><span class="mut">72% of 200 000 zł</span></div></div></div>
+   <div class="card"><h4>Cash register</h4><div class="gauge"><div class="arc w"></div><div><div class="big">19 100 zł</div><span class="wn">95% of 20 000 zł ⚠</span></div></div></div>
+   <div class="card"><h4>Mały ZUS Plus</h4><div class="gauge"><div class="arc off"></div><div class="dis">Client not on ZUS Plus</div></div></div>
+  </div>
+  <div class="cols" style="grid-template-columns:1fr 1fr">
+   <div class="card"><h4>Income 2026</h4><div class="chart line"><svg viewBox="0 0 300 100" preserveAspectRatio="none"><polyline fill="none" stroke="currentColor" stroke-width="2" points="0,70 27,20 55,35 82,60 109,90 136,45 164,80 191,65 218,70 245,40 272,55 300,60"/></svg></div></div>
+   <div class="card"><h4>Invoices 2026 · sales / cost</h4><div class="chart"><i style="height:60%"></i><i class="b" style="height:70%"></i><i style="height:20%"></i><i class="b" style="height:40%"></i><i style="height:100%"></i><i class="b" style="height:90%"></i><i style="height:60%"></i><i class="b" style="height:20%"></i><i style="height:20%"></i><i class="b" style="height:90%"></i><i style="height:40%"></i><i class="b" style="height:60%"></i></div></div>
+  </div>
+  <div class="cols" style="grid-template-columns:1fr 1.4fr 1fr">
+   <div class="card f"><h4>June 2026</h4><div><label>Income</label><span class="box">6 000,00 zł</span></div><div class="row"><div><label>Sales inv.</label><span class="box">6</span></div><div><label>Cost inv.</label><span class="box">7</span></div></div></div>
+   <div class="card"><h4>Checklist · June</h4><div class="tg c4"><div class="on">VAT-R</div><div>CEIDG-1</div><div class="on">ZUS</div><div>Invoiced</div><div class="on">ZUS DRA<br><small>06-03</small></div><div>Tax</div><div class="on">JPK V7<br><small>06-03</small></div><div>VAT UE</div></div></div>
+   <div class="card f"><h4>Notes</h4><span class="box" style="min-height:86px">Prefers email contact…</span></div>
+  </div>
+ </div></div></div>
+
+<h3 class="opt">Option B — Profile side panel + big charts</h3>
+<p class="pros"><b>+</b> client context always visible (photo, tags, limits, notes); charts get room; month inputs sit right next to charts &nbsp; <i>−</i> side panel eats ~280px</p>
+<div class="win"><div class="nav"><div class="on">Dash</div><div>Clients</div><div style="margin-top:auto">Set</div></div>
+<div class="main">
+ <div class="top"><span class="pp s">JK</span><span class="box" style="min-width:190px">Jan Kowalski ▾</span><span class="btn g">‹</span><span class="btn g">›</span><span class="box">2026 ▾</span>
+  <div class="seg"><span class="dis">Sty</span><span class="ok">Lut</span><span class="ok">Mar</span><span class="ok">Kwi</span><span class="wn">Maj</span><span class="wn sel">Cze</span><span class="wn">Lip</span><span class="wn">Sie</span><span class="wn">Wrz</span><span class="wn">Paź</span><span class="wn">Lis</span><span class="wn">Gru</span></div>
+  <span style="flex:1"></span><span class="btn">☐ Mark accounted</span></div>
+ <div class="body cols" style="grid-template-columns:270px 1fr;align-items:start">
+  <div class="cols">
+   <div class="card" style="text-align:center"><div class="pp l" style="margin:0 auto 8px">JK</div><div class="big">Jan Kowalski</div><div class="mut">NIP 000-000-00-00 · mBank</div><div style="margin-top:8px"><span class="chip">Tax scale</span><span class="chip">VAT quarterly</span><span class="chip w">Ulga na start · ends 31.07</span></div></div>
+   <div class="card"><h4>Limits</h4>
+    <div class="gauge" style="margin-bottom:8px"><div class="arc sm"></div><div><b>VAT</b> 72%<br><span class="mut">139 713 / 200 000</span></div></div>
+    <div class="gauge" style="margin-bottom:8px"><div class="arc sm w"></div><div><b>Cash register</b> <span class="wn">95% ⚠</span><br><span class="mut">19 100 / 20 000</span></div></div>
+    <div class="gauge"><div class="arc sm off"></div><div class="dis"><b>ZUS Plus</b><br>not applicable</div></div></div>
+   <div class="card f"><h4>Notes</h4><span class="box" style="min-height:90px">Prefers email contact…</span></div>
+  </div>
+  <div class="cols">
+   <div class="card"><h4>June 2026 — inputs</h4><div class="row"><div class="f"><div><label>Income</label><span class="box">6 000,00 zł</span></div></div><div class="f"><div><label>Sales invoices</label><span class="box">6</span></div></div><div class="f"><div><label>Cost invoices</label><span class="box">7</span></div></div></div></div>
+   <div class="card"><h4>Income 2026</h4><div class="chart tall line"><svg viewBox="0 0 300 100" preserveAspectRatio="none"><polyline fill="none" stroke="currentColor" stroke-width="2" points="0,70 27,20 55,35 82,60 109,90 136,45 164,80 191,65 218,70 245,40 272,55 300,60"/></svg></div></div>
+   <div class="card"><h4>Invoices 2026</h4><div class="chart"><i style="height:60%"></i><i class="b" style="height:70%"></i><i style="height:20%"></i><i class="b" style="height:40%"></i><i style="height:100%"></i><i class="b" style="height:90%"></i><i style="height:60%"></i><i class="b" style="height:20%"></i><i style="height:20%"></i><i class="b" style="height:90%"></i><i style="height:40%"></i><i class="b" style="height:60%"></i></div></div>
+   <div class="card"><h4>Checklist · June</h4><div class="tg c8"><div class="on">VAT-R</div><div>CEIDG-1</div><div class="on">ZUS</div><div>Invoiced</div><div class="on">ZUS DRA</div><div>Tax</div><div class="on">JPK V7</div><div>VAT UE</div></div></div>
+  </div>
+ </div></div></div>
+
+<h3 class="opt">Option C — Two tabs: “This month” and “Year”</h3>
+<p class="pros"><b>+</b> calm; daily work (inputs, checklist) separate from analysis (charts, gauges) &nbsp; <i>−</i> need a click to see the charts; gauge warnings should also show as a small badge on the Year tab</p>
+<div class="win"><div class="nav"><div class="on">Dash</div><div>Clients</div><div style="margin-top:auto">Set</div></div>
+<div class="main">
+ <div class="top"><span class="pp s">JK</span><span class="box" style="min-width:190px">Jan Kowalski ▾</span><span class="btn g">‹</span><span class="btn g">›</span><span class="box">2026 ▾</span>
+  <div class="seg"><span class="dis">Sty</span><span class="ok">Lut</span><span class="ok">Mar</span><span class="ok">Kwi</span><span class="wn">Maj</span><span class="wn sel">Cze</span><span class="wn">Lip</span><span class="wn">Sie</span><span class="wn">Wrz</span><span class="wn">Paź</span><span class="wn">Lis</span><span class="wn">Gru</span></div>
+  <span style="flex:1"></span><span class="btn">☐ Mark accounted</span></div>
+ <div class="tabs"><span class="on">This month</span><span>Year overview <span class="chip w">1 warning</span></span></div>
+ <div class="body cols" style="grid-template-columns:1fr 1fr">
+  <div class="cols" style="align-content:start">
+   <div class="card f"><h4>June 2026</h4><div><label>Income</label><span class="box">6 000,00 zł</span></div><div class="row"><div><label>Sales invoices</label><span class="box">6</span></div><div><label>Cost invoices</label><span class="box">7</span></div></div></div>
+   <div class="card f"><h4>Notes</h4><span class="box" style="min-height:120px">Prefers email contact…</span></div>
+  </div>
+  <div class="card"><h4>Checklist · June</h4><div class="tg c2"><div class="on" style="padding:16px">VAT-R</div><div style="padding:16px">CEIDG-1</div><div class="on" style="padding:16px">ZUS</div><div style="padding:16px">Invoiced</div><div class="on" style="padding:16px">ZUS DRA<br><small>06-03 15:16</small></div><div style="padding:16px">Tax</div><div class="on" style="padding:16px">JPK V7<br><small>06-03</small></div><div style="padding:16px">VAT UE</div></div></div>
+ </div></div></div>
+<p class="n" style="margin-top:8px">“Year overview” tab = the three gauges in a row on top, then income line + invoices bars at full size (like Option B’s chart column).</p>
+
+<!-- ============ CLIENT PAGE ============ -->
+<h2 id="c">2 · Client page (view / edit)</h2>
+<p class="n">All options show the avatar with “Change photo / Remove” (PersonPicture + file picker). Photos are stored inside the encrypted DB.</p>
+
+<h3 class="opt">Option A — Hero header + tabs</h3>
+<p class="pros"><b>+</b> clean, short forms per tab, familiar &nbsp; <i>−</i> data is hidden behind tabs</p>
+<div class="win"><div class="nav"><div>Dash</div><div class="on">Clients</div><div style="margin-top:auto">Set</div></div>
+<div class="main">
+ <div class="top" style="padding:16px 18px;gap:16px"><div class="pp l">JK</div>
+  <div style="flex:1"><div style="font-size:22px;font-weight:600">Jan Kowalski</div><div class="mut">NIP 000-000-00-00 · jan@example.com · 123 456 789</div><div style="margin-top:6px"><span class="chip">Tax scale</span><span class="chip">VAT quarterly</span><span class="chip">Cash register</span><span class="chip w">Ulga na start · ends 31.07.2025</span></div><div class="mut" style="margin-top:4px;font-size:12px">Change photo · Remove</div></div>
+  <span class="btn g">Edit</span><span class="btn bad">Delete</span></div>
+ <div class="tabs"><span class="on">Personal</span><span>Tax &amp; relief</span><span>Subscription</span></div>
+ <div class="body cols" style="grid-template-columns:1fr 1fr;max-width:820px">
+  <div class="f"><div><label>First name</label><span class="box">Jan</span></div><div><label>Phone</label><span class="box">123 456 789</span></div><div><label>NIP</label><span class="box">000-000-00-00</span></div><div><label>Join date</label><span class="box">14/01/2025 📅</span></div></div>
+  <div class="f"><div><label>Last name</label><span class="box">Kowalski</span></div><div><label>Email</label><span class="box">jan@example.com</span></div><div><label>Bank</label><span class="box">mBank ▾</span></div><div><label>Gender</label><span class="box">Male ▾</span></div></div>
+ </div></div></div>
+
+<h3 class="opt">Option B — Windows-Settings style cards (SettingsCard rows)</h3>
+<p class="pros"><b>+</b> most “native WinUI”; every setting is one row with label + help text + control; groups collapse; works well with the Community Toolkit SettingsCard &nbsp; <i>−</i> long scrolling page</p>
+<div class="win"><div class="nav"><div>Dash</div><div class="on">Clients</div><div style="margin-top:auto">Set</div></div>
+<div class="main">
+ <div class="top"><span class="pp s">JK</span><span class="box" style="min-width:190px">Jan Kowalski ▾</span><span class="btn g">‹</span><span class="btn g">›</span><span style="flex:1"></span><span class="btn g">Discard</span><span class="btn">Save changes</span></div>
+ <div class="body" style="max-width:860px">
+  <div class="sc"><div class="pp m">JK</div><div class="t"><b>Jan Kowalski</b><small>Member since 14 Jan 2025</small></div><span class="btn g">Change photo</span><span class="btn g">Remove</span></div>
+  <div><div class="mut" style="margin:6px 0">Contact</div>
+   <div class="sc"><div class="t">Name<small>First and last name</small></div><span class="box">Jan</span><span class="box">Kowalski</span></div>
+   <div class="sc"><div class="t">Email &amp; phone</div><span class="box">jan@example.com</span><span class="box">123 456 789</span></div>
+   <div class="sc"><div class="t">NIP<small>10 digits</small></div><span class="box">000-000-00-00</span></div>
+   <div class="sc"><div class="t">Bank</div><span class="box">mBank ▾</span></div></div>
+  <div><div class="mut" style="margin:6px 0">Taxes</div>
+   <div class="sc"><div class="t">Tax type</div><span class="box">Tax scale ▾</span></div>
+   <div class="sc"><div class="t">PIT payment</div><span class="box">Monthly ▾</span></div>
+   <div class="sc"><div class="t">VAT payer<small>Choose how VAT is paid</small></div><span class="box" style="min-width:120px">Quarterly ▾</span><span>⬤</span></div>
+   <div class="sc"><div class="t">Cash register<small>First transaction date</small></div><span class="box" style="min-width:120px">06/03/2025 📅</span><span>⬤</span></div>
+   <div class="sc"><div class="t">Relief<small>Ends 31.07.2025 (calculated)</small></div><span class="box">Ulga na start ▾</span></div></div>
+  <div class="mut">▸ Subscription &nbsp; ▸ Other (employment contract, cash method)</div>
+ </div></div></div>
+
+<h3 class="opt">Option C — Master–detail (list and profile on one page)</h3>
+<p class="pros"><b>+</b> merges Clients list and Client page: no round trips, quick browsing between clients &nbsp; <i>−</i> narrower detail area; the top-bar client picker becomes redundant on this page</p>
+<div class="win"><div class="nav"><div>Dash</div><div class="on">Clients</div><div style="margin-top:auto">Set</div></div>
+<div class="main">
+ <div class="top"><span class="box" style="min-width:240px">🔍 Search</span><span style="flex:1"></span><span class="btn">+ Add client</span></div>
+ <div class="body cols" style="grid-template-columns:260px 1fr;align-items:start">
+  <div class="list card" style="padding:6px">
+   <div><span class="pp s c2">AN</span>Anna Nowak<span class="chip w" style="margin:0 0 0 auto">!</span></div>
+   <div class="on"><span class="pp s">JK</span>Jan Kowalski</div>
+   <div><span class="pp s c3">MW</span>Maria Wiśniewska</div>
+   <div class="dis"><span class="pp s c4">PZ</span>Piotr Zieliński <span class="chip" style="margin:0 0 0 auto">susp.</span></div>
+  </div>
+  <div class="card">
+   <div style="display:flex;gap:14px;align-items:center;margin-bottom:12px"><div class="pp m">JK</div><div style="flex:1"><div style="font-size:18px;font-weight:600">Jan Kowalski</div><span class="chip">Tax scale</span><span class="chip">VAT quarterly</span></div><span class="btn g">Edit</span><span class="btn g">Suspend</span><span class="btn bad">Delete</span></div>
+   <div class="cols" style="grid-template-columns:1fr 1fr 1fr">
+    <div class="f"><h4 class="mut" style="margin:0;font-size:12px">PERSONAL</h4><div><label>Phone</label>123 456 789</div><div><label>Email</label>jan@example.com</div><div><label>NIP · Bank</label>000-000-00-00 · mBank</div></div>
+    <div class="f"><h4 class="mut" style="margin:0;font-size:12px">TAXES</h4><div><label>Tax / PIT</label>Scale · monthly</div><div><label>VAT</label>Quarterly</div><div><label>Cash register</label>since 06/03/2025</div></div>
+    <div class="f"><h4 class="mut" style="margin:0;font-size:12px">RELIEF &amp; PLAN</h4><div><label>Relief</label>Ulga na start → 31.07.2025</div><div><label>Plan</label>Premium</div><div><label>Fees</label>124,30 zł · 99,99 zł</div></div>
+   </div>
+  </div>
+ </div></div></div>
+
+<!-- ============ LIST ============ -->
+<h2 id="l">3 · Clients list</h2>
+<p class="n">Only needed if the client page is not Option C. Both versions: search, sort, suspend/delete in a context menu, row click opens the client.</p>
+
+<h3 class="opt">Option A — Data grid</h3>
+<p class="pros"><b>+</b> compact, sortable, scales to hundreds of clients</p>
+<div class="win"><div class="nav"><div>Dash</div><div class="on">Clients</div><div style="margin-top:auto">Set</div></div>
+<div class="main"><div class="top"><span class="box" style="min-width:260px">🔍 Search clients</span><span class="box">☐ Show suspended</span><span style="flex:1"></span><span class="btn">+ Add client</span></div>
+<div class="body"><div class="card"><table><tr><th>Name ▲</th><th>NIP</th><th>Bank</th><th>Tax</th><th>Relief</th><th>This month</th></tr>
+<tr><td><span class="pp s c2">AN</span>Anna Nowak</td><td>111-222-33-44</td><td>PKO BP</td><td>Lump sum</td><td>ZUS Plus</td><td class="wn">Not accounted</td></tr>
+<tr><td><span class="pp s">JK</span>Jan Kowalski</td><td>000-000-00-00</td><td>mBank</td><td>Scale</td><td>Ulga na start</td><td class="ok">Accounted</td></tr>
+<tr class="dis"><td><span class="pp s c4">PZ</span>Piotr Zieliński <span class="chip">suspended</span></td><td>555-666-77-88</td><td>ING</td><td>Linear</td><td>Full ZUS</td><td>—</td></tr></table></div></div></div></div>
+
+<h3 class="opt">Option B — Cards</h3>
+<p class="pros"><b>+</b> friendlier, photos stand out, warnings visible per client &nbsp; <i>−</i> fewer clients per screen</p>
+<div class="win"><div class="nav"><div>Dash</div><div class="on">Clients</div><div style="margin-top:auto">Set</div></div>
+<div class="main"><div class="top"><span class="box" style="min-width:260px">🔍 Search clients</span><span class="seg"><span class="sel">All</span><span>Not accounted</span><span>Warnings</span></span><span style="flex:1"></span><span class="btn">+ Add client</span></div>
+<div class="body tiles">
+ <div class="card"><div style="display:flex;gap:10px;align-items:center"><div class="pp m c2">AN</div><div><b>Anna Nowak</b><br><span class="mut">111-222-33-44</span></div></div><div style="margin-top:8px"><span class="chip">Lump sum</span><span class="chip w">Not accounted</span></div></div>
+ <div class="card"><div style="display:flex;gap:10px;align-items:center"><div class="pp m photo">📷</div><div><b>Jan Kowalski</b><br><span class="mut">000-000-00-00</span></div></div><div style="margin-top:8px"><span class="chip">Scale</span><span class="chip o">Accounted</span><span class="chip w">Cash limit 95%</span></div></div>
+ <div class="card"><div style="display:flex;gap:10px;align-items:center"><div class="pp m c3">MW</div><div><b>Maria Wiśniewska</b><br><span class="mut">222-333-44-55</span></div></div><div style="margin-top:8px"><span class="chip">Linear</span><span class="chip o">Accounted</span></div></div>
+</div></div></div>
+<p class="n" style="margin-top:8px">Note the Jan card shows a photo placeholder (📷) to illustrate a real picture next to initials avatars.</p>
+
+<!-- ============ ADD ============ -->
+<h2 id="a">4 · Add client (dialog)</h2>
+<p class="n">ContentDialog. Photo is optional; the avatar updates live with the initials while typing the name.</p>
+<div class="win" style="grid-template-columns:1fr;max-width:540px"><div class="card f" style="margin:14px">
+ <div style="display:flex;gap:14px;align-items:center"><div class="pp m">JK</div><div><div style="font-size:16px;font-weight:600">Add client</div><span class="mut" style="font-size:12px">Add photo (optional)</span></div></div>
+ <div class="row"><div><label>First name *</label><span class="box">Jan</span></div><div><label>Last name *</label><span class="box">Kowalski</span></div></div>
+ <div class="row"><div><label>NIP *</label><span class="box">000-000-00-00</span></div><div><label>Join date *</label><span class="box">07/11/2026 📅</span></div></div>
+ <div><label>Bank *</label><span class="box">Select ▾</span></div>
+ <div class="row"><div><label>Phone</label><span class="box">&nbsp;</span></div><div><label>Email</label><span class="box">&nbsp;</span></div></div>
+ <div class="row" style="justify-content:flex-end"><span class="btn g" style="flex:none">Cancel</span><span class="btn" style="flex:none">Add</span></div></div></div>
+
+<p class="n" style="margin-top:28px">Settings page (unchanged): theme, database location, change DB password, app version.</p>
+</body></html>

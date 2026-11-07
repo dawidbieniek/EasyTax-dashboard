@@ -1,0 +1,112 @@
+# EasyTax — architecture
+
+Status: **skeleton only** (no features yet). This document describes the structure the features will be built into.
+Deliberately lightweight: no DDD, no vertical-slice framework, no unit tests. Code is grouped by feature folder as needed.
+
+## Stack
+- .NET 10, C# 14, **Windows only** (`net10.0-windows10.0.19041.0`)
+- WinUI 3 (Windows App SDK 2.6), unpackaged, self-contained
+- MVVM with CommunityToolkit.Mvvm (source generators, partial properties)
+- Generic Host (`Microsoft.Extensions.Hosting`) for DI, configuration and logging
+- EF Core 10 + SQLite (not encrypted for now)
+- UI language: Polish, all strings in `.resw` resources
+
+## Solution layout
+
+```
+EasyTax.slnx
+Directory.Build.props      shared settings (TFM, nullable, warnings as errors, code style enforced in build)
+Directory.Packages.props   central package versions
+src/
+  EasyTax.Core/            the domain layer: entities (rich, EF-mapped), rules, repository interfaces. No UI, no EF types.
+    Common/                Entity base (Guid v7 id)
+    Clients/               Client, IClientRepository
+    Database/              IDatabaseInitializer
+  EasyTax.Data/            EF Core: DbContext, entity configurations, repositories, DI registration
+    Clients/               ClientConfiguration, ClientRepository
+  EasyTax.App/             WinUI 3 app
+    Shell/                 MainWindow, navigation (service, page registry), ViewModelBase
+    Dashboard/ Clients/ Settings/   one folder per feature: page + view model (+ feature services)
+    Localization/          ILocalizer
+    Resources/pl-PL/       Resources.resw
+    Infrastructure/        AppHost (composition root), AppPaths, DI helpers
+docs/                      wireframes (reference UI) and archived drafts
+```
+
+Folders are **feature slices**, not technical layers: there is no `Abstractions/`, `Services/`, `Views/` or
+`ViewModels/` folder. A feature's interface, entity, configuration, page and view model sit next to their siblings.
+
+### Dependency rule
+```
+App  ──►  Data  ──►  Core
+ └─────────────────►  Core
+```
+`Core` knows nothing about the other projects. `Data` implements the interfaces `Core` declares.
+`App` is the only project that references both and wires them together.
+
+### Domain model
+Core is the domain layer, and **the EF entities are the domain entities**: plain C# classes that will carry their own
+behaviour, mapped by `IEntityTypeConfiguration<T>` classes in `Data` (found by `ApplyConfigurationsFromAssembly`).
+There are no separate persistence models or mappers.
+
+Ids are **Guid v7** (`Guid.CreateVersion7()`), assigned in the `Entity` base class when the object is created.
+The database never generates them (`ValueGeneratedNever`), so an object is valid before it is saved.
+SQLite stores them as text.
+
+## How a screen is built
+1. Create a feature folder in `EasyTax.App` (e.g. `Clients/`).
+2. `XxxViewModel : ViewModelBase`. Override `OnNavigatedToAsync` to load data.
+3. `XxxPage.xaml` + code-behind. The constructor resolves the view model and sets `DataContext`:
+   ```csharp
+   ViewModel = App.GetService<XxxViewModel>();
+   DataContext = ViewModel;
+   ```
+   XAML binds with compiled bindings: `{x:Bind ViewModel.Property}`.
+4. Register the pair in `AppHost`: `services.AddPage<XxxPage, XxxViewModel>(pages);`
+5. Navigate with `INavigationService.NavigateTo<XxxViewModel>(parameter)`.
+   The navigation service calls `OnNavigatedToAsync` / `OnNavigatedFrom` on the view model.
+
+The service locator (`App.GetService`) is used **only** for pages, because `Frame` instantiates them.
+Everything else uses constructor injection.
+
+## Cross-cutting pieces already in place
+- **Navigation** (`Shell/`): `INavigationService` over a `Frame`; `IPageRegistry` maps view model → page.
+  `MainWindow` hosts a `NavigationView` (collapsed icon rail) and keeps the selected item in sync.
+- **Settings** (`Settings/`): `ISettingsService` (`AppSettings` record, JSON file at `%LocalAppData%\EasyTax\settings.json`).
+  Changing a setting raises `Changed`. A corrupt or missing file falls back to defaults.
+- **Theme** (`Settings/`): `IThemeService` applies `AppSettings.Theme` (System / Light / Dark, default Dark) to the window.
+- **Localization**: `ILocalizer` for strings needed in code; `x:Uid` for XAML. Source: `Resources/pl-PL/Resources.resw`.
+- **Database**: file at `%LocalAppData%\EasyTax\easytax.db`; `IDatabaseInitializer` runs at startup
+  (currently `EnsureCreated`; switches to migrations once the model is stable).
+- **DI registration**: each project exposes one `ServiceCollectionExtensions` class that uses C# 14 extension blocks
+  (`extension(IServiceCollection services) { public IServiceCollection AddEasyTaxData(...) }`).
+- **Logging**: `ILogger<T>` from the host (debug output for now; file sink is a later task).
+
+## Conventions
+Formatting is enforced by `.editorconfig` and `.gitattributes` (tabs, CRLF, UTF-8) — never fix it by hand or by script.
+
+C# style (compiler-enforced where possible; warnings are errors):
+- Naming: `_camelCase` private fields, `I` prefix on interfaces, PascalCase for the rest; file-scoped namespaces; Allman braces.
+- **`if` with a single-line condition and a single statement: no braces, statement on its own line.**
+  ```csharp
+  if (x is null)
+  	return;
+  ```
+  Never `if (x) return;` on one line (build error IDE2001). Use braces when the condition spans several lines
+  or the body has several statements.
+- **Guard clauses over nesting**: validate and return/throw early instead of wrapping the main path in `if`s.
+- One type per file; file name = type name.
+- No logic in code-behind beyond view concerns.
+- User-visible strings are never hard-coded: add them to `Resources.resw` (`Key.Property` for `x:Uid`, plain `Key` for code).
+- Package versions only in `Directory.Packages.props`.
+
+## Build and run
+```bash
+dotnet build EasyTax.slnx
+dotnet run --project src/EasyTax.App        # or launch src/EasyTax.App/bin/Debug/net10.0-windows10.0.19041.0/win-x64/EasyTax.exe
+```
+
+## Deferred
+- Charts (LiveCharts2) and the data grid (WinUI.TableView) come with the features that need them. The accent colour is the Windows system accent (WinUI default), so there is no colour setting.
+- Database encryption is postponed.
+- Packaging/installer and auto-update approach are undecided (the app currently runs unpackaged).

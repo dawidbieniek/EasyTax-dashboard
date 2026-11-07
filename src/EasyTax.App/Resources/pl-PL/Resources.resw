@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+
+  <!-- Shell -->
+  <data name="Shell_Title.Text" xml:space="preserve">
+    <value>EasyTax</value>
+  </data>
+  <data name="Nav_Dashboard.Content" xml:space="preserve">
+    <value>Pulpit</value>
+  </data>
+  <data name="Nav_Clients.Content" xml:space="preserve">
+    <value>Klienci</value>
+  </data>
+
+  <!-- Dashboard -->
+  <data name="Dashboard_Placeholder.Text" xml:space="preserve">
+    <value>Pulpit</value>
+  </data>
+
+  <!-- Clients -->
+  <data name="Clients_Title.Text" xml:space="preserve">
+    <value>Klienci</value>
+  </data>
+  <data name="Clients_Count" xml:space="preserve">
+    <value>Liczba klientów: {0}</value>
+  </data>
+
+  <!-- Settings -->
+  <data name="Settings_Title.Text" xml:space="preserve">
+    <value>Ustawienia</value>
+  </data>
+  <data name="Settings_Theme.Header" xml:space="preserve">
+    <value>Motyw</value>
+  </data>
+  <data name="Settings_Version.Text" xml:space="preserve">
+    <value>Wersja aplikacji</value>
+  </data>
+  <data name="Theme_System" xml:space="preserve">
+    <value>Systemowy</value>
+  </data>
+  <data name="Theme_Light" xml:space="preserve">
+    <value>Jasny</value>
+  </data>
+  <data name="Theme_Dark" xml:space="preserve">
+    <value>Ciemny</value>
+  </data>
+</root>

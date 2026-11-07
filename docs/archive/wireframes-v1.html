@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EasyTax wireframes</title>
+<style>
+:root{--bg:#f4f4f4;--ink:#222;--mut:#777;--line:#bbb;--card:#fff;--acc:#0067c0;--ok:#2e9d5b;--warn:#d98a00;--bad:#c42b1c}
+@media (prefers-color-scheme:dark){:root{--bg:#1c1c1c;--ink:#eee;--mut:#999;--line:#555;--card:#2a2a2a;--acc:#4cc2ff;--ok:#5fd08a;--warn:#f0b040;--bad:#ff7b6e}}
+*{box-sizing:border-box}body{margin:0;padding:16px;background:var(--bg);color:var(--ink);font:14px/1.4 "Segoe UI",system-ui,sans-serif}
+h1{font-size:20px}h2{font-size:16px;margin:32px 0 4px}p.n{color:var(--mut);margin:0 0 8px;max-width:900px}
+.win{display:grid;grid-template-columns:150px 1fr;border:2px solid var(--line);border-radius:8px;overflow:hidden;background:var(--bg);max-width:1280px}
+.nav{border-right:1px solid var(--line);padding:10px;display:flex;flex-direction:column;gap:6px}
+.nav b{font-size:15px;margin-bottom:8px}.nav div{padding:6px 8px;border-radius:4px}.nav .on{background:var(--card);border-left:3px solid var(--acc)}
+.main{display:flex;flex-direction:column;min-width:0}
+.top{display:flex;gap:8px;align-items:center;padding:8px 12px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.box{border:1px solid var(--line);border-radius:4px;padding:5px 10px;background:var(--card)}
+.seg{display:flex;border:1px solid var(--line);border-radius:4px;overflow:hidden;background:var(--card)}
+.seg span{padding:5px 8px;border-right:1px solid var(--line);font-size:12px}.seg span:last-child{border:0}
+.ok{color:var(--ok);font-weight:600}.wn{color:var(--warn);font-weight:600}.dis{color:var(--mut)}.sel{outline:2px solid var(--acc);outline-offset:-2px}
+.btn{border-radius:4px;padding:5px 12px;background:var(--acc);color:#fff}
+.body{padding:12px;display:grid;gap:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:10px;min-width:0}
+.card h3{margin:0 0 8px;font-size:13px;color:var(--mut);font-weight:600}
+.g3{grid-template-columns:repeat(3,1fr)}
+.gauge{display:flex;gap:12px;align-items:center}.arc{width:84px;height:84px;border-radius:50%;border:12px solid var(--acc);border-bottom-color:var(--line);flex:none}
+.arc.w{border-color:var(--warn);border-bottom-color:var(--line)}.arc.off{border-color:var(--line)}
+.chart{height:150px;border:1px dashed var(--line);border-radius:4px;display:flex;align-items:flex-end;gap:5px;padding:6px}
+.chart i{flex:1;background:var(--acc);opacity:.7;min-height:4px}.chart i.b{background:var(--ok)}
+.line{align-items:stretch}.line svg{width:100%;height:100%;color:var(--acc)}
+.tg{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}.tg div{border:1px solid var(--line);border-radius:4px;padding:8px 4px;text-align:center;font-size:12px}
+.tg .on{background:var(--ok);color:#fff;border-color:var(--ok)}
+.f{display:grid;gap:8px}.f label{font-size:12px;color:var(--mut);display:block}.f .box{display:block;min-height:30px}
+.row{display:flex;gap:8px}.row>*{flex:1}
+table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);font-size:13px}th{color:var(--mut)}
+.tag{font-size:11px;border-radius:10px;padding:1px 8px;border:1px solid var(--line)}
+.note{font-size:12px;color:var(--mut);margin-top:6px}
+</style></head><body>
+<h1>EasyTax — wireframes v1</h1>
+<p class="n">Low-fidelity. Real UI uses stock WinUI 3 controls (NavigationView, AutoSuggestBox, NumberBox, ToggleSwitch, ToggleButton, Expander, Segmented) plus LiveCharts2 for charts and gauges. Dark/light follows the system theme.</p>
+
+<h2>1 · Dashboard</h2>
+<p class="n">The top bar is shared by Dashboard and Client page: client picker with prev/next, year, month strip (green = accounted, orange = not, grey = before the client joined) and an "Accounted" toggle for the selected month.</p>
+<div class="win"><div class="nav"><b>EasyTax</b><div class="on">Dashboard</div><div>Clients</div><div style="margin-top:auto">Settings</div></div>
+<div class="main">
+ <div class="top"><span class="box" style="min-width:200px">Jan Kowalski ▾</span><span class="box">‹</span><span class="box">›</span>
+  <span class="box">2026 ▾</span>
+  <div class="seg"><span class="dis">Sty</span><span class="ok">Lut</span><span class="ok">Mar</span><span class="ok">Kwi</span><span class="wn">Maj</span><span class="wn sel">Cze</span><span class="wn">Lip</span><span class="wn">Sie</span><span class="wn">Wrz</span><span class="wn">Paź</span><span class="wn">Lis</span><span class="wn">Gru</span></div>
+  <span style="flex:1"></span><span class="btn">☐ Not accounted</span></div>
+ <div class="body">
+  <div class="body g3" style="padding:0">
+   <div class="card"><h3>VAT limit</h3><div class="gauge"><div class="arc"></div><div><b style="font-size:18px">139 713 zł</b><br><span class="note">72% of 200 000 zł</span></div></div></div>
+   <div class="card"><h3>Cash register</h3><div class="gauge"><div class="arc w"></div><div><b style="font-size:18px">19 100 zł</b><br><span class="wn">95% of 20 000 zł ⚠</span></div></div></div>
+   <div class="card"><h3>Mały ZUS Plus</h3><div class="gauge"><div class="arc off"></div><div class="dis">Client not on ZUS Plus</div></div></div>
+  </div>
+  <div class="body" style="padding:0;grid-template-columns:2fr 1fr">
+   <div class="body" style="padding:0">
+    <div class="card"><h3>Monthly income 2026 (line)</h3><div class="chart line"><svg viewBox="0 0 300 100" preserveAspectRatio="none"><polyline fill="none" stroke="currentColor" stroke-width="2" points="0,70 27,20 55,35 82,60 109,90 136,45 164,80 191,65 218,70 245,40 272,55 300,60"/></svg></div></div>
+    <div class="card"><h3>Invoices 2026 (bars: sales / cost)</h3><div class="chart"><i style="height:60%"></i><i class="b" style="height:70%"></i><i style="height:20%"></i><i class="b" style="height:40%"></i><i style="height:100%"></i><i class="b" style="height:90%"></i><i style="height:60%"></i><i class="b" style="height:20%"></i><i style="height:20%"></i><i class="b" style="height:90%"></i><i style="height:40%"></i><i class="b" style="height:60%"></i></div></div>
+   </div>
+   <div class="body" style="padding:0;align-content:start">
+    <div class="card f"><h3>June 2026</h3><div><label>Income</label><span class="box">6 000,00 zł</span></div><div class="row"><div><label>Sales invoices</label><span class="box">6</span></div><div><label>Cost invoices</label><span class="box">7</span></div></div></div>
+    <div class="card"><h3>Checklist · June</h3><div class="tg"><div class="on">VAT-R</div><div>CEIDG-1</div><div class="on">ZUS</div><div>Invoiced</div><div class="on">ZUS DRA<br><small>06-03 15:16</small></div><div>Tax</div><div class="on">JPK V7<br><small>06-03</small></div><div>VAT UE</div></div></div>
+    <div class="card f"><h3>Notes</h3><span class="box" style="min-height:90px">Test client – prefers email contact…</span></div>
+   </div>
+  </div>
+ </div></div></div>
+<p class="note">Open question: are the checklist toggles per-month or per-client? The old app mixed both (JPK V7 / VAT UE per month, VAT-R / CEIDG-1 per client). This wireframe assumes all per-month.</p>
+
+<h2>2 · Client page (view / edit)</h2>
+<p class="n">Same top bar without month controls. Read-only by default with an Edit button; Save/Cancel appear while editing.</p>
+<div class="win"><div class="nav"><b>EasyTax</b><div>Dashboard</div><div class="on">Clients</div><div style="margin-top:auto">Settings</div></div>
+<div class="main"><div class="top"><span class="box" style="min-width:200px">Jan Kowalski ▾</span><span class="box">‹</span><span class="box">›</span><span style="flex:1"></span><span class="box">Cancel</span><span class="btn">Save</span><span class="box" style="color:var(--bad)">Delete</span></div>
+<div class="body g3">
+ <div class="card f"><h3>Personal</h3><div class="row"><div><label>First name</label><span class="box">Jan</span></div><div><label>Last name</label><span class="box">Kowalski</span></div></div><div class="row"><div><label>Phone</label><span class="box">123 456 789</span></div><div><label>Email</label><span class="box">jan@example.com</span></div></div><div><label>NIP</label><span class="box">000-000-00-00</span></div><div><label>Bank</label><span class="box">mBank ▾</span></div><div><label>Join date</label><span class="box">14/01/2025 📅</span></div><div><label>Gender</label><span class="box">Male ▾</span></div></div>
+ <div class="card f"><h3>Subscription &amp; VAT</h3><div><label>Plan</label><span class="box">Premium</span></div><div class="row"><div><label>Authorization fee</label><span class="box">124,30 zł</span></div><div><label>Subscription fee</label><span class="box">99,99 zł</span></div></div><div>⬤ VAT payer</div><div><label>VAT payment</label><span class="box">Quarterly ▾</span></div><div>⬤ Cash register <small class="dis">(first use: 06/03/2025)</small></div><div>◯ Employment contract &nbsp; ⬤ Cash method</div></div>
+ <div class="card f"><h3>Tax &amp; relief</h3><div><label>Tax type</label><span class="box">Tax scale ▾</span></div><div><label>PIT payment</label><span class="box">Monthly ▾</span></div><div><label>Relief</label><span class="box">Ulga na start ▾</span></div><div class="row"><div><label>Relief since</label><span class="box">—</span></div><div><label>Relief ends (calculated)</label><span class="box dis">31.07.2025</span></div></div></div>
+</div></div></div>
+
+<h2>3 · Clients list</h2>
+<p class="n">Data grid: search, sortable columns, row click opens the Client page, right-click for Suspend / Delete. Suspended clients are greyed out and excluded from the top-bar picker.</p>
+<div class="win"><div class="nav"><b>EasyTax</b><div>Dashboard</div><div class="on">Clients</div><div style="margin-top:auto">Settings</div></div>
+<div class="main"><div class="top"><span class="box" style="min-width:260px">🔍 Search clients</span><span class="box">☐ Show suspended</span><span style="flex:1"></span><span class="btn">+ Add client</span></div>
+<div class="body"><div class="card"><table><tr><th>Name ▲</th><th>NIP</th><th>Bank</th><th>Tax</th><th>Relief</th><th>Phone</th><th>Email</th><th>This month</th></tr>
+<tr><td>Anna Nowak</td><td>111-222-33-44</td><td>PKO BP</td><td>Lump sum</td><td>ZUS Plus</td><td>600 100 200</td><td>anna@…</td><td class="wn">Not accounted</td></tr>
+<tr><td>Jan Kowalski</td><td>000-000-00-00</td><td>mBank</td><td>Scale</td><td>Ulga na start</td><td>123 456 789</td><td>jan@…</td><td class="ok">Accounted</td></tr>
+<tr class="dis"><td>Piotr Zieliński <span class="tag">suspended</span></td><td>555-666-77-88</td><td>ING</td><td>Linear</td><td>Full ZUS</td><td>—</td><td>—</td><td>—</td></tr></table></div></div></div></div>
+
+<h2>4 · Add client (dialog)</h2>
+<p class="n">ContentDialog opened from the Clients page. Required fields only; the rest is edited later on the Client page.</p>
+<div class="win" style="grid-template-columns:1fr;max-width:520px"><div class="card f" style="margin:12px"><h3 style="font-size:15px;color:var(--ink)">Add client</h3><div class="row"><div><label>First name *</label><span class="box">&nbsp;</span></div><div><label>Last name *</label><span class="box">&nbsp;</span></div></div><div><label>NIP *</label><span class="box">000-000-00-00</span></div><div><label>Join date *</label><span class="box">07/11/2026 📅</span></div><div><label>Bank *</label><span class="box">Select ▾</span></div><div class="row"><div><label>Phone</label><span class="box">&nbsp;</span></div><div><label>Email</label><span class="box">&nbsp;</span></div></div><div class="row" style="justify-content:flex-end"><span class="box" style="flex:none">Cancel</span><span class="btn" style="flex:none">Add</span></div></div></div>
+
+<h2>5 · Settings</h2>
+<p class="n">Minimal for now: theme (system/light/dark), database location, change database password, app version. Backups, notifications and email come later.</p>
+</body></html>

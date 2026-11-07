@@ -1,0 +1,12 @@
+<Page
+	x:Class="EasyTax.App.Clients.ClientsPage"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+	<StackPanel Padding="24" Spacing="8">
+		<TextBlock
+			x:Uid="Clients_Title"
+			Style="{StaticResource TitleTextBlockStyle}" />
+		<TextBlock Text="{x:Bind ViewModel.Summary, Mode=OneWay}" />
+	</StackPanel>
+</Page>

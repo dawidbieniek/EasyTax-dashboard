@@ -1,0 +1,11 @@
+<Page
+	x:Class="EasyTax.App.Dashboard.DashboardPage"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+	<Grid Padding="24">
+		<TextBlock
+			x:Uid="Dashboard_Placeholder"
+			Style="{StaticResource TitleTextBlockStyle}" />
+	</Grid>
+</Page>

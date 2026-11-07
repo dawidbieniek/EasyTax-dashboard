@@ -1,0 +1,13 @@
+bin/
+obj/
+.vs/
+.idea/
+*.user
+*.suo
+*.log
+TestResults/
+artifacts/
+*.db
+*.db-shm
+*.db-wal
+.claude/settings.local.json

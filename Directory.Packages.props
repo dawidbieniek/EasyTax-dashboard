@@ -1,0 +1,18 @@
+<Project>
+
+	<PropertyGroup>
+		<ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<!-- App -->
+		<PackageVersion Include="Microsoft.WindowsAppSDK" Version="2.6.5" />
+		<PackageVersion Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.28000.2957" />
+		<PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+		<PackageVersion Include="Microsoft.Extensions.Hosting" Version="10.0.14" />
+
+		<!-- Data -->
+		<PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.14" />
+	</ItemGroup>
+
+</Project>
