@@ -31,7 +31,9 @@ src/
   EasyTax.App/             WinUI 3 app
     Shell/                 MainWindow, navigation (service, page registry), ViewModelBase
     Dashboard/ Clients/ Settings/   one folder per feature: page + view model (+ feature services)
-    Localization/          ILocalizer
+    Photos/                photo picking/cropping service and the bytes-to-image converter
+    Controls/              small shared UI controls (FormField)
+    Localization/          ILocalizer, enum option lists
     Resources/pl-PL/       Resources.resw
     Infrastructure/        AppHost (composition root), AppPaths, DI helpers
 docs/                      wireframes (reference UI) and archived drafts
@@ -76,6 +78,17 @@ Everything else uses constructor injection.
 ## Cross-cutting pieces already in place
 - **Navigation** (`Shell/`): `INavigationService` over a `Frame`; `IPageRegistry` maps view model → page.
   `MainWindow` hosts a `NavigationView` (collapsed icon rail) and keeps the selected item in sync.
+- **Dialogs** (`Shell/IDialogService`): confirmation, "unsaved changes" (save / discard / cancel) and a generic `ShowAsync` for
+  custom dialogs, all shown over the main window. View models use it; they never create UI objects. Custom dialogs
+  (like the add-client form) are created by the page's code-behind and shown through the same service.
+- **Navigation guard**: a view model can override `ConfirmLeaveAsync` (default: allow). The shell asks before any rail
+  navigation; the client details page uses it to protect unsaved edits.
+- **Forms** (`Clients/ClientForm`): one editable copy of a client's data used by both the add dialog and the details page.
+  It validates (live format errors, "required" errors after the first submit), knows whether it changed
+  (`HasChanges`) and converts to/from the `Client` entity. `Controls/FormField` is the small shared control that shows a label,
+  the editor while editing (plain text otherwise) and the error.
+- **Photos** (`Photos/`): `IPhotoService` picks, crops (centred square), shrinks (≤ 256 px) and re-encodes a picture as JPEG;
+  `PhotoImageConverter` turns the stored bytes into an image for `PersonPicture`. Photos live in their own table.
 - **Client context** (`Shell/ClientContext`): the one place that knows which client, year and month are selected.
   It loads the selectable clients, the managed years and the month records of the selected client and year, restores the
   last selection from `settings.json`, snaps the selection to the join month when needed, and raises `Changed`. The app bar
@@ -124,6 +137,18 @@ dotnet tool run dotnet-ef migrations add <Name> --project src/EasyTax.Data --out
 ```
 A design-time factory (`EasyTaxDbContextFactory`) lets the tool run without starting the WinUI app.
 
+## WinUI notes (things that cost time once)
+- **Combo boxes: bind `SelectedItem`, not `SelectedValue`.** `SelectedValue` stayed empty when the value was set before the box was shown.
+  View models expose the selected option as a property that stays in sync with the form (`SelectedGender`, `SelectedBank`, …).
+  `x:Bind` cannot nest a converter binding (`Converter={x:Bind …}` does not compile) and generic converters cannot be created in XAML.
+- **Showing stored image bytes**: write to an in-memory stream through `AsStreamForWrite()` and **flush**, and do not dispose the stream
+  while the image is still decoding.
+- **Bitmap crop bounds are in the scaled image's coordinates** (`BitmapTransform.Bounds` after `ScaledWidth/Height`), not the original's.
+- **TableView** does not raise item-click or double-tap reliably; a `Tapped` handler on the grid plus a walk up to `TableViewRow` does.
+- Exceptions thrown inside `async void` event handlers do not crash the app; they are only logged. When something silently does nothing,
+  reproduce the code in a throwaway console project to see the exception.
+- Interactive checks: run with `EASYTAX_DATA_DIR` pointing at a temp folder and `--seed-demo`.
+
 ## Development helpers
 - `EASYTAX_DATA_DIR` environment variable: use another folder for the database and `settings.json` instead of `%LocalAppData%\EasyTax`.
 - `EasyTax.exe --seed-demo` (Debug builds only): fills an empty database with sample clients and 2026 month records.
@@ -136,6 +161,6 @@ dotnet run --project src/EasyTax.App        # or launch src/EasyTax.App/bin/Debu
 ```
 
 ## Deferred
-- Charts (LiveCharts2) and the data grid (WinUI.TableView) come with the features that need them. The accent colour is the Windows system accent (WinUI default), so there is no colour setting.
+- Charts (LiveCharts2) come with the dashboard milestone. The data grid (WinUI.TableView) is in use on the clients list. The accent colour is the Windows system accent (WinUI default), so there is no colour setting.
 - Database encryption is postponed.
 - Packaging/installer and auto-update approach are undecided (the app currently runs unpackaged).

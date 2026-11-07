@@ -26,6 +26,7 @@ public static class ServiceCollectionExtensions
 			services.AddDbContextFactory<EasyTaxDbContext>(builder => builder.UseSqlite(connectionString));
 			services.AddSingleton<IDatabaseInitializer, DatabaseInitializer>();
 			services.AddSingleton<IClientRepository, ClientRepository>();
+			services.AddSingleton<IClientPhotoRepository, ClientPhotoRepository>();
 			services.AddSingleton<IBankRepository, BankRepository>();
 			services.AddSingleton<IMonthRecordRepository, MonthRecordRepository>();
 			services.AddSingleton<IAccountingYearRepository, AccountingYearRepository>();

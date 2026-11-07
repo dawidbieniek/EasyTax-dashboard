@@ -10,6 +10,9 @@ public interface INavigationService
 	/// <summary>Binds the service to the frame that hosts pages. Called once by the shell.</summary>
 	void Initialize(Frame frame);
 
+	/// <summary>Asks the page that is currently shown whether it may be left. Call before navigating on the user's behalf.</summary>
+	Task<bool> CanLeaveAsync();
+
 	bool NavigateTo<TViewModel>(object? parameter = null)
 		where TViewModel : ViewModelBase;
 

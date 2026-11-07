@@ -20,6 +20,8 @@ public sealed class NavigationService(IPageRegistry pages, ILogger<NavigationSer
 		_frame.NavigationFailed += OnFrameNavigationFailed;
 	}
 
+	public Task<bool> CanLeaveAsync() => _currentViewModel?.ConfirmLeaveAsync() ?? Task.FromResult(true);
+
 	public bool NavigateTo<TViewModel>(object? parameter = null)
 		where TViewModel : ViewModelBase
 		=> NavigateTo(typeof(TViewModel), parameter);

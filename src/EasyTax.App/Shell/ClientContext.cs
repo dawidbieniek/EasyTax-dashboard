@@ -7,11 +7,14 @@ namespace EasyTax.App.Shell;
 
 public sealed class ClientContext(
 	IClientRepository clientRepository,
+	IClientPhotoRepository photoRepository,
 	IAccountingYearRepository yearRepository,
 	IMonthRecordRepository monthRepository,
 	ISettingsService settings) : IClientContext
 {
+	private IReadOnlyList<Client> _allClients = [];
 	private IReadOnlyList<MonthRecord> _yearRecords = [];
+	private bool _isSelectionLocked;
 	private int _version;
 
 	public event EventHandler? Changed;
@@ -22,6 +25,8 @@ public sealed class ClientContext(
 
 	public Client? SelectedClient { get; private set; }
 
+	public byte[]? SelectedClientPhoto { get; private set; }
+
 	public int Year { get; private set; }
 
 	public int Month { get; private set; }
@@ -31,6 +36,19 @@ public sealed class ClientContext(
 	public IReadOnlyList<MonthRecord> YearRecords => _yearRecords;
 
 	public MonthRecord? CurrentRecord => _yearRecords.FirstOrDefault(r => r.Month == SelectedMonth);
+
+	public bool IsSelectionLocked
+	{
+		get => _isSelectionLocked;
+		set
+		{
+			if (_isSelectionLocked == value)
+				return;
+
+			_isSelectionLocked = value;
+			Changed?.Invoke(this, EventArgs.Empty);
+		}
+	}
 
 	public async Task InitializeAsync()
 	{
@@ -50,11 +68,15 @@ public sealed class ClientContext(
 		await ApplyAsync(client, year, month);
 	}
 
-	public async Task ReloadAsync()
+	public async Task ReloadAsync(bool dropSuspendedSelection = false)
 	{
 		await LoadListsAsync();
 
-		var client = Clients.FirstOrDefault(c => c.Id == SelectedClient?.Id) ?? Clients.FirstOrDefault();
+		var client = _allClients.FirstOrDefault(c => c.Id == SelectedClient?.Id);
+		if (dropSuspendedSelection && client?.IsSuspended == true)
+			client = null;
+
+		client ??= Clients.FirstOrDefault();
 		var year = Years.Contains(Year) ? Year : NearestYear(Year);
 
 		await ApplyAsync(client, year, Month);
@@ -62,7 +84,10 @@ public sealed class ClientContext(
 
 	public async Task SelectClientAsync(Guid clientId)
 	{
-		var client = Clients.FirstOrDefault(c => c.Id == clientId);
+		if (IsSelectionLocked)
+			return;
+
+		var client = _allClients.FirstOrDefault(c => c.Id == clientId);
 		if (client is null || client.Id == SelectedClient?.Id)
 			return;
 
@@ -71,15 +96,17 @@ public sealed class ClientContext(
 
 	public Task SelectAdjacentClientAsync(int offset)
 	{
-		var index = IndexOfSelectedClient() + offset;
 		if (!CanSelectAdjacentClient(offset))
 			return Task.CompletedTask;
 
-		return ApplyAsync(Clients[index], Year, Month);
+		return ApplyAsync(Clients[IndexOfSelectedClient() + offset], Year, Month);
 	}
 
 	public bool CanSelectAdjacentClient(int offset)
 	{
+		if (IsSelectionLocked)
+			return false;
+
 		var index = IndexOfSelectedClient();
 		if (index < 0)
 			return false;
@@ -125,8 +152,8 @@ public sealed class ClientContext(
 
 	private async Task LoadListsAsync()
 	{
-		var allClients = await clientRepository.GetAllAsync();
-		Clients = [.. allClients.Where(c => !c.IsSuspended)];
+		_allClients = await clientRepository.GetAllAsync();
+		Clients = [.. _allClients.Where(c => !c.IsSuspended)];
 		Years = [.. (await yearRepository.GetAllAsync()).Select(y => y.Year)];
 	}
 
@@ -139,13 +166,16 @@ public sealed class ClientContext(
 		Month = month;
 
 		var version = ++_version;
-		var records = client is null ? [] : await monthRepository.GetForYearAsync(client.Id, year);
+		var recordsTask = client is null ? Task.FromResult<IReadOnlyList<MonthRecord>>([]) : monthRepository.GetForYearAsync(client.Id, year);
+		var photoTask = client is null ? Task.FromResult<ClientPhoto?>(null) : photoRepository.GetAsync(client.Id);
+		await Task.WhenAll(recordsTask, photoTask);
 
 		// A newer selection was made while loading: let that one publish its own result.
 		if (version != _version)
 			return;
 
-		_yearRecords = records;
+		_yearRecords = recordsTask.Result;
+		SelectedClientPhoto = photoTask.Result?.Bytes;
 
 		settings.Update(s => s with { LastClientId = client?.Id, LastYear = year, LastMonth = month });
 		Changed?.Invoke(this, EventArgs.Empty);

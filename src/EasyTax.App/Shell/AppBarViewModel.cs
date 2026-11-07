@@ -31,6 +31,13 @@ public sealed partial class AppBarViewModel : ObservableObject
 	public partial string SelectedClientName { get; set; } = string.Empty;
 
 	[ObservableProperty]
+	public partial byte[]? SelectedClientPhoto { get; set; }
+
+	/// <summary>False while a page is editing the current client: switching client would lose its changes.</summary>
+	[ObservableProperty]
+	public partial bool CanPickClient { get; set; }
+
+	[ObservableProperty]
 	public partial string ClientPlaceholder { get; set; } = string.Empty;
 
 	[ObservableProperty]
@@ -80,6 +87,8 @@ public sealed partial class AppBarViewModel : ObservableObject
 
 		HasClients = _context.Clients.Count > 0;
 		SelectedClientName = client?.FullName ?? string.Empty;
+		SelectedClientPhoto = _context.SelectedClientPhoto;
+		CanPickClient = HasClients && !_context.IsSelectionLocked;
 		ClientPlaceholder = _localizer[HasClients ? "AppBar_ClientPlaceholder" : "AppBar_NoClients"];
 		CanSelectPrevious = _context.CanSelectAdjacentClient(-1);
 		CanSelectNext = _context.CanSelectAdjacentClient(1);

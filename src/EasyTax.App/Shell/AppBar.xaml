@@ -3,9 +3,12 @@
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:clients="using:EasyTax.Core.Domain.Clients"
 	xmlns:local="using:EasyTax.App.Shell"
+	xmlns:photos="using:EasyTax.App.Photos"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
 	<UserControl.Resources>
+		<photos:PhotoImageConverter x:Key="PhotoImageConverter" />
+
 		<!-- One template per month state: accounted (green), not accounted (orange), before the client joined (grey, disabled). -->
 		<DataTemplate x:Key="AccountedMonthTemplate" x:DataType="local:MonthItem">
 			<Grid>
@@ -85,13 +88,14 @@
 				<PersonPicture
 					Width="32"
 					Height="32"
-					DisplayName="{x:Bind ViewModel.SelectedClientName, Mode=OneWay}" />
+					DisplayName="{x:Bind ViewModel.SelectedClientName, Mode=OneWay}"
+					ProfilePicture="{x:Bind ViewModel.SelectedClientPhoto, Mode=OneWay, Converter={StaticResource PhotoImageConverter}}" />
 				<AutoSuggestBox
 					x:Name="ClientBox"
 					x:Uid="AppBar_ClientBox"
 					Width="240"
 					GotFocus="OnClientBoxGotFocus"
-					IsEnabled="{x:Bind ViewModel.HasClients, Mode=OneWay}"
+					IsEnabled="{x:Bind ViewModel.CanPickClient, Mode=OneWay}"
 					LostFocus="OnClientBoxLostFocus"
 					PlaceholderText="{x:Bind ViewModel.ClientPlaceholder, Mode=OneWay}"
 					QuerySubmitted="OnClientQuerySubmitted"

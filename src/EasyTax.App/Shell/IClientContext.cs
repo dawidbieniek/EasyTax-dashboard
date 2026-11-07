@@ -9,13 +9,20 @@ namespace EasyTax.App.Shell;
 /// </summary>
 public interface IClientContext
 {
-	/// <summary>Clients that can be selected (suspended ones excluded), ordered by name.</summary>
+	/// <summary>Clients that can be picked in the app bar (suspended ones excluded), ordered by name.</summary>
 	IReadOnlyList<Client> Clients { get; }
 
 	/// <summary>The user-managed years, ascending.</summary>
 	IReadOnlyList<int> Years { get; }
 
+	/// <summary>
+	/// The selected client. Usually one of <see cref="Clients"/>, but a suspended client can be selected explicitly
+	/// (opened from the clients list) and stays selected until another selection or a reload that drops it.
+	/// </summary>
 	Client? SelectedClient { get; }
+
+	/// <summary>Picture of the selected client, or null when there is none.</summary>
+	byte[]? SelectedClientPhoto { get; }
 
 	int Year { get; }
 
@@ -30,15 +37,25 @@ public interface IClientContext
 	/// <summary>The record of the selected month, or null when nothing has been recorded yet.</summary>
 	MonthRecord? CurrentRecord { get; }
 
-	/// <summary>Raised whenever the selection or the loaded data changed.</summary>
+	/// <summary>
+	/// While true the client cannot be changed (a page is editing the current client and would lose its changes).
+	/// The app bar disables its client controls.
+	/// </summary>
+	bool IsSelectionLocked { get; set; }
+
+	/// <summary>Raised whenever the selection, the lock or the loaded data changed.</summary>
 	event EventHandler? Changed;
 
 	/// <summary>Loads the lists and restores the last selection. Call once at startup.</summary>
 	Task InitializeAsync();
 
-	/// <summary>Reloads clients, years and records after they were edited elsewhere, keeping the selection when possible.</summary>
-	Task ReloadAsync();
+	/// <summary>
+	/// Reloads clients, years, records and photo after they were edited elsewhere, keeping the selection when possible.
+	/// </summary>
+	/// <param name="dropSuspendedSelection">Move to the first available client when the selected one is now suspended.</param>
+	Task ReloadAsync(bool dropSuspendedSelection = false);
 
+	/// <summary>Selects any existing client, suspended or not.</summary>
 	Task SelectClientAsync(Guid clientId);
 
 	/// <summary>Selects the previous (-1) or next (+1) client in the list. Does nothing at the ends.</summary>

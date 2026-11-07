@@ -1,12 +1,200 @@
 <Page
 	x:Class="EasyTax.App.Clients.ClientsPage"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:local="using:EasyTax.App.Clients"
+	xmlns:photos="using:EasyTax.App.Photos"
+	xmlns:tv="using:WinUI.TableView"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-	<StackPanel Padding="24" Spacing="8">
-		<TextBlock
-			x:Uid="Clients_Title"
-			Style="{StaticResource TitleTextBlockStyle}" />
-		<TextBlock Text="{x:Bind ViewModel.Summary, Mode=OneWay}" />
-	</StackPanel>
+	<Page.Resources>
+		<photos:PhotoImageConverter x:Key="PhotoImageConverter" />
+	</Page.Resources>
+
+	<Grid Padding="16" RowSpacing="12">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="*" />
+		</Grid.RowDefinitions>
+
+		<Grid ColumnSpacing="12">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="320" />
+				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="Auto" />
+			</Grid.ColumnDefinitions>
+
+			<TextBox
+				x:Uid="List_Search"
+				Text="{x:Bind ViewModel.SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+			<TextBlock
+				Grid.Column="1"
+				VerticalAlignment="Center"
+				Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+				Text="{x:Bind ViewModel.Summary, Mode=OneWay}" />
+			<Button
+				x:Uid="List_Add"
+				Grid.Column="2"
+				Click="OnAddClientClick"
+				Style="{StaticResource AccentButtonStyle}" />
+		</Grid>
+
+		<tv:TableView
+			x:Name="ClientsGrid"
+			Grid.Row="1"
+			AutoGenerateColumns="False"
+			CanFilterColumns="False"
+			CanGroupColumns="False"
+			IsReadOnly="True"
+			ItemsSource="{x:Bind ViewModel.Rows, Mode=OneWay}"
+			RowContextFlyoutOpening="OnRowContextFlyoutOpening"
+			Tapped="OnGridTapped"
+			SelectionMode="Single"
+			SelectionUnit="Row">
+
+			<tv:TableView.RowContextFlyout>
+				<MenuFlyout>
+					<MenuFlyoutItem x:Uid="List_Open" Click="OnOpenClick" />
+					<MenuFlyoutItem x:Name="SuspendItem" Click="OnSuspendClick" />
+					<MenuFlyoutSeparator />
+					<MenuFlyoutItem x:Uid="List_Delete" Click="OnDeleteClick" />
+				</MenuFlyout>
+			</tv:TableView.RowContextFlyout>
+
+			<tv:TableView.Columns>
+				<tv:TableViewTemplateColumn
+					x:Uid="List_Column_Name"
+					Width="220"
+					SortMemberPath="FullName">
+					<tv:TableViewTemplateColumn.CellTemplate>
+						<DataTemplate x:DataType="local:ClientRow">
+							<StackPanel
+								Margin="12,0"
+								VerticalAlignment="Center"
+								Opacity="{x:Bind RowOpacity}"
+								Orientation="Horizontal"
+								Spacing="10">
+								<PersonPicture
+									Width="28"
+									Height="28"
+									DisplayName="{x:Bind FullName}"
+									ProfilePicture="{x:Bind Photo, Converter={StaticResource PhotoImageConverter}}" />
+								<TextBlock VerticalAlignment="Center" Text="{x:Bind FullName}" />
+								<TextBlock
+									x:Uid="List_Suspended"
+									VerticalAlignment="Center"
+									Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+									Style="{StaticResource CaptionTextBlockStyle}"
+									Visibility="{x:Bind IsSuspended}" />
+							</StackPanel>
+						</DataTemplate>
+					</tv:TableViewTemplateColumn.CellTemplate>
+				</tv:TableViewTemplateColumn>
+
+				<tv:TableViewTemplateColumn
+					x:Uid="List_Column_Nip"
+					Width="130"
+					SortMemberPath="Nip">
+					<tv:TableViewTemplateColumn.CellTemplate>
+						<DataTemplate x:DataType="local:ClientRow">
+							<TextBlock
+								Margin="12,0"
+								VerticalAlignment="Center"
+								Opacity="{x:Bind RowOpacity}"
+								Text="{x:Bind Nip}" />
+						</DataTemplate>
+					</tv:TableViewTemplateColumn.CellTemplate>
+				</tv:TableViewTemplateColumn>
+
+				<tv:TableViewTemplateColumn
+					x:Uid="List_Column_Bank"
+					Width="160"
+					SortMemberPath="BankName">
+					<tv:TableViewTemplateColumn.CellTemplate>
+						<DataTemplate x:DataType="local:ClientRow">
+							<TextBlock
+								Margin="12,0"
+								VerticalAlignment="Center"
+								Opacity="{x:Bind RowOpacity}"
+								Text="{x:Bind BankName}" />
+						</DataTemplate>
+					</tv:TableViewTemplateColumn.CellTemplate>
+				</tv:TableViewTemplateColumn>
+
+				<tv:TableViewTemplateColumn
+					x:Uid="List_Column_Tax"
+					Width="140"
+					SortMemberPath="TaxType">
+					<tv:TableViewTemplateColumn.CellTemplate>
+						<DataTemplate x:DataType="local:ClientRow">
+							<TextBlock
+								Margin="12,0"
+								VerticalAlignment="Center"
+								Opacity="{x:Bind RowOpacity}"
+								Text="{x:Bind TaxType}" />
+						</DataTemplate>
+					</tv:TableViewTemplateColumn.CellTemplate>
+				</tv:TableViewTemplateColumn>
+
+				<tv:TableViewTemplateColumn
+					x:Uid="List_Column_Relief"
+					Width="150"
+					SortMemberPath="Relief">
+					<tv:TableViewTemplateColumn.CellTemplate>
+						<DataTemplate x:DataType="local:ClientRow">
+							<TextBlock
+								Margin="12,0"
+								VerticalAlignment="Center"
+								Opacity="{x:Bind RowOpacity}"
+								Text="{x:Bind Relief}" />
+						</DataTemplate>
+					</tv:TableViewTemplateColumn.CellTemplate>
+				</tv:TableViewTemplateColumn>
+
+				<tv:TableViewTemplateColumn
+					x:Uid="List_Column_Phone"
+					Width="120"
+					SortMemberPath="Phone">
+					<tv:TableViewTemplateColumn.CellTemplate>
+						<DataTemplate x:DataType="local:ClientRow">
+							<TextBlock
+								Margin="12,0"
+								VerticalAlignment="Center"
+								Opacity="{x:Bind RowOpacity}"
+								Text="{x:Bind Phone}" />
+						</DataTemplate>
+					</tv:TableViewTemplateColumn.CellTemplate>
+				</tv:TableViewTemplateColumn>
+
+				<tv:TableViewTemplateColumn
+					x:Uid="List_Column_Email"
+					Width="200"
+					SortMemberPath="Email">
+					<tv:TableViewTemplateColumn.CellTemplate>
+						<DataTemplate x:DataType="local:ClientRow">
+							<TextBlock
+								Margin="12,0"
+								VerticalAlignment="Center"
+								Opacity="{x:Bind RowOpacity}"
+								Text="{x:Bind Email}" />
+						</DataTemplate>
+					</tv:TableViewTemplateColumn.CellTemplate>
+				</tv:TableViewTemplateColumn>
+
+				<tv:TableViewTemplateColumn
+					x:Uid="List_Column_Month"
+					Width="130"
+					SortMemberPath="MonthStatus">
+					<tv:TableViewTemplateColumn.CellTemplate>
+						<DataTemplate x:DataType="local:ClientRow">
+							<TextBlock
+								Margin="12,0"
+								VerticalAlignment="Center"
+								Opacity="{x:Bind RowOpacity}"
+								Text="{x:Bind MonthStatus}" />
+						</DataTemplate>
+					</tv:TableViewTemplateColumn.CellTemplate>
+				</tv:TableViewTemplateColumn>
+			</tv:TableView.Columns>
+		</tv:TableView>
+	</Grid>
 </Page>

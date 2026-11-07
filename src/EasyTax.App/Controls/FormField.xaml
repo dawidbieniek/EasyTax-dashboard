@@ -1,0 +1,29 @@
+<UserControl
+	x:Class="EasyTax.App.Controls.FormField"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:local="using:EasyTax.App.Controls"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+	<!-- A labelled value that is an editor while editing and plain text otherwise, with a validation message below. -->
+	<StackPanel Spacing="4">
+		<TextBlock
+			Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+			Style="{StaticResource CaptionTextBlockStyle}"
+			Text="{x:Bind Header, Mode=OneWay}" />
+
+		<ContentPresenter Content="{x:Bind FieldContent, Mode=OneWay}" Visibility="{x:Bind IsEditing, Mode=OneWay}" />
+
+		<TextBlock
+			MinHeight="32"
+			Padding="0,5"
+			Text="{x:Bind DisplayText, Mode=OneWay}"
+			TextWrapping="Wrap"
+			Visibility="{x:Bind local:FormField.ShowWhenFalse(IsEditing), Mode=OneWay}" />
+
+		<TextBlock
+			Foreground="{ThemeResource SystemFillColorCriticalBrush}"
+			Style="{StaticResource CaptionTextBlockStyle}"
+			Text="{x:Bind Error, Mode=OneWay}"
+			Visibility="{x:Bind local:FormField.ShowWhenText(Error), Mode=OneWay}" />
+	</StackPanel>
+</UserControl>

@@ -1,6 +1,7 @@
 using EasyTax.App.Clients;
 using EasyTax.App.Dashboard;
 using EasyTax.App.Localization;
+using EasyTax.App.Photos;
 using EasyTax.App.Settings;
 using EasyTax.App.Shell;
 using EasyTax.Data;
@@ -30,6 +31,10 @@ internal static class AppHost
 		services.AddSingleton<IThemeService, ThemeService>();
 		services.AddSingleton<INavigationService, NavigationService>();
 		services.AddSingleton<IClientContext, ClientContext>();
+		services.AddSingleton<IDialogService, DialogService>();
+		services.AddSingleton<IShellWindow, ShellWindow>();
+		services.AddSingleton<IPhotoService, PhotoService>();
+		services.AddTransient<AddClientViewModel>();
 
 		// Shell
 		services.AddSingleton<AppBarViewModel>();
@@ -40,6 +45,7 @@ internal static class AppHost
 		services.AddSingleton<IPageRegistry>(pages);
 		services.AddPage<DashboardPage, DashboardViewModel>(pages);
 		services.AddPage<ClientsPage, ClientsViewModel>(pages);
+		services.AddPage<ClientDetailsPage, ClientDetailsViewModel>(pages);
 		services.AddPage<SettingsPage, SettingsViewModel>(pages);
 
 #if DEBUG

@@ -1,0 +1,579 @@
+<Page
+	x:Class="EasyTax.App.Clients.ClientDetailsPage"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:controls="using:EasyTax.App.Controls"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:photos="using:EasyTax.App.Photos">
+
+	<Page.Resources>
+		<photos:PhotoImageConverter x:Key="PhotoImageConverter" />
+
+		<Style x:Key="CardStyle" TargetType="Border">
+			<Setter Property="Padding" Value="16" />
+			<Setter Property="Background" Value="{ThemeResource CardBackgroundFillColorDefaultBrush}" />
+			<Setter Property="BorderBrush" Value="{ThemeResource CardStrokeColorDefaultBrush}" />
+			<Setter Property="BorderThickness" Value="1" />
+			<Setter Property="CornerRadius" Value="8" />
+		</Style>
+
+		<Style x:Key="CardTitleStyle" BasedOn="{StaticResource BodyStrongTextBlockStyle}" TargetType="TextBlock">
+			<Setter Property="Margin" Value="0,0,0,4" />
+		</Style>
+	</Page.Resources>
+
+	<Grid>
+		<!-- Nothing selected (no clients at all). -->
+		<TextBlock
+			x:Uid="Details_NoClient"
+			HorizontalAlignment="Center"
+			VerticalAlignment="Center"
+			Style="{StaticResource SubtitleTextBlockStyle}"
+			Visibility="{x:Bind ViewModel.HasNoClient, Mode=OneWay}" />
+
+		<Grid Visibility="{x:Bind ViewModel.HasClient, Mode=OneWay}">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto" />
+				<RowDefinition Height="Auto" />
+				<RowDefinition Height="*" />
+			</Grid.RowDefinitions>
+
+			<!-- Header band: photo, name, contact line, chips, stats and the main actions. -->
+			<Border
+				Padding="20,16"
+				Background="{ThemeResource LayerFillColorDefaultBrush}"
+				BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}"
+				BorderThickness="0,0,0,1">
+				<Grid ColumnSpacing="24">
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="Auto" />
+						<ColumnDefinition Width="*" />
+						<ColumnDefinition Width="Auto" />
+						<ColumnDefinition Width="Auto" />
+					</Grid.ColumnDefinitions>
+
+					<StackPanel HorizontalAlignment="Center" Spacing="6">
+						<PersonPicture
+							Width="96"
+							Height="96"
+							DisplayName="{x:Bind ViewModel.Display.FullName, Mode=OneWay}"
+							ProfilePicture="{x:Bind ViewModel.PhotoBytes, Mode=OneWay, Converter={StaticResource PhotoImageConverter}}" />
+						<StackPanel
+							HorizontalAlignment="Center"
+							Orientation="Horizontal"
+							Spacing="4">
+							<HyperlinkButton
+								x:Uid="Details_ChangePhoto"
+								Padding="4,0"
+								Command="{x:Bind ViewModel.ChangePhotoCommand}" />
+							<HyperlinkButton
+								x:Uid="Details_RemovePhoto"
+								Padding="4,0"
+								Command="{x:Bind ViewModel.RemovePhotoCommand}"
+								Visibility="{x:Bind ViewModel.HasPhoto, Mode=OneWay}" />
+						</StackPanel>
+					</StackPanel>
+
+					<StackPanel
+						Grid.Column="1"
+						VerticalAlignment="Center"
+						Spacing="6">
+						<StackPanel Orientation="Horizontal" Spacing="12">
+							<TextBlock
+								VerticalAlignment="Center"
+								Style="{StaticResource TitleTextBlockStyle}"
+								Text="{x:Bind ViewModel.Display.FullName, Mode=OneWay}" />
+							<Border
+								Padding="10,2"
+								VerticalAlignment="Center"
+								BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
+								BorderThickness="1"
+								CornerRadius="10">
+								<TextBlock Style="{StaticResource CaptionTextBlockStyle}" Text="{x:Bind ViewModel.Display.Status, Mode=OneWay}" />
+							</Border>
+						</StackPanel>
+						<TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="{x:Bind ViewModel.Display.ContactLine, Mode=OneWay}" />
+						<ItemsControl ItemsSource="{x:Bind ViewModel.Display.Chips, Mode=OneWay}">
+							<ItemsControl.ItemsPanel>
+								<ItemsPanelTemplate>
+									<StackPanel Orientation="Horizontal" />
+								</ItemsPanelTemplate>
+							</ItemsControl.ItemsPanel>
+							<ItemsControl.ItemTemplate>
+								<DataTemplate x:DataType="x:String">
+									<Border
+										Margin="0,0,6,0"
+										Padding="10,2"
+										Background="{ThemeResource ControlFillColorDefaultBrush}"
+										BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
+										BorderThickness="1"
+										CornerRadius="10">
+										<TextBlock Style="{StaticResource CaptionTextBlockStyle}" Text="{x:Bind}" />
+									</Border>
+								</DataTemplate>
+							</ItemsControl.ItemTemplate>
+						</ItemsControl>
+					</StackPanel>
+
+					<StackPanel
+						Grid.Column="2"
+						MinWidth="150"
+						Padding="24,0,0,0"
+						VerticalAlignment="Center"
+						BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}"
+						BorderThickness="1,0,0,0"
+						Spacing="8">
+						<StackPanel>
+							<TextBlock
+								x:Uid="Details_Stat_Since"
+								Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+								Style="{StaticResource CaptionTextBlockStyle}" />
+							<TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{x:Bind ViewModel.Display.JoinDate, Mode=OneWay}" />
+						</StackPanel>
+						<StackPanel>
+							<TextBlock
+								x:Uid="Details_Stat_Bank"
+								Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+								Style="{StaticResource CaptionTextBlockStyle}" />
+							<TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{x:Bind ViewModel.Display.Bank, Mode=OneWay}" />
+						</StackPanel>
+						<StackPanel>
+							<TextBlock
+								x:Uid="Details_Stat_Month"
+								Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+								Style="{StaticResource CaptionTextBlockStyle}" />
+							<TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{x:Bind ViewModel.MonthStatus, Mode=OneWay}" />
+						</StackPanel>
+					</StackPanel>
+
+					<Grid Grid.Column="3" VerticalAlignment="Center">
+						<StackPanel Spacing="8" Visibility="{x:Bind ViewModel.IsViewing, Mode=OneWay}">
+							<Button
+								x:Uid="Details_Edit"
+								HorizontalAlignment="Stretch"
+								Command="{x:Bind ViewModel.EditCommand}"
+								Style="{StaticResource AccentButtonStyle}" />
+							<Button
+								x:Uid="Details_Delete"
+								HorizontalAlignment="Stretch"
+								Command="{x:Bind ViewModel.DeleteCommand}"
+								Foreground="{ThemeResource SystemFillColorCriticalBrush}" />
+						</StackPanel>
+						<StackPanel Spacing="8" Visibility="{x:Bind ViewModel.IsEditing, Mode=OneWay}">
+							<Button
+								x:Uid="Details_Save"
+								HorizontalAlignment="Stretch"
+								Command="{x:Bind ViewModel.SaveCommand}"
+								Style="{StaticResource AccentButtonStyle}" />
+							<Button
+								x:Uid="Details_Cancel"
+								HorizontalAlignment="Stretch"
+								Command="{x:Bind ViewModel.CancelCommand}" />
+						</StackPanel>
+					</Grid>
+				</Grid>
+			</Border>
+
+			<SelectorBar
+				x:Name="TabBar"
+				Grid.Row="1"
+				Margin="20,4,20,0"
+				SelectionChanged="OnTabChanged">
+				<SelectorBarItem
+					x:Uid="Details_Tab_Personal"
+					IsSelected="True"
+					Tag="Personal" />
+				<SelectorBarItem x:Uid="Details_Tab_Tax" Tag="TaxAndRelief" />
+				<SelectorBarItem x:Uid="Details_Tab_Subscription" Tag="Subscription" />
+			</SelectorBar>
+
+			<ScrollViewer Grid.Row="2">
+				<!-- Content grows with the window up to 960 px, then stays left-aligned under the header instead of stretching across wide windows. -->
+				<Grid Padding="20,12,20,24">
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="*" MaxWidth="960" />
+						<ColumnDefinition Width="Auto" />
+					</Grid.ColumnDefinitions>
+
+					<!-- Personal -->
+					<Grid
+						ColumnSpacing="16"
+						RowSpacing="16"
+						Visibility="{x:Bind ViewModel.IsPersonalTab, Mode=OneWay}">
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="*" />
+							<ColumnDefinition Width="*" />
+						</Grid.ColumnDefinitions>
+						<Grid.RowDefinitions>
+							<RowDefinition Height="Auto" />
+							<RowDefinition Height="Auto" />
+							<RowDefinition Height="Auto" />
+						</Grid.RowDefinitions>
+
+						<Border x:Name="IdentityCard" Style="{StaticResource CardStyle}">
+							<StackPanel Spacing="12">
+								<TextBlock x:Uid="Details_Card_Identity" Style="{StaticResource CardTitleStyle}" />
+								<Grid ColumnSpacing="12">
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="*" />
+										<ColumnDefinition Width="*" />
+									</Grid.ColumnDefinitions>
+									<controls:FormField
+										x:Uid="Field_FirstName"
+										DisplayText="{x:Bind ViewModel.Display.FirstName, Mode=OneWay}"
+										Error="{x:Bind ViewModel.Form.FirstNameError, Mode=OneWay}"
+										IsEditing="{x:Bind ViewModel.IsEditing, Mode=OneWay}">
+										<TextBox Text="{x:Bind ViewModel.Form.FirstName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+									</controls:FormField>
+									<controls:FormField
+										x:Uid="Field_LastName"
+										Grid.Column="1"
+										DisplayText="{x:Bind ViewModel.Display.LastName, Mode=OneWay}"
+										Error="{x:Bind ViewModel.Form.LastNameError, Mode=OneWay}"
+										IsEditing="{x:Bind ViewModel.IsEditing, Mode=OneWay}">
+										<TextBox Text="{x:Bind ViewModel.Form.LastName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+									</controls:FormField>
+								</Grid>
+								<Grid ColumnSpacing="12">
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="*" />
+										<ColumnDefinition Width="*" />
+									</Grid.ColumnDefinitions>
+									<controls:FormField
+										x:Uid="Field_Gender"
+										DisplayText="{x:Bind ViewModel.Display.Gender, Mode=OneWay}"
+										IsEditing="{x:Bind ViewModel.IsEditing, Mode=OneWay}">
+										<ComboBox
+											HorizontalAlignment="Stretch"
+											DisplayMemberPath="Label"
+											ItemsSource="{x:Bind ViewModel.GenderOptions}"
+											SelectedItem="{x:Bind ViewModel.SelectedGender, Mode=TwoWay}" />
+									</controls:FormField>
+									<controls:FormField
+										x:Uid="Field_JoinDate"
+										Grid.Column="1"
+										DisplayText="{x:Bind ViewModel.Display.JoinDate, Mode=OneWay}"
+										Error="{x:Bind ViewModel.Form.JoinDateError, Mode=OneWay}"
+										IsEditing="{x:Bind ViewModel.IsEditing, Mode=OneWay}">
+										<CalendarDatePicker
+											HorizontalAlignment="Stretch"
+											Date="{x:Bind ViewModel.Form.JoinDate, Mode=TwoWay}"
+											DateFormat="{}{day.integer(2)}.{month.integer(2)}.{year.full}" />
+									</controls:FormField>
+								</Grid>
+							</StackPanel>
+						</Border>
+
+						<Border
+							x:Name="ContactCard"
+							Grid.Column="1"
+							Style="{StaticResource CardStyle}">
+							<StackPanel Spacing="12">
+								<TextBlock x:Uid="Details_Card_Contact" Style="{StaticResource CardTitleStyle}" />
+								<controls:FormField
+									x:Uid="Field_Phone"
+									DisplayText="{x:Bind ViewModel.Display.PhoneNumber, Mode=OneWay}"
+									Error="{x:Bind ViewModel.Form.PhoneNumberError, Mode=OneWay}"
+									IsEditing="{x:Bind ViewModel.IsEditing, Mode=OneWay}">
+									<TextBox Text="{x:Bind ViewModel.Form.PhoneNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+								</controls:FormField>
+								<controls:FormField
+									x:Uid="Field_Email"
+									DisplayText="{x:Bind ViewModel.Display.Email, Mode=OneWay}"
+									Error="{x:Bind ViewModel.Form.EmailError, Mode=OneWay}"
+									IsEditing="{x:Bind ViewModel.IsEditing, Mode=OneWay}">
+									<TextBox Text="{x:Bind ViewModel.Form.Email, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+								</controls:FormField>
+							</StackPanel>
+						</Border>
+
+						<Border
+							x:Name="BusinessCard"
+							Grid.Row="1"
+							Grid.ColumnSpan="2"
+							Style="{StaticResource CardStyle}">
+							<StackPanel Spacing="12">
+								<TextBlock x:Uid="Details_Card_Business" Style="{StaticResource CardTitleStyle}" />
+								<Grid ColumnSpacing="12">
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="*" />
+										<ColumnDefinition Width="*" />
+									</Grid.ColumnDefinitions>
+									<controls:FormField
+										x:Uid="Field_Nip"
+										DisplayText="{x:Bind ViewModel.Display.Nip, Mode=OneWay}"
+										Error="{x:Bind ViewModel.Form.NipError, Mode=OneWay}"
+										IsEditing="{x:Bind ViewModel.IsEditing, Mode=OneWay}">
+										<TextBox MaxLength="13" Text="{x:Bind ViewModel.Form.Nip, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+									</controls:FormField>
+									<controls:FormField
+										x:Uid="Field_Bank"
+										Grid.Column="1"
+										DisplayText="{x:Bind ViewModel.Display.Bank, Mode=OneWay}"
+										Error="{x:Bind ViewModel.Form.BankError, Mode=OneWay}"
+										IsEditing="{x:Bind ViewModel.IsEditing, Mode=OneWay}">
+										<ComboBox
+											HorizontalAlignment="Stretch"
+											DisplayMemberPath="Name"
+											ItemsSource="{x:Bind ViewModel.Banks, Mode=OneWay}"
+											SelectedItem="{x:Bind ViewModel.SelectedBank, Mode=TwoWay}" />
+									</controls:FormField>
+								</Grid>
+							</StackPanel>
+						</Border>
+					</Grid>
+
+					<!-- Tax and relief -->
+					<Grid
+						ColumnSpacing="16"
+						RowSpacing="16"
+						Visibility="{x:Bind ViewModel.IsTaxTab, Mode=OneWay}">
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="*" />
+							<ColumnDefinition Width="*" />
+						</Grid.ColumnDefinitions>
+						<Grid.RowDefinitions>
+							<RowDefinition Height="Auto" />
+							<RowDefinition Height="Auto" />
+							<RowDefinition Height="Auto" />
+							<RowDefinition Height="Auto" />
+						</Grid.RowDefinitions>
+
+						<Border x:Name="IncomeTaxCard" Style="{StaticResource CardStyle}">
+							<StackPanel Spacing="12">
+								<TextBlock x:Uid="Details_Card_IncomeTax" Style="{StaticResource CardTitleStyle}" />
+								<controls:FormField
+									x:Uid="Field_TaxType"
+									DisplayText="{x:Bind ViewModel.Display.TaxType, Mode=OneWay}"
+									IsEditing="{x:Bind ViewModel.IsEditing, Mode=OneWay}">
+									<ComboBox
+										HorizontalAlignment="Stretch"
+										DisplayMemberPath="Label"
+										ItemsSource="{x:Bind ViewModel.TaxTypeOptions}"
+										SelectedItem="{x:Bind ViewModel.SelectedTaxType, Mode=TwoWay}" />
+								</controls:FormField>
+								<controls:FormField
+									x:Uid="Field_PitPayment"
+									DisplayText="{x:Bind ViewModel.Display.PitPaymentFrequency, Mode=OneWay}"
+									IsEditing="{x:Bind ViewModel.IsEditing, Mode=OneWay}">
+									<ComboBox
+										HorizontalAlignment="Stretch"
+										DisplayMemberPath="Label"
+										ItemsSource="{x:Bind ViewModel.PaymentFrequencyOptions}"
+										SelectedItem="{x:Bind ViewModel.SelectedPitPaymentFrequency, Mode=TwoWay}" />
+								</controls:FormField>
+							</StackPanel>
+						</Border>
+
+						<Border
+							x:Name="VatCard"
+							Grid.Column="1"
+							Style="{StaticResource CardStyle}">
+							<StackPanel Spacing="12">
+								<TextBlock x:Uid="Details_Card_Vat" Style="{StaticResource CardTitleStyle}" />
+								<controls:FormField
+									x:Uid="Field_IsVatPayer"
+									DisplayText="{x:Bind ViewModel.Display.IsVatPayer, Mode=OneWay}"
+									IsEditing="{x:Bind ViewModel.IsEditing, Mode=OneWay}">
+									<ToggleSwitch
+										IsOn="{x:Bind ViewModel.Form.IsVatPayer, Mode=TwoWay}"
+										OffContent=""
+										OnContent="" />
+								</controls:FormField>
+								<controls:FormField
+									x:Uid="Field_VatPayment"
+									DisplayText="{x:Bind ViewModel.Display.VatPaymentFrequency, Mode=OneWay}"
+									IsEditing="{x:Bind ViewModel.IsEditing, Mode=OneWay}">
+									<ComboBox
+										HorizontalAlignment="Stretch"
+										DisplayMemberPath="Label"
+										IsEnabled="{x:Bind ViewModel.Form.IsVatPaymentEnabled, Mode=OneWay}"
+										ItemsSource="{x:Bind ViewModel.PaymentFrequencyOptions}"
+										SelectedItem="{x:Bind ViewModel.SelectedVatPaymentFrequency, Mode=TwoWay}" />
+								</controls:FormField>
+								<controls:FormField
+									x:Uid="Field_CashMethod"
+									DisplayText="{x:Bind ViewModel.Display.CashMethod, Mode=OneWay}"
+									IsEditing="{x:Bind ViewModel.IsEditing, Mode=OneWay}">
+									<ToggleSwitch
+										IsOn="{x:Bind ViewModel.Form.CashMethod, Mode=TwoWay}"
+										OffContent=""
+										OnContent="" />
+								</controls:FormField>
+							</StackPanel>
+						</Border>
+
+						<Border
+							x:Name="ReliefCard"
+							Grid.Row="1"
+							Style="{StaticResource CardStyle}">
+							<StackPanel Spacing="12">
+								<TextBlock x:Uid="Details_Card_Relief" Style="{StaticResource CardTitleStyle}" />
+								<controls:FormField
+									x:Uid="Field_ReliefType"
+									DisplayText="{x:Bind ViewModel.Display.Relief, Mode=OneWay}"
+									IsEditing="{x:Bind ViewModel.IsEditing, Mode=OneWay}">
+									<ComboBox
+										HorizontalAlignment="Stretch"
+										DisplayMemberPath="Label"
+										ItemsSource="{x:Bind ViewModel.ReliefTypeOptions}"
+										SelectedItem="{x:Bind ViewModel.SelectedReliefType, Mode=TwoWay}" />
+								</controls:FormField>
+								<controls:FormField
+									x:Uid="Field_ReliefSince"
+									DisplayText="{x:Bind ViewModel.Display.ReliefSinceDate, Mode=OneWay}"
+									IsEditing="{x:Bind ViewModel.IsEditing, Mode=OneWay}">
+									<CalendarDatePicker
+										HorizontalAlignment="Stretch"
+										Date="{x:Bind ViewModel.Form.ReliefSinceDate, Mode=TwoWay}"
+										DateFormat="{}{day.integer(2)}.{month.integer(2)}.{year.full}"
+										IsEnabled="{x:Bind ViewModel.Form.IsReliefSinceEnabled, Mode=OneWay}" />
+								</controls:FormField>
+								<controls:FormField
+									x:Uid="Field_ReliefEnd"
+									DisplayText="{x:Bind ViewModel.Form.ReliefEndText, Mode=OneWay}"
+									IsEditing="False" />
+							</StackPanel>
+						</Border>
+
+						<Border
+							x:Name="CashRegisterCard"
+							Grid.Row="1"
+							Grid.Column="1"
+							Style="{StaticResource CardStyle}">
+							<StackPanel Spacing="12">
+								<TextBlock x:Uid="Details_Card_CashRegister" Style="{StaticResource CardTitleStyle}" />
+								<controls:FormField
+									x:Uid="Field_UsesCashRegister"
+									DisplayText="{x:Bind ViewModel.Display.UsesCashRegister, Mode=OneWay}"
+									IsEditing="{x:Bind ViewModel.IsEditing, Mode=OneWay}">
+									<ToggleSwitch
+										IsOn="{x:Bind ViewModel.Form.UsesCashRegister, Mode=TwoWay}"
+										OffContent=""
+										OnContent="" />
+								</controls:FormField>
+								<controls:FormField
+									x:Uid="Field_FirstCashRegisterDate"
+									DisplayText="{x:Bind ViewModel.Display.FirstCashRegisterDate, Mode=OneWay}"
+									IsEditing="{x:Bind ViewModel.IsEditing, Mode=OneWay}">
+									<CalendarDatePicker
+										HorizontalAlignment="Stretch"
+										Date="{x:Bind ViewModel.Form.FirstCashRegisterDate, Mode=TwoWay}"
+										DateFormat="{}{day.integer(2)}.{month.integer(2)}.{year.full}"
+										IsEnabled="{x:Bind ViewModel.Form.IsFirstCashRegisterDateEnabled, Mode=OneWay}" />
+								</controls:FormField>
+							</StackPanel>
+						</Border>
+					</Grid>
+
+					<!-- Subscription -->
+					<Grid
+						ColumnSpacing="16"
+						RowSpacing="16"
+						Visibility="{x:Bind ViewModel.IsSubscriptionTab, Mode=OneWay}">
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="*" />
+							<ColumnDefinition Width="*" />
+						</Grid.ColumnDefinitions>
+						<Grid.RowDefinitions>
+							<RowDefinition Height="Auto" />
+							<RowDefinition Height="Auto" />
+						</Grid.RowDefinitions>
+
+						<Border x:Name="PlanCard" Style="{StaticResource CardStyle}">
+							<StackPanel Spacing="12">
+								<TextBlock x:Uid="Details_Card_Plan" Style="{StaticResource CardTitleStyle}" />
+								<controls:FormField
+									x:Uid="Field_PlanName"
+									DisplayText="{x:Bind ViewModel.Display.PlanName, Mode=OneWay}"
+									IsEditing="{x:Bind ViewModel.IsEditing, Mode=OneWay}">
+									<TextBox Text="{x:Bind ViewModel.Form.PlanName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+								</controls:FormField>
+								<Grid ColumnSpacing="12">
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="*" />
+										<ColumnDefinition Width="*" />
+									</Grid.ColumnDefinitions>
+									<controls:FormField
+										x:Uid="Field_AuthorizationFee"
+										DisplayText="{x:Bind ViewModel.Display.AuthorizationFee, Mode=OneWay}"
+										IsEditing="{x:Bind ViewModel.IsEditing, Mode=OneWay}">
+										<NumberBox
+											Minimum="0"
+											SpinButtonPlacementMode="Hidden"
+											Value="{x:Bind ViewModel.Form.AuthorizationFee, Mode=TwoWay}" />
+									</controls:FormField>
+									<controls:FormField
+										x:Uid="Field_SubscriptionFee"
+										Grid.Column="1"
+										DisplayText="{x:Bind ViewModel.Display.SubscriptionFee, Mode=OneWay}"
+										IsEditing="{x:Bind ViewModel.IsEditing, Mode=OneWay}">
+										<NumberBox
+											Minimum="0"
+											SpinButtonPlacementMode="Hidden"
+											Value="{x:Bind ViewModel.Form.SubscriptionFee, Mode=TwoWay}" />
+									</controls:FormField>
+								</Grid>
+							</StackPanel>
+						</Border>
+
+						<Border
+							x:Name="OtherCard"
+							Grid.Column="1"
+							Style="{StaticResource CardStyle}">
+							<StackPanel Spacing="12">
+								<TextBlock x:Uid="Details_Card_Other" Style="{StaticResource CardTitleStyle}" />
+								<controls:FormField
+									x:Uid="Field_EmploymentContract"
+									DisplayText="{x:Bind ViewModel.Display.EmploymentContract, Mode=OneWay}"
+									IsEditing="{x:Bind ViewModel.IsEditing, Mode=OneWay}">
+									<ToggleSwitch
+										IsOn="{x:Bind ViewModel.Form.EmploymentContract, Mode=TwoWay}"
+										OffContent=""
+										OnContent="" />
+								</controls:FormField>
+							</StackPanel>
+						</Border>
+					</Grid>
+				</Grid>
+			</ScrollViewer>
+		</Grid>
+
+		<!-- Below ~1000 px the two-column card grids collapse to a single column. -->
+		<VisualStateManager.VisualStateGroups>
+			<VisualStateGroup>
+				<VisualState x:Name="Narrow">
+					<VisualState.StateTriggers>
+						<AdaptiveTrigger MinWindowWidth="0" />
+					</VisualState.StateTriggers>
+					<VisualState.Setters>
+						<Setter Target="IdentityCard.(Grid.ColumnSpan)" Value="2" />
+						<Setter Target="ContactCard.(Grid.Column)" Value="0" />
+						<Setter Target="ContactCard.(Grid.Row)" Value="1" />
+						<Setter Target="ContactCard.(Grid.ColumnSpan)" Value="2" />
+						<Setter Target="BusinessCard.(Grid.Row)" Value="2" />
+
+						<Setter Target="IncomeTaxCard.(Grid.ColumnSpan)" Value="2" />
+						<Setter Target="VatCard.(Grid.Column)" Value="0" />
+						<Setter Target="VatCard.(Grid.Row)" Value="1" />
+						<Setter Target="VatCard.(Grid.ColumnSpan)" Value="2" />
+						<Setter Target="ReliefCard.(Grid.Row)" Value="2" />
+						<Setter Target="ReliefCard.(Grid.ColumnSpan)" Value="2" />
+						<Setter Target="CashRegisterCard.(Grid.Column)" Value="0" />
+						<Setter Target="CashRegisterCard.(Grid.Row)" Value="3" />
+						<Setter Target="CashRegisterCard.(Grid.ColumnSpan)" Value="2" />
+
+						<Setter Target="PlanCard.(Grid.ColumnSpan)" Value="2" />
+						<Setter Target="OtherCard.(Grid.Column)" Value="0" />
+						<Setter Target="OtherCard.(Grid.Row)" Value="1" />
+						<Setter Target="OtherCard.(Grid.ColumnSpan)" Value="2" />
+					</VisualState.Setters>
+				</VisualState>
+				<VisualState x:Name="Wide">
+					<VisualState.StateTriggers>
+						<AdaptiveTrigger MinWindowWidth="1000" />
+					</VisualState.StateTriggers>
+				</VisualState>
+			</VisualStateGroup>
+		</VisualStateManager.VisualStateGroups>
+	</Grid>
+</Page>

@@ -78,13 +78,16 @@ All of M3 is done and checked by running the app against demo data (clicking thr
 - Not done on purpose: the narrow-window fallback for the month strip (it scrolls horizontally for now); revisit in the dashboard layout task 5.6.
 
 ### M4 — Clients
-- [ ] 4.1 Clients list: grid spike (WinUI.TableView), search, sort, suspended rows greyed, row click opens client
-- [ ] 4.2 Context menu: Suspend / Unsuspend, Delete (confirm; removes month records and photo)
-- [ ] 4.3 Add-client dialog with validation and live-initials avatar
-- [ ] 4.4 Client page header band: avatar, name + status, contact line, chips, stats column
-- [ ] 4.5 Tabs: Personal, Tax & relief, Subscription — view/edit modes, unsaved-changes guard
-- [ ] 4.6 Photo: pick, resize to ~256 px, store; remove
-- [ ] 4.7 Responsive container (max ~920, 2 → 1 column via AdaptiveTrigger)
+All of M4 is done and checked in the running app (list, menu, add with validation, edit with validation, unsaved-changes dialog in all three branches, delete with confirmation, photo pick/show, narrow-window layout).
+
+- [x] 4.1 Clients list on **WinUI.TableView** (spike passed: sorting by header, row events, context flyout, templated cells with avatars all work). Search box filters name, NIP, bank, phone, email; suspended rows are dimmed with a "zawieszony" tag; the last column shows the accounted status of the month selected in the app bar. **A single tap on a row opens the client** (the grid does not raise the standard item-click/double-tap events reliably, so the tap is handled on the grid and mapped to its row). Built-in column filtering is available but switched off (`CanFilterColumns="False"`) until filters are designed.
+- [x] 4.2 Right-click menu: Open, Suspend / Unsuspend, Delete… (confirmation dialog with the client's name on its own bold line, default button is Cancel; deletes month records and photo via cascade). List avatars show the client's photo when there is one (all photos are loaded with the list; fine for hundreds of 256 px JPEGs).
+- [x] 4.3 Add-client dialog: required fields validated on submit (format errors show while typing), optional photo, avatar shows initials live while typing
+- [x] 4.4 Client page header band: photo with Change / Remove, name + status badge, contact line, chips (tax, PIT, VAT, cash register, relief with end date, plan), stats (client since, bank, status of the selected month), Edit / Delete
+- [x] 4.5 Tabs (Dane / Podatki i ulgi / Abonament) in view mode and edit mode with inline validation; the relief end date is calculated live from the form; Save / Cancel appear in the **header band** (not in the app bar as the wireframe had: the app bar has no slot for page actions yet); the app bar's client picker is locked while editing; leaving the page with unsaved changes asks Save / Discard / Cancel
+- [x] 4.6 Photo: pick (file picker) → crop to a centred square → shrink to ≤ 256 px → JPEG → stored in `ClientPhoto`; shown in the header, the app bar and the add dialog. Limitation: EXIF rotation is ignored, so a phone photo taken sideways can appear rotated
+- [x] 4.7 Responsive layout: content column grows with the window up to 960 px, left-aligned; below ~1000 px the card grids collapse to one column (`AdaptiveTrigger`)
+- Known cosmetic limits, left for polish (M7): the header chips do not wrap, so in windows narrower than ~1000 px the last chips are clipped.
 
 ### M5 — Dashboard
 - [ ] 5.1 Month inputs card: income, sales/cost invoices (debounced save, 0 = clear)

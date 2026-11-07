@@ -18,6 +18,17 @@ internal sealed class MonthRecordRepository(IDbContextFactory<EasyTaxDbContext> 
 			.ToListAsync(cancellationToken);
 	}
 
+	public async Task<IReadOnlyList<MonthRecord>> GetForMonthAsync(DateOnly month, CancellationToken cancellationToken = default)
+	{
+		var firstOfMonth = new DateOnly(month.Year, month.Month, 1);
+
+		await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
+		return await context.MonthRecords
+			.AsNoTracking()
+			.Where(m => m.Month == firstOfMonth)
+			.ToListAsync(cancellationToken);
+	}
+
 	public async Task SaveAsync(MonthRecord record, CancellationToken cancellationToken = default)
 	{
 		await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);

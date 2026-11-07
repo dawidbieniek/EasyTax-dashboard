@@ -38,6 +38,328 @@
     <value>Przejdź do klientów</value>
   </data>
 
+  <!-- Common dialogs -->
+  <data name="Dialog_Unsaved_Title" xml:space="preserve">
+    <value>Niezapisane zmiany</value>
+  </data>
+  <data name="Dialog_Unsaved_Message" xml:space="preserve">
+    <value>Masz niezapisane zmiany. Co chcesz zrobić?</value>
+  </data>
+  <data name="Dialog_Save" xml:space="preserve">
+    <value>Zapisz</value>
+  </data>
+  <data name="Dialog_Discard" xml:space="preserve">
+    <value>Odrzuć</value>
+  </data>
+  <data name="Dialog_Cancel" xml:space="preserve">
+    <value>Anuluj</value>
+  </data>
+
+  <!-- Clients list -->
+  <data name="List_Search.PlaceholderText" xml:space="preserve">
+    <value>Szukaj klientów…</value>
+  </data>
+  <data name="List_Column_Name.Header" xml:space="preserve">
+    <value>Klient</value>
+  </data>
+  <data name="List_Column_Nip.Header" xml:space="preserve">
+    <value>NIP</value>
+  </data>
+  <data name="List_Column_Bank.Header" xml:space="preserve">
+    <value>Bank</value>
+  </data>
+  <data name="List_Column_Tax.Header" xml:space="preserve">
+    <value>Podatek</value>
+  </data>
+  <data name="List_Column_Relief.Header" xml:space="preserve">
+    <value>Ulga</value>
+  </data>
+  <data name="List_Column_Phone.Header" xml:space="preserve">
+    <value>Telefon</value>
+  </data>
+  <data name="List_Column_Email.Header" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="List_Column_Month.Header" xml:space="preserve">
+    <value>Rozliczenie</value>
+  </data>
+  <data name="List_Open.Text" xml:space="preserve">
+    <value>Otwórz</value>
+  </data>
+  <data name="List_Delete.Text" xml:space="preserve">
+    <value>Usuń…</value>
+  </data>
+  <data name="List_Suspended.Text" xml:space="preserve">
+    <value>zawieszony</value>
+  </data>
+  <data name="List_Suspend" xml:space="preserve">
+    <value>Zawieś</value>
+  </data>
+  <data name="List_Unsuspend" xml:space="preserve">
+    <value>Przywróć</value>
+  </data>
+  <data name="List_Delete_Title" xml:space="preserve">
+    <value>Usuwanie klienta</value>
+  </data>
+  <data name="List_Delete_Question" xml:space="preserve">
+    <value>Czy na pewno usunąć klienta?</value>
+  </data>
+  <data name="List_Delete_Warning" xml:space="preserve">
+    <value>Usunięte zostaną także jego dane miesięczne i zdjęcie. Tej operacji nie można cofnąć.</value>
+  </data>
+  <data name="List_Delete_Confirm" xml:space="preserve">
+    <value>Usuń</value>
+  </data>
+
+  <data name="List_Add.Content" xml:space="preserve">
+    <value>Dodaj klienta</value>
+  </data>
+
+  <!-- Add client dialog -->
+  <data name="AddClient_Dialog.Title" xml:space="preserve">
+    <value>Nowy klient</value>
+  </data>
+  <data name="AddClient_Dialog.PrimaryButtonText" xml:space="preserve">
+    <value>Dodaj</value>
+  </data>
+  <data name="AddClient_Dialog.CloseButtonText" xml:space="preserve">
+    <value>Anuluj</value>
+  </data>
+  <data name="AddClient_PickPhoto.Content" xml:space="preserve">
+    <value>Wybierz zdjęcie…</value>
+  </data>
+  <data name="AddClient_RemovePhoto.Content" xml:space="preserve">
+    <value>Usuń zdjęcie</value>
+  </data>
+
+  <!-- Form fields and validation -->
+  <data name="Field_FirstName.Header" xml:space="preserve">
+    <value>Imię</value>
+  </data>
+  <data name="Field_LastName.Header" xml:space="preserve">
+    <value>Nazwisko</value>
+  </data>
+  <data name="Field_Gender.Header" xml:space="preserve">
+    <value>Płeć</value>
+  </data>
+  <data name="Field_Nip.Header" xml:space="preserve">
+    <value>NIP</value>
+  </data>
+  <data name="Field_JoinDate.Header" xml:space="preserve">
+    <value>Data założenia</value>
+  </data>
+  <data name="Field_Bank.Header" xml:space="preserve">
+    <value>Bank</value>
+  </data>
+  <data name="Field_Phone.Header" xml:space="preserve">
+    <value>Telefon</value>
+  </data>
+  <data name="Field_Email.Header" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="Field_PlanName.Header" xml:space="preserve">
+    <value>Abonament</value>
+  </data>
+  <data name="Field_AuthorizationFee.Header" xml:space="preserve">
+    <value>Kwota autoryzacyjna (zł)</value>
+  </data>
+  <data name="Field_SubscriptionFee.Header" xml:space="preserve">
+    <value>Koszt abonamentu (zł)</value>
+  </data>
+  <data name="Field_EmploymentContract.Header" xml:space="preserve">
+    <value>Umowa o pracę</value>
+  </data>
+  <data name="Field_CashMethod.Header" xml:space="preserve">
+    <value>Metoda kasowa</value>
+  </data>
+  <data name="Field_TaxType.Header" xml:space="preserve">
+    <value>Podatek</value>
+  </data>
+  <data name="Field_PitPayment.Header" xml:space="preserve">
+    <value>Rozliczanie PIT</value>
+  </data>
+  <data name="Field_IsVatPayer.Header" xml:space="preserve">
+    <value>Płatnik VAT</value>
+  </data>
+  <data name="Field_VatPayment.Header" xml:space="preserve">
+    <value>Rozliczanie VAT</value>
+  </data>
+  <data name="Field_UsesCashRegister.Header" xml:space="preserve">
+    <value>Używa kasy fiskalnej</value>
+  </data>
+  <data name="Field_FirstCashRegisterDate.Header" xml:space="preserve">
+    <value>Pierwsza transakcja fiskalna</value>
+  </data>
+  <data name="Field_ReliefType.Header" xml:space="preserve">
+    <value>Rodzaj ulgi</value>
+  </data>
+  <data name="Field_ReliefSince.Header" xml:space="preserve">
+    <value>Ulga od (Mały ZUS Plus)</value>
+  </data>
+  <data name="Field_ReliefEnd.Header" xml:space="preserve">
+    <value>Koniec ulgi (wyliczony)</value>
+  </data>
+  <data name="Form_Error_Required" xml:space="preserve">
+    <value>To pole jest wymagane</value>
+  </data>
+  <data name="Form_Error_Nip" xml:space="preserve">
+    <value>Nieprawidłowy NIP</value>
+  </data>
+  <data name="Form_Error_Phone" xml:space="preserve">
+    <value>Nieprawidłowy numer telefonu</value>
+  </data>
+  <data name="Form_Error_Email" xml:space="preserve">
+    <value>Nieprawidłowy adres email</value>
+  </data>
+  <data name="Common_Yes" xml:space="preserve">
+    <value>Tak</value>
+  </data>
+  <data name="Common_No" xml:space="preserve">
+    <value>Nie</value>
+  </data>
+  <data name="Chip_Pit" xml:space="preserve">
+    <value>PIT</value>
+  </data>
+  <data name="Chip_Vat" xml:space="preserve">
+    <value>VAT</value>
+  </data>
+  <data name="Chip_CashRegister" xml:space="preserve">
+    <value>Kasa fiskalna</value>
+  </data>
+  <data name="Chip_Until" xml:space="preserve">
+    <value>do</value>
+  </data>
+  <data name="Chip_Plan" xml:space="preserve">
+    <value>Abonament</value>
+  </data>
+
+  <!-- Client details page -->
+  <data name="Details_NoClient.Text" xml:space="preserve">
+    <value>Nie wybrano klienta.</value>
+  </data>
+  <data name="Details_Status_Active" xml:space="preserve">
+    <value>Aktywny</value>
+  </data>
+  <data name="Details_Status_Suspended" xml:space="preserve">
+    <value>Zawieszony</value>
+  </data>
+  <data name="Details_Stat_Since.Text" xml:space="preserve">
+    <value>Klient od</value>
+  </data>
+  <data name="Details_Stat_Bank.Text" xml:space="preserve">
+    <value>Bank</value>
+  </data>
+  <data name="Details_Stat_Month.Text" xml:space="preserve">
+    <value>Wybrany miesiąc</value>
+  </data>
+  <data name="Details_ChangePhoto.Content" xml:space="preserve">
+    <value>Zmień</value>
+  </data>
+  <data name="Details_RemovePhoto.Content" xml:space="preserve">
+    <value>Usuń</value>
+  </data>
+  <data name="Details_Edit.Content" xml:space="preserve">
+    <value>Edytuj</value>
+  </data>
+  <data name="Details_Delete.Content" xml:space="preserve">
+    <value>Usuń klienta</value>
+  </data>
+  <data name="Details_Save.Content" xml:space="preserve">
+    <value>Zapisz</value>
+  </data>
+  <data name="Details_Cancel.Content" xml:space="preserve">
+    <value>Anuluj</value>
+  </data>
+  <data name="Details_Tab_Personal.Text" xml:space="preserve">
+    <value>Dane</value>
+  </data>
+  <data name="Details_Tab_Tax.Text" xml:space="preserve">
+    <value>Podatki i ulgi</value>
+  </data>
+  <data name="Details_Tab_Subscription.Text" xml:space="preserve">
+    <value>Abonament</value>
+  </data>
+  <data name="Details_Card_Identity.Text" xml:space="preserve">
+    <value>Dane osobowe</value>
+  </data>
+  <data name="Details_Card_Contact.Text" xml:space="preserve">
+    <value>Kontakt</value>
+  </data>
+  <data name="Details_Card_Business.Text" xml:space="preserve">
+    <value>Działalność</value>
+  </data>
+  <data name="Details_Card_IncomeTax.Text" xml:space="preserve">
+    <value>Podatek dochodowy</value>
+  </data>
+  <data name="Details_Card_Vat.Text" xml:space="preserve">
+    <value>VAT</value>
+  </data>
+  <data name="Details_Card_Relief.Text" xml:space="preserve">
+    <value>Ulga</value>
+  </data>
+  <data name="Details_Card_CashRegister.Text" xml:space="preserve">
+    <value>Kasa fiskalna</value>
+  </data>
+  <data name="Details_Card_Plan.Text" xml:space="preserve">
+    <value>Abonament</value>
+  </data>
+  <data name="Details_Card_Other.Text" xml:space="preserve">
+    <value>Pozostałe</value>
+  </data>
+  <data name="Details_Discard_Title" xml:space="preserve">
+    <value>Odrzucić zmiany?</value>
+  </data>
+  <data name="Details_Discard_Message" xml:space="preserve">
+    <value>Wprowadzone zmiany zostaną utracone.</value>
+  </data>
+  <data name="Details_Discard_Confirm" xml:space="preserve">
+    <value>Odrzuć</value>
+  </data>
+
+  <!-- Enum display names (EnumName_Value) -->
+  <data name="Gender_Male" xml:space="preserve">
+    <value>Mężczyzna</value>
+  </data>
+  <data name="Gender_Female" xml:space="preserve">
+    <value>Kobieta</value>
+  </data>
+  <data name="TaxType_Scale" xml:space="preserve">
+    <value>Skala podatkowa</value>
+  </data>
+  <data name="TaxType_LumpSum" xml:space="preserve">
+    <value>Ryczałt</value>
+  </data>
+  <data name="TaxType_Linear" xml:space="preserve">
+    <value>Podatek liniowy</value>
+  </data>
+  <data name="PaymentFrequency_Monthly" xml:space="preserve">
+    <value>Miesięcznie</value>
+  </data>
+  <data name="PaymentFrequency_Quarterly" xml:space="preserve">
+    <value>Kwartalnie</value>
+  </data>
+  <data name="ReliefType_Start" xml:space="preserve">
+    <value>Ulga na start</value>
+  </data>
+  <data name="ReliefType_PreferentialZus" xml:space="preserve">
+    <value>ZUS preferencyjny</value>
+  </data>
+  <data name="ReliefType_ZusPlus" xml:space="preserve">
+    <value>Mały ZUS Plus</value>
+  </data>
+  <data name="ReliefType_FullZus" xml:space="preserve">
+    <value>Pełny ZUS</value>
+  </data>
+  <data name="MonthState_Accounted" xml:space="preserve">
+    <value>Rozliczony</value>
+  </data>
+  <data name="MonthState_NotAccounted" xml:space="preserve">
+    <value>Nierozliczony</value>
+  </data>
+  <data name="MonthState_BeforeJoin" xml:space="preserve">
+    <value>—</value>
+  </data>
+
   <!-- App bar -->
   <data name="AppBar_ClientBox.AutomationProperties.Name" xml:space="preserve">
     <value>Klient</value>

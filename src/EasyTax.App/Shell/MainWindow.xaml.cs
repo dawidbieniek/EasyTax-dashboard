@@ -7,19 +7,22 @@ using Windows.Graphics;
 
 namespace EasyTax.App.Shell;
 
-/// <summary>Application shell: title bar, navigation rail and the frame that hosts pages. Contains no business logic.</summary>
+/// <summary>Application shell: title bar, navigation rail, app bar and the frame that hosts pages. Contains no business logic.</summary>
 public sealed partial class MainWindow : Window
 {
 	private const string DashboardTag = "Dashboard";
 	private const string ClientsTag = "Clients";
 
 	private readonly INavigationService _navigation;
+	private ViewModelBase? _currentViewModel;
 
-	public MainWindow(INavigationService navigation, IThemeService themeService)
+	public MainWindow(INavigationService navigation, IThemeService themeService, IDialogService dialogService, IShellWindow shellWindow)
 	{
 		_navigation = navigation;
 
 		InitializeComponent();
+
+		shellWindow.Attach(this);
 
 		Title = "EasyTax";
 		ExtendsContentIntoTitleBar = true;
@@ -28,13 +31,25 @@ public sealed partial class MainWindow : Window
 
 		themeService.Attach(this);
 
+		// Dialogs need the XamlRoot of the content, which exists once the content has loaded.
+		((FrameworkElement)Content).Loaded += (_, _) => dialogService.Attach(Content.XamlRoot);
+
 		_navigation.Initialize(ContentFrame);
 		_navigation.Navigated += OnNavigated;
 		_navigation.NavigateTo<DashboardViewModel>();
 	}
 
-	private void OnItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
+	private async void OnItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
 	{
+		if (!await _navigation.CanLeaveAsync())
+		{
+			// The rail already moved its highlight; put it back on the page that stays.
+			if (_currentViewModel is not null)
+				SyncSelection(_currentViewModel);
+
+			return;
+		}
+
 		if (args.IsSettingsInvoked)
 		{
 			_navigation.NavigateTo<SettingsViewModel>();
@@ -55,16 +70,21 @@ public sealed partial class MainWindow : Window
 	/// <summary>Keeps the highlighted rail item and the app bar in sync with the page that is shown.</summary>
 	private void OnNavigated(object? sender, ViewModelBase viewModel)
 	{
+		_currentViewModel = viewModel;
 		AppBarControl.SetMode(viewModel.AppBarMode);
+		SyncSelection(viewModel);
+	}
 
-		var viewModelType = viewModel.GetType();
-		if (viewModelType == typeof(SettingsViewModel))
+	private void SyncSelection(ViewModelBase viewModel)
+	{
+		if (viewModel is SettingsViewModel)
 		{
 			Navigation.SelectedItem = Navigation.SettingsItem;
 			return;
 		}
 
-		var tag = viewModelType == typeof(ClientsViewModel) ? ClientsTag : DashboardTag;
+		// The client details page belongs to the clients section of the rail.
+		var tag = viewModel is ClientsViewModel or ClientDetailsViewModel ? ClientsTag : DashboardTag;
 		Navigation.SelectedItem = Navigation.MenuItems
 			.OfType<NavigationViewItem>()
 			.First(item => (string)item.Tag == tag);

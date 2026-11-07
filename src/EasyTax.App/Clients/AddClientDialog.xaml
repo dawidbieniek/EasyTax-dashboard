@@ -1,0 +1,95 @@
+<ContentDialog
+	x:Class="EasyTax.App.Clients.AddClientDialog"
+	x:Uid="AddClient_Dialog"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:controls="using:EasyTax.App.Controls"
+	xmlns:photos="using:EasyTax.App.Photos"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	DefaultButton="Primary"
+	PrimaryButtonClick="OnPrimaryButtonClick">
+
+	<ContentDialog.Resources>
+		<photos:PhotoImageConverter x:Key="PhotoImageConverter" />
+	</ContentDialog.Resources>
+
+	<ScrollViewer>
+		<StackPanel Width="480" Spacing="14">
+
+			<!-- Avatar: shows the initials of the typed name until a photo is chosen. -->
+			<StackPanel Orientation="Horizontal" Spacing="16">
+				<PersonPicture
+					Width="64"
+					Height="64"
+					DisplayName="{x:Bind ViewModel.DisplayName, Mode=OneWay}"
+					ProfilePicture="{x:Bind ViewModel.PhotoBytes, Mode=OneWay, Converter={StaticResource PhotoImageConverter}}" />
+				<StackPanel VerticalAlignment="Center" Spacing="4">
+					<Button x:Uid="AddClient_PickPhoto" Command="{x:Bind ViewModel.PickPhotoCommand}" />
+					<HyperlinkButton
+						x:Uid="AddClient_RemovePhoto"
+						Padding="0"
+						Command="{x:Bind ViewModel.RemovePhotoCommand}"
+						Visibility="{x:Bind ViewModel.HasPhoto, Mode=OneWay}" />
+				</StackPanel>
+			</StackPanel>
+
+			<Grid ColumnSpacing="12">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="*" />
+					<ColumnDefinition Width="*" />
+				</Grid.ColumnDefinitions>
+				<controls:FormField x:Uid="Field_FirstName" Error="{x:Bind ViewModel.Form.FirstNameError, Mode=OneWay}">
+					<TextBox Text="{x:Bind ViewModel.Form.FirstName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+				</controls:FormField>
+				<controls:FormField
+					x:Uid="Field_LastName"
+					Grid.Column="1"
+					Error="{x:Bind ViewModel.Form.LastNameError, Mode=OneWay}">
+					<TextBox Text="{x:Bind ViewModel.Form.LastName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+				</controls:FormField>
+			</Grid>
+
+			<Grid ColumnSpacing="12">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="*" />
+					<ColumnDefinition Width="*" />
+				</Grid.ColumnDefinitions>
+				<controls:FormField x:Uid="Field_Nip" Error="{x:Bind ViewModel.Form.NipError, Mode=OneWay}">
+					<TextBox MaxLength="13" Text="{x:Bind ViewModel.Form.Nip, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+				</controls:FormField>
+				<controls:FormField
+					x:Uid="Field_JoinDate"
+					Grid.Column="1"
+					Error="{x:Bind ViewModel.Form.JoinDateError, Mode=OneWay}">
+					<CalendarDatePicker
+						HorizontalAlignment="Stretch"
+						Date="{x:Bind ViewModel.Form.JoinDate, Mode=TwoWay}"
+						DateFormat="{}{day.integer(2)}.{month.integer(2)}.{year.full}" />
+				</controls:FormField>
+			</Grid>
+
+			<controls:FormField x:Uid="Field_Bank" Error="{x:Bind ViewModel.Form.BankError, Mode=OneWay}">
+				<ComboBox
+					HorizontalAlignment="Stretch"
+					DisplayMemberPath="Name"
+					ItemsSource="{x:Bind ViewModel.Banks, Mode=OneWay}"
+					SelectedItem="{x:Bind ViewModel.SelectedBank, Mode=TwoWay}" />
+			</controls:FormField>
+
+			<Grid ColumnSpacing="12">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="*" />
+					<ColumnDefinition Width="*" />
+				</Grid.ColumnDefinitions>
+				<controls:FormField x:Uid="Field_Phone" Error="{x:Bind ViewModel.Form.PhoneNumberError, Mode=OneWay}">
+					<TextBox Text="{x:Bind ViewModel.Form.PhoneNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+				</controls:FormField>
+				<controls:FormField
+					x:Uid="Field_Email"
+					Grid.Column="1"
+					Error="{x:Bind ViewModel.Form.EmailError, Mode=OneWay}">
+					<TextBox Text="{x:Bind ViewModel.Form.Email, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+				</controls:FormField>
+			</Grid>
+		</StackPanel>
+	</ScrollViewer>
+</ContentDialog>
