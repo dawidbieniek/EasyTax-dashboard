@@ -1,6 +1,10 @@
-using EasyTax.Core.Clients;
 using EasyTax.Core.Database;
+using EasyTax.Core.Domain.Banks;
+using EasyTax.Core.Domain.Clients;
+using EasyTax.Core.Domain.Years;
+using EasyTax.Data.Banks;
 using EasyTax.Data.Clients;
+using EasyTax.Data.Years;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,6 +24,8 @@ public static class ServiceCollectionExtensions
 			services.AddDbContextFactory<EasyTaxDbContext>(builder => builder.UseSqlite(connectionString));
 			services.AddSingleton<IDatabaseInitializer, DatabaseInitializer>();
 			services.AddSingleton<IClientRepository, ClientRepository>();
+			services.AddSingleton<IBankRepository, BankRepository>();
+			services.AddSingleton<IAccountingYearRepository, AccountingYearRepository>();
 
 			return services;
 		}

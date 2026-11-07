@@ -1,8 +1,8 @@
 <Project>
 
 	<PropertyGroup>
-		<TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
-		<TargetPlatformMinVersion>10.0.19041.0</TargetPlatformMinVersion>
+		<!-- Windows only. Libraries use the unversioned TFM (no Windows SDK projection), which keeps `dotnet ef` working; the app overrides it. -->
+		<TargetFramework>net10.0-windows</TargetFramework>
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>

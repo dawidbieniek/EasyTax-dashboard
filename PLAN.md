@@ -26,7 +26,7 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done · **(?)** needs a decisio
 One `MonthRecord` per client per month replaces the old app's five child tables.
 
 - All entities derive from `Entity` (`Guid Id`, v7). `AccountingYear` is keyed by its year number instead.
-- `Client`: FirstName, LastName, Gender, Nip, Phone, Email, JoinDate, BankId, IsSuspended, Notes, PlanName, AuthorizationFee, SubscriptionFee, EmploymentContract, CashMethod, TaxType, PitPaymentType, IsVatPayer, VatPaymentType, UsesCashRegister, FirstCashRegisterDate, ReliefType, ReliefSinceDate
+- `Client`: FirstName, LastName, Gender, Nip, Phone, Email, JoinDate, BankId, IsSuspended, Notes, PlanName, AuthorizationFee, SubscriptionFee, EmploymentContract, CashMethod, TaxType, PitPaymentFrequency, IsVatPayer, VatPaymentFrequency, UsesCashRegister, FirstCashRegisterDate, ReliefType, ReliefSinceDate (dates are `DateOnly`; enums are stored as text)
   - **per-client checklist items** (same rules as the old app; stored as done-at timestamps, null = not done): `VatRDoneAt`, `Ceidg1DoneAt`, `ZusDoneAt`, `InvoicedAt`, `ZusDraDoneAt`, `TaxDoneAt`
 - `ClientPhoto`: ClientId (PK/FK), Bytes, ContentType
 - `Bank`: Id, Name (seeded)
@@ -46,7 +46,7 @@ Resolved: checklist = old app's rules (VAT-R, CEIDG-1, ZUS, Invoiced, ZUS DRA, T
 - [x] Charts feasibility spike
 - [x] Reference wireframes approved
 
-### M1 — Foundation (skeleton) — **awaiting your approval of the architecture**
+### M1 — Foundation (skeleton)
 - [x] 1.1 Solution: `EasyTax.Core`, `EasyTax.Data`, `EasyTax.App`; `.editorconfig`, `.gitattributes`, `global.json`, shared props, central package versions
 - [x] 1.2 App boots: Generic Host, DI, shell window with title bar + icon-rail navigation, placeholder pages (Dashboard, Clients, Settings)
 - [x] 1.3 Navigation service + page registry + view-model lifecycle
@@ -54,17 +54,19 @@ Resolved: checklist = old app's rules (VAT-R, CEIDG-1, ZUS, Invoiced, ZUS DRA, T
 - [x] 1.5 Localization via `.resw` (pl-PL) for XAML (`x:Uid`) and code (`ILocalizer`)
 - [x] 1.6 Data layer wired end to end: `DbContext`, repository, initializer; Clients page reads a count from the DB
 - [x] 1.7 Reorganised into feature folders (Clients, Dashboard, Settings, Shell…), Guid v7 ids, extension-block DI, `Resources/` folder, code-style rules enforced in the build (unit tests dropped)
-- [ ] 1.8 Architecture approval → then replace `EnsureCreated` with migrations once the model is defined (task 2.0)
+- [x] 1.8 Architecture approved; `EnsureCreated` replaced by migrations (task 2.0)
 - [ ] 1.9 File logging sink
 
 ### M2 — Domain model & core logic (pure, no UI)
-- [ ] 2.0 Full entities + EF configurations + first migration; seed banks and years 2026–2030
-- [ ] 2.1 Relief rules: end date for Ulga na start / ZUS preferencyjny / ZUS Plus (port old `LastDayOfReduction`; mind the month-boundary cases)
-- [ ] 2.2 Income sums: VAT year (prorated start in join year), cash-register year, ZUS year
-- [ ] 2.3 Limits: VAT 200 000 (prorated in join year), cash register 20 000, ZUS Plus 120 000; percentage + state (OK / Warning ≥ 90% / Over)
-- [ ] 2.4 Month rules: selectable months (not before join month); accounted / not / disabled state
-- [ ] 2.5 Validation: NIP (10 digits + checksum), phone, email, required fields
-- [ ] 2.6 Year management rules: add year, remove only when no data
+All of M2 is done and was checked with a throwaway console program (not part of the repo; no unit tests by decision): 56 checks, including the old app's relief example (join 14.01.2025 → ends 31.07.2025).
+
+- [x] 2.0 Full entities (`Client`, `ClientPhoto`, `Bank`, `MonthRecord`, `AccountingYear`) + EF configurations + `Initial` migration; banks (27) seeded idempotently, years 2026–2030 seeded once when the database is created
+- [x] 2.1 Relief end date on `Client.ReliefEndDate` (Ulga na start / ZUS preferencyjny / Mały ZUS Plus, ported from the old app)
+- [x] 2.2 + 2.3 Income sums and limits in `LimitCalculator` (VAT 200 000 prorated in the join year, cash register 20 000, ZUS Plus 120 000); `LimitStatus` gives income, limit, ratio and state (Ok / Warning ≥ 90% / Over); not-applicable cases handled
+- [x] 2.4 Month rules on `Client` (`IsMonthSelectable`, `GetMonthState` → BeforeJoin / NotAccounted / Accounted); `MonthRecord.Month` is always normalised to the first day; one record per client and month enforced by a unique index
+- [x] 2.5 Validation in `ClientValidation`: NIP (10 digits + checksum, normalisation), phone, email (phone/email optional)
+- [x] 2.6 Year rules in `IAccountingYearRepository`: add (no duplicates), remove only when the year has no month data
+- Repositories done: clients (CRUD), banks (list), accounting years. Month-record and photo repositories come with the dashboard and client-page milestones.
 
 ### M3 — Shell
 - [ ] 3.1 App bar: avatar + client picker (`AutoSuggestBox`, skips suspended), prev/next, shared `ClientContext` service (selected client, year, month) persisted between runs

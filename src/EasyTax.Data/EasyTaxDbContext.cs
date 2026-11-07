@@ -1,5 +1,8 @@
-using EasyTax.Core.Clients;
 using EasyTax.Core.Common;
+using EasyTax.Core.Domain.Banks;
+using EasyTax.Core.Domain.Clients;
+using EasyTax.Core.Domain.Months;
+using EasyTax.Core.Domain.Years;
 using Microsoft.EntityFrameworkCore;
 
 namespace EasyTax.Data;
@@ -7,6 +10,20 @@ namespace EasyTax.Data;
 public class EasyTaxDbContext(DbContextOptions<EasyTaxDbContext> options) : DbContext(options)
 {
 	public DbSet<Client> Clients => Set<Client>();
+
+	public DbSet<ClientPhoto> ClientPhotos => Set<ClientPhoto>();
+
+	public DbSet<Bank> Banks => Set<Bank>();
+
+	public DbSet<MonthRecord> MonthRecords => Set<MonthRecord>();
+
+	public DbSet<AccountingYear> AccountingYears => Set<AccountingYear>();
+
+	protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+	{
+		// Enums are stored as their names: readable in the database and safe when members are reordered.
+		configurationBuilder.Properties<Enum>().HaveConversion<string>().HaveMaxLength(32);
+	}
 
 	protected override void OnModelCreating(ModelBuilder modelBuilder)
 	{

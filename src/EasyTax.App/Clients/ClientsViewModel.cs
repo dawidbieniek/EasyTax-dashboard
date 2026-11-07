@@ -2,7 +2,7 @@ using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using EasyTax.App.Localization;
 using EasyTax.App.Shell;
-using EasyTax.Core.Clients;
+using EasyTax.Core.Domain.Clients;
 
 namespace EasyTax.App.Clients;
 
