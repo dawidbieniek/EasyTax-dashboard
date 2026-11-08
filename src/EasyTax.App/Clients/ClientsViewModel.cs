@@ -67,12 +67,12 @@ public sealed partial class ClientsViewModel(
 	{
 		var allClients = await clients.GetAllAsync();
 
-		// The "accounted" column follows the month selected in the app bar.
-		var selectedMonth = context.SelectedMonth;
-		var monthRecords = await months.GetForMonthAsync(selectedMonth);
+		// The app bar's month picker is hidden here, so the "accounted" column is about the current calendar month.
+		var currentMonth = ClientFormatting.CurrentMonth();
+		var monthRecords = await months.GetForMonthAsync(currentMonth);
 		var recordsByClient = monthRecords.ToLookup(r => r.ClientId);
 
-		_allRows = [.. allClients.Select(client => ToRow(client, selectedMonth, recordsByClient[client.Id], context.ClientPhotos.GetValueOrDefault(client.Id)))];
+		_allRows = [.. allClients.Select(client => ToRow(client, currentMonth, recordsByClient[client.Id], context.ClientPhotos.GetValueOrDefault(client.Id)))];
 		Summary = string.Format(CultureInfo.CurrentCulture, localizer["Clients_Count"], _allRows.Count);
 
 		ApplyFilter();

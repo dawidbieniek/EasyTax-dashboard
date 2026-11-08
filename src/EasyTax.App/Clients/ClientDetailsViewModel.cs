@@ -7,6 +7,7 @@ using EasyTax.App.Photos;
 using EasyTax.App.Shell;
 using EasyTax.Core.Domain.Banks;
 using EasyTax.Core.Domain.Clients;
+using EasyTax.Core.Domain.Months;
 
 namespace EasyTax.App.Clients;
 
@@ -17,6 +18,7 @@ namespace EasyTax.App.Clients;
 public sealed partial class ClientDetailsViewModel : ViewModelBase
 {
 	private readonly IClientRepository _clients;
+	private readonly IMonthRecordRepository _months;
 	private readonly IBankRepository _banks;
 	private readonly IClientPhotoRepository _photos;
 	private readonly IPhotoService _photoService;
@@ -31,6 +33,7 @@ public sealed partial class ClientDetailsViewModel : ViewModelBase
 
 	public ClientDetailsViewModel(
 		IClientRepository clients,
+		IMonthRecordRepository months,
 		IBankRepository banks,
 		IClientPhotoRepository photos,
 		IPhotoService photoService,
@@ -42,6 +45,7 @@ public sealed partial class ClientDetailsViewModel : ViewModelBase
 		ClientDeletionService deletion)
 	{
 		_clients = clients;
+		_months = months;
 		_banks = banks;
 		_photos = photos;
 		_photoService = photoService;
@@ -91,7 +95,7 @@ public sealed partial class ClientDetailsViewModel : ViewModelBase
 	[ObservableProperty]
 	public partial ClientDisplay? Display { get; set; }
 
-	/// <summary>Accounted status of the month selected in the app bar.</summary>
+	/// <summary>Accounted status of the current calendar month.</summary>
 	[ObservableProperty]
 	public partial string MonthStatus { get; set; } = string.Empty;
 
@@ -307,13 +311,23 @@ public sealed partial class ClientDetailsViewModel : ViewModelBase
 		Form.Load(_client);
 	}
 
-	private void RefreshFromContext()
+	private async void RefreshFromContext()
 	{
 		PhotoBytes = _context.SelectedClientPhoto;
 
-		MonthStatus = _context.SelectedClient is { } client
-			? _localizer.Label(client.GetMonthState(_context.SelectedMonth, _context.YearRecords))
-			: string.Empty;
+		// The app bar's month picker is hidden on this page, so the status is about the current calendar month.
+		if (_context.SelectedClient is not { } client)
+		{
+			MonthStatus = string.Empty;
+			return;
+		}
+
+		var month = ClientFormatting.CurrentMonth();
+		var records = (await _months.GetForMonthAsync(month)).Where(r => r.ClientId == client.Id);
+
+		// The selection may have moved on while the records loaded.
+		if (_context.SelectedClient?.Id == client.Id)
+			MonthStatus = _localizer.Label(client.GetMonthState(month, records));
 	}
 
 	private void OnFormPropertyChanged(object? sender, PropertyChangedEventArgs e)

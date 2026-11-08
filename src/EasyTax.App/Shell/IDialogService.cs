@@ -12,8 +12,8 @@ public interface IDialogService
 	/// <summary>Yes/no question. Returns true when the user chose the confirm button.</summary>
 	Task<bool> ConfirmAsync(string title, string message, string confirmText, string cancelText);
 
-	/// <summary>Yes/no question whose message is several paragraphs, each optionally bold.</summary>
-	Task<bool> ConfirmAsync(string title, IReadOnlyList<DialogText> message, string confirmText, string cancelText);
+	/// <summary>Yes/no question whose message is several paragraphs, each optionally bold. A destructive confirm button (delete) is red.</summary>
+	Task<bool> ConfirmAsync(string title, IReadOnlyList<DialogText> message, string confirmText, string cancelText, bool destructive = false);
 
 	/// <summary>"You have unsaved changes": save, discard or stay.</summary>
 	Task<UnsavedChangesChoice> AskUnsavedChangesAsync();

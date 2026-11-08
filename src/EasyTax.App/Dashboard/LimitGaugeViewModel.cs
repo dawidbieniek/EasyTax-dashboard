@@ -114,14 +114,14 @@ public sealed partial class LimitGaugeViewModel(ILocalizer localizer, string tit
 			{
 				series.Fill = new SolidColorPaint(fill);
 				series.MaxRadialColumnWidth = ArcWidth;
-				series.CornerRadius = ArcWidth / 2;
+				series.CornerRadius = 0;
 				series.DataLabelsPaint = null;
 			}),
 			new GaugeItem(GaugeItem.Background, series =>
 			{
 				series.Fill = new SolidColorPaint(track);
 				series.MaxRadialColumnWidth = ArcWidth;
-				series.CornerRadius = ArcWidth / 2;
+				series.CornerRadius = 0;
 				series.DataLabelsPaint = null;
 			}));
 }

@@ -51,12 +51,18 @@ public sealed partial class SettingsViewModel : ViewModelBase
 			new(AppTheme.Dark, localizer["Theme_Dark"]),
 		];
 		SelectedTheme = ThemeOptions.First(o => o.Value == settings.Current.Theme);
+
+		var systemAccent = new Windows.UI.ViewManagement.UISettings().GetColorValue(Windows.UI.ViewManagement.UIColorType.Accent);
+		AccentOptions = [.. Enum.GetValues<AppAccent>().Select(accent => new AccentOption(accent, localizer[$"Accent_{accent}"], AppAccentColors.Of(accent) ?? systemAccent))];
+		SelectedAccent = AccentOptions.First(o => o.Value == settings.Current.Accent);
 		NewYear = DateTime.Today.Year;
 
 		AppVersion = Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "?";
 	}
 
 	public IReadOnlyList<ThemeOption> ThemeOptions { get; }
+
+	public IReadOnlyList<AccentOption> AccentOptions { get; }
 
 	public string AppVersion { get; }
 
@@ -65,6 +71,9 @@ public sealed partial class SettingsViewModel : ViewModelBase
 
 	[ObservableProperty]
 	public partial ThemeOption SelectedTheme { get; set; }
+
+	[ObservableProperty]
+	public partial AccentOption SelectedAccent { get; set; }
 
 	/// <summary>Value of the "new year" box (NaN while it is empty).</summary>
 	[ObservableProperty]
@@ -92,6 +101,13 @@ public sealed partial class SettingsViewModel : ViewModelBase
 
 	partial void OnSelectedThemeChanged(ThemeOption value)
 		=> _settings.Update(s => s with { Theme = value.Value });
+
+	partial void OnSelectedAccentChanged(AccentOption value)
+	{
+		// The swatch list briefly has no selection while it is rebuilt.
+		if (value is not null)
+			_settings.Update(s => s with { Accent = value.Value });
+	}
 
 	public override Task OnNavigatedToAsync(object? parameter)
 	{
@@ -241,6 +257,8 @@ public sealed partial class SettingsViewModel : ViewModelBase
 }
 
 public sealed record ThemeOption(AppTheme Value, string Label);
+
+public sealed record AccentOption(AppAccent Value, string Label, Windows.UI.Color Swatch);
 
 public sealed record YearItem(int Year, bool HasData)
 {

@@ -71,36 +71,56 @@
 					<MenuFlyoutItem x:Uid="List_Open" Click="OnOpenClick" />
 					<MenuFlyoutItem x:Name="SuspendItem" Click="OnSuspendClick" />
 					<MenuFlyoutSeparator />
-					<MenuFlyoutItem x:Uid="List_Delete" Click="OnDeleteClick" />
+					<MenuFlyoutItem
+							x:Uid="List_Delete"
+							Click="OnDeleteClick"
+							Foreground="{ThemeResource SystemFillColorCriticalBrush}" />
 				</MenuFlyout>
 			</tv:TableView.RowContextFlyout>
 
 			<tv:TableView.Columns>
 				<tv:TableViewTemplateColumn
 					x:Uid="List_Column_Name"
-					Width="220"
+					Width="260"
 					SortMemberPath="FullName">
 					<tv:TableViewTemplateColumn.CellTemplate>
 						<DataTemplate x:DataType="local:ClientRow">
-							<StackPanel
+							<Grid
 								Margin="12,0"
 								VerticalAlignment="Center"
-								Opacity="{x:Bind RowOpacity}"
-								Orientation="Horizontal"
-								Spacing="10">
+								ColumnSpacing="10"
+								Opacity="{x:Bind RowOpacity}">
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="Auto" />
+									<ColumnDefinition Width="*" />
+									<ColumnDefinition Width="Auto" />
+								</Grid.ColumnDefinitions>
 								<PersonPicture
 									Width="28"
 									Height="28"
 									DisplayName="{x:Bind FullName}"
 									ProfilePicture="{x:Bind Photo, Converter={StaticResource PhotoImageConverter}}" />
-								<TextBlock VerticalAlignment="Center" Text="{x:Bind FullName}" />
 								<TextBlock
-									x:Uid="List_Suspended"
+									Grid.Column="1"
 									VerticalAlignment="Center"
-									Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-									Style="{StaticResource CaptionTextBlockStyle}"
-									Visibility="{x:Bind IsSuspended}" />
-							</StackPanel>
+									Text="{x:Bind FullName}"
+									TextTrimming="CharacterEllipsis" />
+								<!-- A tinted chip that is never cut off: the name gives way (ellipsis) before the chip does. -->
+								<Border
+									Grid.Column="2"
+									Padding="8,1"
+									VerticalAlignment="Center"
+									Background="{ThemeResource SystemFillColorCautionBackgroundBrush}"
+									BorderBrush="{ThemeResource SystemFillColorCautionBrush}"
+									BorderThickness="1"
+									CornerRadius="9"
+									Visibility="{x:Bind IsSuspended}">
+									<TextBlock
+										x:Uid="List_Suspended"
+										Foreground="{ThemeResource SystemFillColorCautionBrush}"
+										Style="{StaticResource CaptionTextBlockStyle}" />
+								</Border>
+							</Grid>
 						</DataTemplate>
 					</tv:TableViewTemplateColumn.CellTemplate>
 				</tv:TableViewTemplateColumn>

@@ -14,7 +14,7 @@ public sealed class DialogService(ILocalizer localizer) : IDialogService
 	public Task<bool> ConfirmAsync(string title, string message, string confirmText, string cancelText)
 		=> ConfirmAsync(title, [new DialogText(message)], confirmText, cancelText);
 
-	public async Task<bool> ConfirmAsync(string title, IReadOnlyList<DialogText> message, string confirmText, string cancelText)
+	public async Task<bool> ConfirmAsync(string title, IReadOnlyList<DialogText> message, string confirmText, string cancelText, bool destructive = false)
 	{
 		var paragraphs = new StackPanel { Spacing = 12 };
 		foreach (var paragraph in message)
@@ -35,6 +35,9 @@ public sealed class DialogService(ILocalizer localizer) : IDialogService
 			CloseButtonText = cancelText,
 			DefaultButton = ContentDialogButton.Close,
 		};
+
+		if (destructive)
+			dialog.PrimaryButtonStyle = (Style)Application.Current.Resources["DestructiveButtonStyle"];
 
 		return await ShowAsync(dialog) == ContentDialogResult.Primary;
 	}
@@ -95,6 +98,11 @@ public sealed class DialogService(ILocalizer localizer) : IDialogService
 	public Task<ContentDialogResult> ShowAsync(ContentDialog dialog)
 	{
 		dialog.XamlRoot = _xamlRoot ?? throw new InvalidOperationException("DialogService is not attached to a window.");
+
+		// Dialogs live in their own popup layer and do not inherit the theme chosen in the app, only the system one.
+		if (_xamlRoot.Content is FrameworkElement root)
+			dialog.RequestedTheme = root.RequestedTheme;
+
 		return dialog.ShowAsync().AsTask();
 	}
 }
