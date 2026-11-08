@@ -19,7 +19,7 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done · **(?)** needs a decisio
 - Photos: optional, stored in the DB (separate table), shown with `PersonPicture`.
 - Years are **user-managed**: seeded 2026–2030, user can add years and remove a year only if it has no data.
 - Settings page: theme (System / Light / **Dark default**) and app version shown as plain text. No DB settings.
-- **Accent colour = the Windows system accent** (WinUI's default), so the app follows the user's Windows personalisation. No colour setting, no custom palette.
+- **Accent colour = the Windows system accent by default**, with an optional pick from the Windows accent palette in Settings (applied by overriding the `SystemAccentColor*` resources). Status colours (success / caution / critical) are fixed Material green / amber / red, defined in `App.xaml` and `ChartPalette`.
 - Out of scope for v1: backups, notifications, email, tax calculator, list filters.
 
 ## Data model (draft)
