@@ -12,7 +12,6 @@ namespace EasyTax.App.Clients;
 public sealed partial class ClientsViewModel(
 	IClientRepository clients,
 	IMonthRecordRepository months,
-	IClientPhotoRepository photos,
 	IClientContext context,
 	INavigationService navigation,
 	IDialogService dialogs,
@@ -34,14 +33,13 @@ public sealed partial class ClientsViewModel(
 	public async Task LoadAsync()
 	{
 		var allClients = await clients.GetAllAsync();
-		var photoByClient = await photos.GetAllAsync();
 
 		// The "accounted" column follows the month selected in the app bar.
 		var selectedMonth = context.SelectedMonth;
 		var monthRecords = await months.GetForMonthAsync(selectedMonth);
 		var recordsByClient = monthRecords.ToLookup(r => r.ClientId);
 
-		_allRows = [.. allClients.Select(client => ToRow(client, selectedMonth, recordsByClient[client.Id], photoByClient.GetValueOrDefault(client.Id)))];
+		_allRows = [.. allClients.Select(client => ToRow(client, selectedMonth, recordsByClient[client.Id], context.ClientPhotos.GetValueOrDefault(client.Id)))];
 		Summary = string.Format(CultureInfo.CurrentCulture, localizer["Clients_Count"], _allRows.Count);
 
 		ApplyFilter();

@@ -25,6 +25,8 @@ public sealed class ClientContext(
 
 	public Client? SelectedClient { get; private set; }
 
+	public IReadOnlyDictionary<Guid, byte[]> ClientPhotos { get; private set; } = new Dictionary<Guid, byte[]>();
+
 	public byte[]? SelectedClientPhoto { get; private set; }
 
 	public int Year { get; private set; }
@@ -150,11 +152,25 @@ public sealed class ClientContext(
 
 	public Task SetAccountedAsync(bool isAccounted) => UpdateCurrentRecordAsync(record => record.IsAccounted = isAccounted);
 
+	public async Task UpdateClientAsync(Guid clientId, Action<Client> change, bool notify = true)
+	{
+		var client = _allClients.FirstOrDefault(c => c.Id == clientId);
+		if (client is null)
+			return;
+
+		change(client);
+		await clientRepository.UpdateAsync(client);
+
+		if (notify)
+			Changed?.Invoke(this, EventArgs.Empty);
+	}
+
 	private async Task LoadListsAsync()
 	{
 		_allClients = await clientRepository.GetAllAsync();
 		Clients = [.. _allClients.Where(c => !c.IsSuspended)];
 		Years = [.. (await yearRepository.GetAllAsync()).Select(y => y.Year)];
+		ClientPhotos = await photoRepository.GetAllAsync();
 	}
 
 	private async Task ApplyAsync(Client? client, int year, int month)

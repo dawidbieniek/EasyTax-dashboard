@@ -21,6 +21,9 @@ public interface IClientContext
 	/// </summary>
 	Client? SelectedClient { get; }
 
+	/// <summary>Pictures of all clients that have one, by client id (for avatars in lists).</summary>
+	IReadOnlyDictionary<Guid, byte[]> ClientPhotos { get; }
+
 	/// <summary>Picture of the selected client, or null when there is none.</summary>
 	byte[]? SelectedClientPhoto { get; }
 
@@ -72,4 +75,8 @@ public interface IClientContext
 	Task UpdateCurrentRecordAsync(Action<MonthRecord> change);
 
 	Task SetAccountedAsync(bool isAccounted);
+
+	/// <summary>Applies a change to a client (looked up by id, so it stays correct if the selection moved meanwhile) and saves it.</summary>
+	/// <param name="notify">Raise <see cref="Changed"/>. Pass false for edits nobody else displays (notes), so typing does not refresh every screen.</param>
+	Task UpdateClientAsync(Guid clientId, Action<Client> change, bool notify = true);
 }

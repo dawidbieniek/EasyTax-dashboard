@@ -90,12 +90,16 @@ All of M4 is done and checked in the running app (list, menu, add with validatio
 - Known cosmetic limits, left for polish (M7): the header chips do not wrap, so in windows narrower than ~1000 px the last chips are clipped.
 
 ### M5 — Dashboard
-- [ ] 5.1 Month inputs card: income, sales/cost invoices (debounced save, 0 = clear)
-- [ ] 5.2 Checklist card: per-client items (VAT-R, CEIDG-1, ZUS, Invoiced, ZUS DRA, Tax) and per-month items (JPK V7, VAT UE), with timestamps
-- [ ] 5.3 Notes card (autosave on pause)
-- [ ] 5.4 Gauges: VAT, cash register, ZUS Plus (or "not applicable"), warning/over colours, tooltip
-- [ ] 5.5 Income line chart + invoices bar chart for the selected year; live updates
-- [ ] 5.6 Layout: 3 gauges on top, charts left, cards right, equal column height; narrow-window behaviour
+All of M5 is done and checked in the running app (edit, restart to confirm it was saved, several clients, narrow window, light theme).
+
+- [x] 5.1 Month card: income and sales/cost invoice counts for the selected month. A value is saved when it is committed (Enter or leaving the box), not on a timer, so it can never land on a different month if you switch quickly. Clearing a box saves 0: the month record also holds the accounted flag and the checklist, so it is not deleted (the old app removed the record at 0). Disabled for months before the client joined.
+- [x] 5.2 Checklist card: per-client items (VAT-R, CEIDG-1, ZUS, Zafakturowany, ZUS DRA, Podatek) and per-month items (JPK V7, VAT UE). Clicking toggles an item; done items turn green and show when they were done.
+- [x] 5.3 Notes card: a rich text editor (bold, italic, underline, bullet list; Ctrl+B/I/U work too) that autosaves 0.8 s after you stop typing. The pending save carries the client's id, so switching client right away still saves to the right one. Stored as RTF text in the existing `Client.Notes` column (no schema change; RTF is plain ASCII text). Old plain-text notes still load and become RTF the next time they are edited. Trade-off: the stored value is not human-readable in a database tool.
+- Polish pass on the dashboard (after first review): checklist has a divider instead of labels; invoice counts have ± spin buttons; gauge tooltips are on the text only; gauge cards have equal height; both ends of the gauge arc are rounded; refreshes are granular (gauge arcs animate their value, checklist/month-strip/chart values change only when they differ, typing in notes no longer refreshes every screen) which removed the flicker. Measured by sampling screenshots after clicks: no changed pixels in the gauges, charts or untouched months.
+- [x] 5.4 Gauges for VAT, cash register and ZUS Plus: amount, limit, percentage, amber from 90% ("Blisko limitu") and red from 100% ("Limit przekroczony"); tooltip says which dates are counted; "not applicable" text when the client has no cash register or is not on Mały ZUS Plus. VAT limit is prorated in the join year (checked: 162 739,73 zł for a 10.03.2026 join).
+- [x] 5.5 Income line chart and sales/cost bar chart for the selected year (LiveCharts2), updating live as inputs change. Chart colours come from `ChartPalette`: the Windows accent colour (the lighter shade on dark, darker on light) and the current theme.
+- [x] 5.6 Layout: three gauge cards on top, the two charts stacked on the left, month / checklist / notes cards on the right; below ~1100 px the right column moves under the charts. The page scrolls when the window is short.
+- Polish done: minimum window width 1200 px keeps the month strip whole; charts show "Brak danych za ten rok." when the year has no data.
 
 ### M6 — Settings
 - [ ] 6.1 Years management UI (add / remove where allowed)
@@ -107,5 +111,27 @@ All of M4 is done and checked in the running app (list, menu, add with validatio
 - [ ] 7.4 Packaging/installer and auto-update decision
 - [x] 7.5 Demo data for development: `EasyTax.exe --seed-demo` (Debug builds only) fills an empty database with five sample clients and 2026 month records. `EASYTAX_DATA_DIR` redirects the data folder (database and settings), so testing never touches real data.
 
+## Backups (planned, post-v1)
+Settled with the user; not scheduled in a milestone yet.
+
+**Prerequisite: single instance**
+- [ ] B.0 Enforce one app instance (`AppInstance.FindOrRegisterForKey`). A second launch activates the first and exits. Guarantees backup and restore never overlap.
+
+**Settings** (new card on the Settings page)
+- `BackupFolder` (default `Documents\EasyTax\Backups`, user-configurable, a fileshare path must work as plain file copy) and a scheduled-backups on/off toggle. Interval fixed at 7 days. No retention/pruning: keep all.
+
+**Backup flow** (`Backups/` feature folder, `BackupService`, plain methods with guard clauses)
+- [ ] B.1 `RunAsync()`: copy the live DB with the SQLite online backup API (`SqliteConnection.BackupDatabase`) into a temp `.db`, run `PRAGMA integrity_check` on the copy, zip it with `manifest.json` (app version, schema/migration version, timestamp) as `EasyTax-yyyy-MM-dd-HHmm.zip.tmp`, then rename to `.zip` as the last step (atomic, so a `.zip` is always complete).
+- [ ] B.2 Interruption safety: the live DB is only read, so closing mid-backup is harmless. On startup `DeleteStaleTempFiles()` removes leftover `.tmp` files; they never count as backups.
+- [ ] B.3 Schedule on startup: `GetLatestBackup()` reads the newest valid `.zip` in the folder (the folder is the source of truth, not a stored setting). If the toggle is on and it is older than 7 days or missing, run `RunAsync()` in the background. Startup only, no timer.
+- [ ] B.4 Toasts: success toast on finish; error toast on any failure, including an unreachable destination.
+
+**Restore**
+- [ ] B.5 "Restore from file": file picker for a `.zip`, confirmation dialog saying the current data will be replaced, unzip to temp, integrity check, manifest check (refuse a newer schema, migrate an older one), safety backup of the current DB, close connections, swap the file, restart the app.
+
+**Settings UI** (B.6): folder path + Browse, scheduled toggle, last backup time/status, "Back up now" and "Restore from file" buttons.
+
+Out of scope: retention, encryption, off-machine copies, Windows scheduled tasks.
+
 ## Later (not in v1)
-DB encryption, backups, notifications/reminders, emails + templates, tax calculator, list filters (search + filter flyout), CSV/Excel export.
+DB encryption, backups (see above), notifications/reminders, emails + templates, tax calculator, list filters (search + filter flyout), CSV/Excel export.

@@ -1,6 +1,7 @@
 using EasyTax.App.Clients;
 using EasyTax.App.Dashboard;
 using EasyTax.App.Settings;
+using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Windows.Graphics;
@@ -12,6 +13,7 @@ public sealed partial class MainWindow : Window
 {
 	private const string DashboardTag = "Dashboard";
 	private const string ClientsTag = "Clients";
+	private const int MinimumWindowWidth = 1280;
 
 	private readonly INavigationService _navigation;
 	private ViewModelBase? _currentViewModel;
@@ -29,10 +31,18 @@ public sealed partial class MainWindow : Window
 		SetTitleBar(AppTitleBar);
 		AppWindow.Resize(new SizeInt32(1400, 900));
 
+
 		themeService.Attach(this);
 
 		// Dialogs need the XamlRoot of the content, which exists once the content has loaded.
-		((FrameworkElement)Content).Loaded += (_, _) => dialogService.Attach(Content.XamlRoot);
+		((FrameworkElement)Content).Loaded += (_, _) =>
+		{
+			dialogService.Attach(Content.XamlRoot);
+
+			// The presenter works in pixels, the constant is in device-independent pixels.
+			if (AppWindow.Presenter is OverlappedPresenter presenter)
+				presenter.PreferredMinimumWidth = (int)(MinimumWindowWidth * Content.XamlRoot.RasterizationScale);
+		};
 
 		_navigation.Initialize(ContentFrame);
 		_navigation.Navigated += OnNavigated;

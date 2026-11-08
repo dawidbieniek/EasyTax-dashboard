@@ -1,4 +1,3 @@
-using EasyTax.Core.Domain.Clients;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -48,15 +47,15 @@ public sealed partial class AppBar : UserControl
 
 	private async void OnClientSuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
 	{
-		if (args.SelectedItem is Client client)
-			await ViewModel.SelectClientAsync(client.Id);
+		if (args.SelectedItem is ClientSuggestion suggestion)
+			await ViewModel.SelectClientAsync(suggestion.Id);
 	}
 
 	private async void OnClientQuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
 	{
-		var client = args.ChosenSuggestion as Client ?? ViewModel.FindClients(args.QueryText).FirstOrDefault();
-		if (client is not null)
-			await ViewModel.SelectClientAsync(client.Id);
+		var suggestion = args.ChosenSuggestion as ClientSuggestion ?? ViewModel.FindClients(args.QueryText).FirstOrDefault();
+		if (suggestion is not null)
+			await ViewModel.SelectClientAsync(suggestion.Id);
 	}
 
 	private async void OnYearSelectionChanged(object sender, SelectionChangedEventArgs e)

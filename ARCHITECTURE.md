@@ -31,6 +31,7 @@ src/
   EasyTax.App/             WinUI 3 app
     Shell/                 MainWindow, navigation (service, page registry), ViewModelBase
     Dashboard/ Clients/ Settings/   one folder per feature: page + view model (+ feature services)
+    Dashboard/             gauges, charts, month inputs, checklist, notes (+ ChartPalette)
     Photos/                photo picking/cropping service and the bytes-to-image converter
     Controls/              small shared UI controls (FormField)
     Localization/          ILocalizer, enum option lists
@@ -89,6 +90,17 @@ Everything else uses constructor injection.
   the editor while editing (plain text otherwise) and the error.
 - **Photos** (`Photos/`): `IPhotoService` picks, crops (centred square), shrinks (≤ 256 px) and re-encodes a picture as JPEG;
   `PhotoImageConverter` turns the stored bytes into an image for `PersonPicture`. Photos live in their own table.
+- **Dashboard** (`Dashboard/`): `DashboardViewModel` is a projection of the client context plus the limit rules in Core.
+  It rebuilds nothing on its own: every change goes back through the context (`UpdateCurrentRecordAsync` for month data,
+  `UpdateClientAsync(id, …)` for notes and per-client checklist items) and the resulting `Changed` event refreshes the page.
+  The three gauges are `LimitGaugeViewModel`s updated in place. Charts (LiveCharts2) read from three `ObservableCollection`s
+  that are updated in place; the series/axes are only rebuilt when the theme changes. **Refresh rule: update, never rebuild.**
+  Every `Changed` event reaches several screens, so each view model must only touch what really differs (equal values are
+  skipped by the property setters; month buttons, checklist items and gauges are fixed long-lived objects updated in place (toggle buttons use `StatusToggleButtonStyle`: instant state change, no fade; note ToggleButton hover+checked is the single state `CheckedPointerOver`)
+  objects). Replacing a bound list or series makes the controls re-create everything, which shows as flicker and replayed animations.
+  Edits that nobody else displays (notes) are saved with `notify: false`. Notes are RTF in `Client.Notes`; the page code-behind
+  converts between the editor and that string (it is a view concern) and still reads old plain-text notes. `ChartPalette` supplies their colours
+  (SkiaSharp cannot use XAML theme resources): the Windows accent and the light/dark theme.
 - **Client context** (`Shell/ClientContext`): the one place that knows which client, year and month are selected.
   It loads the selectable clients, the managed years and the month records of the selected client and year, restores the
   last selection from `settings.json`, snaps the selection to the join month when needed, and raises `Changed`. The app bar
@@ -145,6 +157,12 @@ A design-time factory (`EasyTaxDbContextFactory`) lets the tool run without star
   while the image is still decoding.
 - **Bitmap crop bounds are in the scaled image's coordinates** (`BitmapTransform.Bounds` after `ScaledWidth/Height`), not the original's.
 - **TableView** does not raise item-click or double-tap reliably; a `Tapped` handler on the grid plus a walk up to `TableViewRow` does.
+- **LiveCharts controls draw on solid black** unless `Background="Transparent"` is set on each chart. Gauge series show their own
+  value label by default (`DataLabelsPaint = null` removes it). Chart colours are SkiaSharp colours, so theme-dependent ones are computed
+  (see `ChartPalette`) and must be rebuilt when the theme changes.
+- **`ItemsRepeater` has no `IsEnabled`**; wrap it in a `ContentControl` to disable what is inside.
+- A converter that looks up brushes in `Application.Current.Resources` gets the *application* theme's brush, not the element's; when
+  the colour depends on the theme, compute it (as `ChartPalette` does) and bind a plain colour.
 - Exceptions thrown inside `async void` event handlers do not crash the app; they are only logged. When something silently does nothing,
   reproduce the code in a throwaway console project to see the exception.
 - Interactive checks: run with `EASYTAX_DATA_DIR` pointing at a temp folder and `--seed-demo`.

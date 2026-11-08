@@ -1,16 +1,99 @@
 <Page
 	x:Class="EasyTax.App.Dashboard.DashboardPage"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:controls="using:EasyTax.App.Controls"
+	xmlns:local="using:EasyTax.App.Dashboard"
+	xmlns:lvc="using:LiveChartsCore.SkiaSharpView.WinUI"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-	<Grid Padding="24">
-		<StackPanel Spacing="8" Visibility="{x:Bind ViewModel.HasClients, Mode=OneWay}">
-			<TextBlock
-				x:Uid="Dashboard_Placeholder"
-				Style="{StaticResource TitleTextBlockStyle}" />
-			<TextBlock Text="{x:Bind ViewModel.Selection, Mode=OneWay}" />
-		</StackPanel>
+	<Page.Resources>
+		<local:ColorBrushConverter x:Key="ColorBrush" />
 
+		<DataTemplate x:Key="GaugeCardTemplate" x:DataType="local:LimitGaugeViewModel">
+			<Border
+				MinHeight="160"
+				VerticalAlignment="Stretch"
+				Style="{StaticResource CardStyle}">
+				<Grid RowSpacing="8">
+					<Grid.RowDefinitions>
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="*" />
+					</Grid.RowDefinitions>
+					<TextBlock Style="{StaticResource CardTitleStyle}" Text="{x:Bind Title}" />
+
+					<!-- Arc and numbers, centred in the space under the title. -->
+					<StackPanel
+						Grid.Row="1"
+						HorizontalAlignment="Center"
+						VerticalAlignment="Center"
+						Orientation="Horizontal"
+						Spacing="16"
+						Visibility="{x:Bind IsApplicable, Mode=OneWay}">
+						<Grid Width="104" Height="104">
+							<lvc:PieChart
+								Background="Transparent"
+								InitialRotation="-225"
+								MaxAngle="270"
+								MaxValue="100"
+								MinValue="0"
+								Series="{x:Bind Series, Mode=OneWay}" />
+							<TextBlock
+								Margin="0,0,0,6"
+								HorizontalAlignment="Center"
+								VerticalAlignment="Center"
+								FontWeight="SemiBold"
+								Foreground="{x:Bind StateColor, Mode=OneWay, Converter={StaticResource ColorBrush}}"
+								Style="{StaticResource SubtitleTextBlockStyle}"
+								Text="{x:Bind PercentText, Mode=OneWay}" />
+						</Grid>
+
+						<StackPanel VerticalAlignment="Center" Background="Transparent" ToolTipService.ToolTip="{x:Bind Tooltip, Mode=OneWay}">
+							<TextBlock
+								FontWeight="SemiBold"
+								Style="{StaticResource SubtitleTextBlockStyle}"
+								Text="{x:Bind IncomeText, Mode=OneWay}" />
+							<TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="{x:Bind LimitText, Mode=OneWay}" />
+							<TextBlock
+								Foreground="{x:Bind StateColor, Mode=OneWay, Converter={StaticResource ColorBrush}}"
+								Text="{x:Bind StateText, Mode=OneWay}"
+								Visibility="{x:Bind controls:FormField.ShowWhenText(StateText), Mode=OneWay}" />
+						</StackPanel>
+					</StackPanel>
+
+					<TextBlock
+						Grid.Row="1"
+						HorizontalAlignment="Center"
+						VerticalAlignment="Center"
+						Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+						Text="{x:Bind NotApplicableText}"
+						TextAlignment="Center"
+						TextWrapping="Wrap"
+						Visibility="{x:Bind IsNotApplicable, Mode=OneWay}" />
+				</Grid>
+			</Border>
+		</DataTemplate>
+
+		<DataTemplate x:Key="ChecklistItemTemplate" x:DataType="local:ChecklistItem">
+			<ToggleButton
+				HorizontalAlignment="Stretch"
+				Click="OnChecklistClick"
+				IsChecked="{x:Bind IsDone, Mode=OneWay}"
+				Style="{StaticResource StatusToggleButtonStyle}"
+				Tag="{x:Bind Key}">
+				<StackPanel HorizontalAlignment="Center">
+					<TextBlock HorizontalAlignment="Center" Text="{x:Bind Label}" />
+					<!-- Always takes its line, so checking an item does not change the button's height. -->
+					<TextBlock
+						MinHeight="16"
+						HorizontalAlignment="Center"
+						Style="{StaticResource CaptionTextBlockStyle}"
+						Text="{x:Bind Timestamp, Mode=OneWay}" />
+				</StackPanel>
+			</ToggleButton>
+		</DataTemplate>
+	</Page.Resources>
+
+	<Grid>
 		<!-- Empty state: nothing to show until the first client exists. -->
 		<StackPanel
 			HorizontalAlignment="Center"
@@ -26,5 +109,267 @@
 				HorizontalAlignment="Center"
 				Command="{x:Bind ViewModel.GoToClientsCommand}" />
 		</StackPanel>
+
+		<ScrollViewer Visibility="{x:Bind ViewModel.HasClients, Mode=OneWay}">
+			<Grid
+				MinHeight="720"
+				Padding="16"
+				VerticalAlignment="Stretch"
+				RowSpacing="16">
+				<Grid.RowDefinitions>
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="*" />
+				</Grid.RowDefinitions>
+
+				<!-- Limits -->
+				<Grid ColumnSpacing="16">
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="*" />
+						<ColumnDefinition Width="*" />
+						<ColumnDefinition Width="*" />
+					</Grid.ColumnDefinitions>
+					<ContentControl
+						HorizontalAlignment="Stretch"
+						HorizontalContentAlignment="Stretch"
+						VerticalAlignment="Stretch"
+						VerticalContentAlignment="Stretch"
+						Content="{x:Bind ViewModel.VatGauge}"
+						ContentTemplate="{StaticResource GaugeCardTemplate}" />
+					<ContentControl
+						Grid.Column="1"
+						HorizontalAlignment="Stretch"
+						HorizontalContentAlignment="Stretch"
+						VerticalAlignment="Stretch"
+						VerticalContentAlignment="Stretch"
+						Content="{x:Bind ViewModel.CashRegisterGauge}"
+						ContentTemplate="{StaticResource GaugeCardTemplate}" />
+					<ContentControl
+						Grid.Column="2"
+						HorizontalAlignment="Stretch"
+						HorizontalContentAlignment="Stretch"
+						VerticalAlignment="Stretch"
+						VerticalContentAlignment="Stretch"
+						Content="{x:Bind ViewModel.ZusPlusGauge}"
+						ContentTemplate="{StaticResource GaugeCardTemplate}" />
+				</Grid>
+
+				<!-- Charts on the left, the selected month's cards on the right. -->
+				<Grid
+					x:Name="MainGrid"
+					Grid.Row="1"
+					ColumnSpacing="16"
+					RowSpacing="16">
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="2*" />
+						<ColumnDefinition x:Name="RightColumnDefinition" Width="*" MinWidth="320" />
+					</Grid.ColumnDefinitions>
+					<Grid.RowDefinitions>
+						<RowDefinition Height="*" />
+						<RowDefinition Height="Auto" />
+					</Grid.RowDefinitions>
+
+					<Grid RowSpacing="16">
+						<Grid.RowDefinitions>
+							<RowDefinition Height="*" MinHeight="240" />
+							<RowDefinition Height="*" MinHeight="240" />
+						</Grid.RowDefinitions>
+
+						<Border Style="{StaticResource CardStyle}">
+							<Grid RowSpacing="8">
+								<Grid.RowDefinitions>
+									<RowDefinition Height="Auto" />
+									<RowDefinition Height="*" />
+								</Grid.RowDefinitions>
+								<TextBlock Style="{StaticResource CardTitleStyle}" Text="{x:Bind ViewModel.IncomeChartTitle, Mode=OneWay}" />
+								<lvc:CartesianChart
+									Grid.Row="1"
+									Background="Transparent"
+									Series="{x:Bind ViewModel.IncomeSeries, Mode=OneWay}"
+										Visibility="{x:Bind ViewModel.HasIncomeData, Mode=OneWay}"
+									TooltipBackgroundPaint="{x:Bind ViewModel.TooltipBackgroundPaint, Mode=OneWay}"
+									TooltipTextPaint="{x:Bind ViewModel.TooltipTextPaint, Mode=OneWay}"
+									XAxes="{x:Bind ViewModel.MonthAxes, Mode=OneWay}"
+									YAxes="{x:Bind ViewModel.IncomeValueAxes, Mode=OneWay}" />
+									<TextBlock
+										x:Uid="Dash_NoChartData"
+										Grid.Row="1"
+										HorizontalAlignment="Center"
+										VerticalAlignment="Center"
+										Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+										IsHitTestVisible="False"
+										Visibility="{x:Bind ViewModel.HasNoIncomeData, Mode=OneWay}" />
+							</Grid>
+						</Border>
+
+						<Border Grid.Row="1" Style="{StaticResource CardStyle}">
+							<Grid RowSpacing="8">
+								<Grid.RowDefinitions>
+									<RowDefinition Height="Auto" />
+									<RowDefinition Height="*" />
+								</Grid.RowDefinitions>
+								<TextBlock Style="{StaticResource CardTitleStyle}" Text="{x:Bind ViewModel.InvoicesChartTitle, Mode=OneWay}" />
+								<lvc:CartesianChart
+									Grid.Row="1"
+									Background="Transparent"
+									LegendPosition="Bottom"
+									LegendTextPaint="{x:Bind ViewModel.LegendPaint, Mode=OneWay}"
+									Series="{x:Bind ViewModel.InvoiceSeries, Mode=OneWay}"
+										Visibility="{x:Bind ViewModel.HasInvoiceData, Mode=OneWay}"
+									TooltipBackgroundPaint="{x:Bind ViewModel.TooltipBackgroundPaint, Mode=OneWay}"
+									TooltipTextPaint="{x:Bind ViewModel.TooltipTextPaint, Mode=OneWay}"
+									XAxes="{x:Bind ViewModel.MonthAxes, Mode=OneWay}"
+									YAxes="{x:Bind ViewModel.InvoiceValueAxes, Mode=OneWay}" />
+									<TextBlock
+										x:Uid="Dash_NoChartData"
+										Grid.Row="1"
+										HorizontalAlignment="Center"
+										VerticalAlignment="Center"
+										Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+										IsHitTestVisible="False"
+										Visibility="{x:Bind ViewModel.HasNoInvoiceData, Mode=OneWay}" />
+							</Grid>
+						</Border>
+					</Grid>
+
+					<Grid
+						x:Name="RightPanel"
+						Grid.Column="1"
+						RowSpacing="16">
+						<Grid.RowDefinitions>
+							<RowDefinition Height="Auto" />
+							<RowDefinition Height="Auto" />
+							<RowDefinition Height="*" MinHeight="140" />
+						</Grid.RowDefinitions>
+
+						<!-- Selected month: income and invoice counts. Saved when the value is committed (Enter or leaving the box). -->
+						<Border Style="{StaticResource CardStyle}">
+							<StackPanel Spacing="12">
+								<TextBlock Style="{StaticResource CardTitleStyle}" Text="{x:Bind ViewModel.MonthTitle, Mode=OneWay}" />
+								<controls:FormField x:Uid="Dash_Income">
+									<NumberBox
+										x:Name="IncomeBox"
+										Minimum="0"
+										SpinButtonPlacementMode="Hidden"
+										IsEnabled="{x:Bind ViewModel.IsMonthEditable, Mode=OneWay}"
+										Value="{x:Bind ViewModel.IncomeInput, Mode=TwoWay}" />
+								</controls:FormField>
+								<Grid ColumnSpacing="12">
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="*" />
+										<ColumnDefinition Width="*" />
+									</Grid.ColumnDefinitions>
+									<controls:FormField x:Uid="Dash_Sales">
+										<NumberBox
+											x:Name="SalesBox"
+											Minimum="0"
+											LargeChange="5"
+							SmallChange="1"
+							SpinButtonPlacementMode="Inline"
+											IsEnabled="{x:Bind ViewModel.IsMonthEditable, Mode=OneWay}"
+											Value="{x:Bind ViewModel.SalesInput, Mode=TwoWay}" />
+									</controls:FormField>
+									<controls:FormField x:Uid="Dash_Costs" Grid.Column="1">
+										<NumberBox
+											x:Name="CostBox"
+											Minimum="0"
+											LargeChange="5"
+							SmallChange="1"
+							SpinButtonPlacementMode="Inline"
+											IsEnabled="{x:Bind ViewModel.IsMonthEditable, Mode=OneWay}"
+											Value="{x:Bind ViewModel.CostInput, Mode=TwoWay}" />
+									</controls:FormField>
+								</Grid>
+							</StackPanel>
+						</Border>
+
+						<Border Grid.Row="1" Style="{StaticResource CardStyle}">
+							<StackPanel Spacing="10">
+								<TextBlock x:Uid="Dash_Checklist_Title" Style="{StaticResource CardTitleStyle}" />
+
+								<ItemsRepeater ItemTemplate="{StaticResource ChecklistItemTemplate}" ItemsSource="{x:Bind ViewModel.ClientChecklist, Mode=OneWay}">
+									<ItemsRepeater.Layout>
+										<UniformGridLayout
+											ItemsStretch="Fill"
+											MaximumRowsOrColumns="2"
+											MinColumnSpacing="8"
+											MinItemWidth="110"
+											MinRowSpacing="8" />
+									</ItemsRepeater.Layout>
+								</ItemsRepeater>
+
+								<Border Height="1" Margin="0,4" Background="{ThemeResource DividerStrokeColorDefaultBrush}" />
+								<ContentControl
+									HorizontalContentAlignment="Stretch"
+									IsEnabled="{x:Bind ViewModel.IsMonthEditable, Mode=OneWay}">
+									<ItemsRepeater ItemTemplate="{StaticResource ChecklistItemTemplate}" ItemsSource="{x:Bind ViewModel.MonthChecklist, Mode=OneWay}">
+										<ItemsRepeater.Layout>
+											<UniformGridLayout
+												ItemsStretch="Fill"
+												MaximumRowsOrColumns="2"
+												MinColumnSpacing="8"
+												MinItemWidth="110"
+												MinRowSpacing="8" />
+										</ItemsRepeater.Layout>
+									</ItemsRepeater>
+								</ContentControl>
+							</StackPanel>
+						</Border>
+
+						<Border Grid.Row="2" Style="{StaticResource CardStyle}">
+							<Grid RowSpacing="8">
+								<Grid.RowDefinitions>
+									<RowDefinition Height="Auto" />
+									<RowDefinition Height="Auto" />
+									<RowDefinition Height="*" />
+								</Grid.RowDefinitions>
+								<TextBlock x:Uid="Dash_Notes_Title" Style="{StaticResource CardTitleStyle}" />
+
+								<StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="2">
+									<Button AllowFocusOnInteraction="False" x:Uid="Dash_Notes_Bold" Click="OnBoldClick" Style="{StaticResource SubtleButtonStyle}">
+										<FontIcon FontSize="14" Glyph="&#xE8DD;" />
+									</Button>
+									<Button AllowFocusOnInteraction="False" x:Uid="Dash_Notes_Italic" Click="OnItalicClick" Style="{StaticResource SubtleButtonStyle}">
+										<FontIcon FontSize="14" Glyph="&#xE8DB;" />
+									</Button>
+									<Button AllowFocusOnInteraction="False" x:Uid="Dash_Notes_Underline" Click="OnUnderlineClick" Style="{StaticResource SubtleButtonStyle}">
+										<FontIcon FontSize="14" Glyph="&#xE8DC;" />
+									</Button>
+									<Button AllowFocusOnInteraction="False" x:Uid="Dash_Notes_Bullets" Click="OnBulletsClick" Style="{StaticResource SubtleButtonStyle}">
+										<FontIcon FontSize="14" Glyph="&#xE8FD;" />
+									</Button>
+								</StackPanel>
+
+								<RichEditBox
+									x:Name="NotesEditor"
+									Grid.Row="2"
+									TextChanged="OnNotesTextChanged" />
+							</Grid>
+						</Border>
+					</Grid>
+				</Grid>
+			</Grid>
+		</ScrollViewer>
+
+		<!-- Below ~1100 px the right column moves under the charts. -->
+		<VisualStateManager.VisualStateGroups>
+			<VisualStateGroup>
+				<VisualState x:Name="Narrow">
+					<VisualState.StateTriggers>
+						<AdaptiveTrigger MinWindowWidth="0" />
+					</VisualState.StateTriggers>
+					<VisualState.Setters>
+						<Setter Target="RightColumnDefinition.Width" Value="0" />
+						<Setter Target="RightColumnDefinition.MinWidth" Value="0" />
+						<Setter Target="RightPanel.(Grid.Column)" Value="0" />
+						<Setter Target="RightPanel.(Grid.Row)" Value="1" />
+					</VisualState.Setters>
+				</VisualState>
+				<VisualState x:Name="Wide">
+					<VisualState.StateTriggers>
+						<AdaptiveTrigger MinWindowWidth="1100" />
+					</VisualState.StateTriggers>
+				</VisualState>
+			</VisualStateGroup>
+		</VisualStateManager.VisualStateGroups>
 	</Grid>
 </Page>

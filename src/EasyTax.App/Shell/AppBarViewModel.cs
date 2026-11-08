@@ -1,8 +1,6 @@
-using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EasyTax.App.Localization;
-using EasyTax.Core.Domain.Clients;
 using EasyTax.Core.Domain.Months;
 
 namespace EasyTax.App.Shell;
@@ -17,12 +15,14 @@ public sealed partial class AppBarViewModel : ObservableObject
 	{
 		_context = context;
 		_localizer = localizer;
+		Months = [.. Enumerable.Range(1, 12).Select(month => new MonthItem(month, localizer[$"Month_{month}"]))];
 
 		_context.Changed += (_, _) => Refresh();
 		Refresh();
 	}
 
-	public ObservableCollection<MonthItem> Months { get; } = [];
+	/// <summary>The twelve month buttons. Created once; their state is updated in place.</summary>
+	public IReadOnlyList<MonthItem> Months { get; }
 
 	[ObservableProperty]
 	public partial bool HasClients { get; set; }
@@ -62,10 +62,10 @@ public sealed partial class AppBarViewModel : ObservableObject
 	public partial bool CanSelectNext { get; set; }
 
 	/// <summary>Clients whose name contains the text (case-insensitive); all of them when the text is empty.</summary>
-	public IReadOnlyList<Client> FindClients(string? text)
-		=> string.IsNullOrWhiteSpace(text)
-			? _context.Clients
-			: [.. _context.Clients.Where(c => c.FullName.Contains(text.Trim(), StringComparison.CurrentCultureIgnoreCase))];
+	public IReadOnlyList<ClientSuggestion> FindClients(string? text)
+		=> [.. _context.Clients
+			.Where(c => string.IsNullOrWhiteSpace(text) || c.FullName.Contains(text.Trim(), StringComparison.CurrentCultureIgnoreCase))
+			.Select(c => new ClientSuggestion(c.Id, c.FullName, _context.ClientPhotos.GetValueOrDefault(c.Id)))];
 
 	public Task SelectClientAsync(Guid clientId) => _context.SelectClientAsync(clientId);
 
@@ -102,11 +102,10 @@ public sealed partial class AppBarViewModel : ObservableObject
 		IsAccounted = _context.CurrentRecord?.IsAccounted ?? false;
 		AccountedLabel = _localizer[IsAccounted ? "AppBar_Accounted" : "AppBar_NotAccounted"];
 
-		Months.Clear();
-		for (var month = 1; month <= 12; month++)
+		foreach (var item in Months)
 		{
-			var state = client?.GetMonthState(new DateOnly(_context.Year, month, 1), _context.YearRecords) ?? MonthState.BeforeJoin;
-			Months.Add(new MonthItem(month, _localizer[$"Month_{month}"], state, month == _context.Month));
+			var state = client?.GetMonthState(new DateOnly(_context.Year, item.Month, 1), _context.YearRecords) ?? MonthState.BeforeJoin;
+			item.Set(state, item.Month == _context.Month);
 		}
 	}
 }

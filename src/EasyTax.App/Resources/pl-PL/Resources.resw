@@ -25,11 +25,8 @@
   </data>
 
   <!-- Dashboard -->
-  <data name="Dashboard_Placeholder.Text" xml:space="preserve">
-    <value>Pulpit</value>
-  </data>
-  <data name="Dashboard_Selection" xml:space="preserve">
-    <value>{0} · {1}</value>
+  <data name="Dash_NoChartData.Text" xml:space="preserve">
+    <value>Brak danych za ten rok.</value>
   </data>
   <data name="Dashboard_NoClients.Text" xml:space="preserve">
     <value>Nie masz jeszcze żadnych klientów.</value>
@@ -420,6 +417,116 @@
   </data>
   <data name="Month_12" xml:space="preserve">
     <value>Gru</value>
+  </data>
+
+  <!-- Dashboard cards -->
+  <data name="Gauge_Vat_Title" xml:space="preserve">
+    <value>Limit VAT</value>
+  </data>
+  <data name="Gauge_Vat_NotApplicable" xml:space="preserve">
+    <value></value>
+  </data>
+  <data name="Gauge_CashRegister_Title" xml:space="preserve">
+    <value>Kasa fiskalna</value>
+  </data>
+  <data name="Gauge_CashRegister_NotApplicable" xml:space="preserve">
+    <value>Klient nie używa kasy fiskalnej</value>
+  </data>
+  <data name="Gauge_ZusPlus_Title" xml:space="preserve">
+    <value>Mały ZUS Plus</value>
+  </data>
+  <data name="Gauge_ZusPlus_NotApplicable" xml:space="preserve">
+    <value>Klient nie jest na Małym ZUS Plus</value>
+  </data>
+  <data name="Gauge_LimitOf" xml:space="preserve">
+    <value>z {0}</value>
+  </data>
+  <data name="Gauge_CountedFrom" xml:space="preserve">
+    <value>Liczone od {0} do {1}</value>
+  </data>
+  <data name="Gauge_State_Warning" xml:space="preserve">
+    <value>Blisko limitu</value>
+  </data>
+  <data name="Gauge_State_Over" xml:space="preserve">
+    <value>Limit przekroczony</value>
+  </data>
+  <data name="Dashboard_IncomeChart_Title" xml:space="preserve">
+    <value>Przychody miesięczne · {0}</value>
+  </data>
+  <data name="Dashboard_InvoicesChart_Title" xml:space="preserve">
+    <value>Faktury · {0}</value>
+  </data>
+  <data name="Dashboard_Series_Income" xml:space="preserve">
+    <value>Przychody</value>
+  </data>
+  <data name="Dashboard_Series_Sales" xml:space="preserve">
+    <value>Sprzedażowe</value>
+  </data>
+  <data name="Dashboard_Series_Costs" xml:space="preserve">
+    <value>Kosztowe</value>
+  </data>
+  <data name="Dash_Income.Header" xml:space="preserve">
+    <value>Przychód (zł)</value>
+  </data>
+  <data name="Dash_Sales.Header" xml:space="preserve">
+    <value>Faktury sprzedażowe</value>
+  </data>
+  <data name="Dash_Costs.Header" xml:space="preserve">
+    <value>Faktury kosztowe</value>
+  </data>
+  <data name="Dash_Checklist_Title.Text" xml:space="preserve">
+    <value>Lista kontrolna</value>
+  </data>
+  <data name="Dash_Notes_Bold.AutomationProperties.Name" xml:space="preserve">
+    <value>Pogrubienie</value>
+  </data>
+  <data name="Dash_Notes_Bold.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Pogrubienie (Ctrl+B)</value>
+  </data>
+  <data name="Dash_Notes_Italic.AutomationProperties.Name" xml:space="preserve">
+    <value>Kursywa</value>
+  </data>
+  <data name="Dash_Notes_Italic.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Kursywa (Ctrl+I)</value>
+  </data>
+  <data name="Dash_Notes_Underline.AutomationProperties.Name" xml:space="preserve">
+    <value>Podkreślenie</value>
+  </data>
+  <data name="Dash_Notes_Underline.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Podkreślenie (Ctrl+U)</value>
+  </data>
+  <data name="Dash_Notes_Bullets.AutomationProperties.Name" xml:space="preserve">
+    <value>Lista punktowana</value>
+  </data>
+  <data name="Dash_Notes_Bullets.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Lista punktowana</value>
+  </data>
+  <data name="Dash_Notes_Title.Text" xml:space="preserve">
+    <value>Notatki</value>
+  </data>
+  <data name="ChecklistKey_VatR" xml:space="preserve">
+    <value>VAT-R</value>
+  </data>
+  <data name="ChecklistKey_Ceidg1" xml:space="preserve">
+    <value>CEIDG-1</value>
+  </data>
+  <data name="ChecklistKey_Zus" xml:space="preserve">
+    <value>ZUS</value>
+  </data>
+  <data name="ChecklistKey_Invoiced" xml:space="preserve">
+    <value>Zafakturowany</value>
+  </data>
+  <data name="ChecklistKey_ZusDra" xml:space="preserve">
+    <value>ZUS DRA</value>
+  </data>
+  <data name="ChecklistKey_Tax" xml:space="preserve">
+    <value>Podatek</value>
+  </data>
+  <data name="ChecklistKey_JpkV7" xml:space="preserve">
+    <value>JPK V7</value>
+  </data>
+  <data name="ChecklistKey_VatUe" xml:space="preserve">
+    <value>VAT UE</value>
   </data>
 
   <!-- Clients -->
