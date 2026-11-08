@@ -1,4 +1,6 @@
 using System.Globalization;
+using System.Diagnostics;
+using EasyTax.App.Backups;
 using EasyTax.App.Infrastructure;
 using EasyTax.App.Localization;
 using EasyTax.App.Security;
@@ -10,11 +12,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml;
+using Microsoft.Windows.AppLifecycle;
 
 namespace EasyTax.App;
 
 public partial class App : Application
 {
+	private const string InstanceKey = "EasyTax.MainInstance";
+
 	private readonly IHost _host;
 	private Window? _window;
 
@@ -43,6 +48,19 @@ public partial class App : Application
 
 	protected override async void OnLaunched(LaunchActivatedEventArgs args)
 	{
+		WaitForPreviousInstance();
+
+		// One copy only: a second launch hands over to the first and ends. Backups and restores can then never overlap.
+		var instance = AppInstance.FindOrRegisterForKey(InstanceKey);
+		if (!instance.IsCurrent)
+		{
+			await instance.RedirectActivationToAsync(AppInstance.GetCurrent().GetActivatedEventArgs());
+			Exit();
+			return;
+		}
+
+		instance.Activated += (_, _) => ShowMainWindow();
+
 		try
 		{
 			await _host.StartAsync();
@@ -83,6 +101,42 @@ public partial class App : Application
 		_window = Services.GetRequiredService<MainWindow>();
 		_window.Closed += OnWindowClosed;
 		_window.Activate();
+
+		// Automatic backup (when due) runs in the background; it reports with a toast.
+		_ = Services.GetRequiredService<BackupManager>().RunScheduledIfDueAsync();
+	}
+
+	// After a restore the old process starts a new one and ends; the new one must wait until the old one is gone,
+	// otherwise the single-instance check would take it for a second copy.
+	private static void WaitForPreviousInstance()
+	{
+		var arguments = Environment.GetCommandLineArgs();
+		var index = Array.IndexOf(arguments, "--restart-after");
+		if (index < 0 || index + 1 >= arguments.Length || !int.TryParse(arguments[index + 1], out var processId))
+			return;
+
+		try
+		{
+			using var previous = Process.GetProcessById(processId);
+			previous.WaitForExit(TimeSpan.FromSeconds(20));
+		}
+		catch (ArgumentException)
+		{
+			// Already gone.
+		}
+	}
+
+	// Another launch was redirected here: bring the window to the front (the event arrives on a background thread).
+	private void ShowMainWindow()
+	{
+		var window = _window;
+		window?.DispatcherQueue.TryEnqueue(() =>
+		{
+			if (window.AppWindow.Presenter is Microsoft.UI.Windowing.OverlappedPresenter { State: Microsoft.UI.Windowing.OverlappedPresenterState.Minimized } presenter)
+				presenter.Restore();
+
+			window.Activate();
+		});
 	}
 
 	// Development helper (Debug builds): EASYTAX_DEV_KEY=<a key> skips the key windows, so test databases need no typing.

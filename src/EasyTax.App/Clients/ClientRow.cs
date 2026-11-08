@@ -15,6 +15,7 @@ public sealed record ClientRow(
 	MonthState MonthState,
 	string MonthStatus,
 	bool IsSuspended,
+	DateTime? SuspendedAt,
 	string SuspendLabel,
 	byte[]? Photo)
 {

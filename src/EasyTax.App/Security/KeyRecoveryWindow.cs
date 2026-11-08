@@ -17,7 +17,7 @@ internal sealed class KeyRecoveryWindow : KeyWindow
 	private readonly TextBox _input = new();
 	private readonly TextBlock _error = new() { TextWrapping = TextWrapping.Wrap, Foreground = (Brush)Application.Current.Resources["SystemFillColorCriticalBrush"] };
 
-	public KeyRecoveryWindow(ILocalizer localizer, AppTheme theme, Func<string, Task<bool>> verify)
+	public KeyRecoveryWindow(ILocalizer localizer, AppTheme theme, Func<string, Task<bool>> verify, string messageKey = "Key_Recovery_Message", string quitKey = "Key_Recovery_Quit")
 		: base(localizer["Key_Recovery_Title"], theme)
 	{
 		_localizer = localizer;
@@ -30,11 +30,11 @@ internal sealed class KeyRecoveryWindow : KeyWindow
 		var next = new Button { Content = localizer["Key_Recovery_Continue"], Style = (Style)Application.Current.Resources["AccentButtonStyle"] };
 		next.Click += async (_, _) => await TryContinueAsync();
 
-		var quit = new Button { Content = localizer["Key_Recovery_Quit"] };
+		var quit = new Button { Content = localizer[quitKey] };
 		quit.Click += (_, _) => Close();
 
 		Panel.Children.Add(Heading(localizer["Key_Recovery_Title"]));
-		Panel.Children.Add(Paragraph(localizer["Key_Recovery_Message"]));
+		Panel.Children.Add(Paragraph(localizer[messageKey]));
 		Panel.Children.Add(_input);
 		Panel.Children.Add(_error);
 		Panel.Children.Add(new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8, Children = { next, quit } });

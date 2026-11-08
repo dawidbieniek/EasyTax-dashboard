@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using EasyTax.App.Backups;
 using EasyTax.App.Localization;
 using EasyTax.App.Photos;
 using EasyTax.App.Shell;
@@ -24,6 +25,7 @@ public sealed partial class ClientDetailsViewModel : ViewModelBase
 	private readonly INavigationService _navigation;
 	private readonly ILocalizer _localizer;
 	private readonly IToastService _toasts;
+	private readonly ClientDeletionService _deletion;
 
 	private Client? _client;
 
@@ -36,7 +38,8 @@ public sealed partial class ClientDetailsViewModel : ViewModelBase
 		IDialogService dialogs,
 		INavigationService navigation,
 		ILocalizer localizer,
-		IToastService toasts)
+		IToastService toasts,
+		ClientDeletionService deletion)
 	{
 		_clients = clients;
 		_banks = banks;
@@ -47,6 +50,7 @@ public sealed partial class ClientDetailsViewModel : ViewModelBase
 		_navigation = navigation;
 		_localizer = localizer;
 		_toasts = toasts;
+		_deletion = deletion;
 
 		Form = new ClientForm(localizer);
 		GenderOptions = localizer.Options<Gender>();
@@ -215,13 +219,13 @@ public sealed partial class ClientDetailsViewModel : ViewModelBase
 		if (_client is null)
 			return;
 
-		if (!await ClientDeleteDialog.ConfirmAsync(_dialogs, _localizer, _client.FullName))
+		if (!await ClientDeleteDialog.ConfirmAsync(_dialogs, _localizer, _client.FullName, _client.SuspendedAt))
 			return;
 
 		var name = _client.FullName;
 
 		EndEditing();
-		await _clients.DeleteAsync(_client.Id);
+		await _deletion.DeleteAsync(_client.Id);
 		await _context.ReloadAsync();
 
 		_navigation.NavigateTo<ClientsViewModel>();

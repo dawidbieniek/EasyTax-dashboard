@@ -93,7 +93,7 @@ internal sealed class DemoDataSeeder(IClientRepository clients, IBankRepository 
 			BankId = bankIds["ING Bank Śląski"],
 			TaxType = TaxType.Linear,
 			ReliefType = ReliefType.FullZus,
-			IsSuspended = true,
+			SuspendedAt = DateTime.UtcNow.AddMonths(-3),
 		});
 	}
 

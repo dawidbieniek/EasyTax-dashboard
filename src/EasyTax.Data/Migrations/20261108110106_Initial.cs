@@ -35,6 +35,18 @@ namespace EasyTax.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "DeletedClients",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DeletedClients", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Clients",
                 columns: table => new
                 {
@@ -47,7 +59,7 @@ namespace EasyTax.Data.Migrations
                     Email = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
                     JoinDate = table.Column<DateOnly>(type: "TEXT", nullable: false),
                     BankId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    IsSuspended = table.Column<bool>(type: "INTEGER", nullable: false),
+                    SuspendedAt = table.Column<DateTime>(type: "TEXT", nullable: true),
                     Notes = table.Column<string>(type: "TEXT", nullable: false),
                     PlanName = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false),
                     AuthorizationFee = table.Column<decimal>(type: "TEXT", nullable: false),
@@ -155,6 +167,9 @@ namespace EasyTax.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "ClientPhotos");
+
+            migrationBuilder.DropTable(
+                name: "DeletedClients");
 
             migrationBuilder.DropTable(
                 name: "MonthRecords");

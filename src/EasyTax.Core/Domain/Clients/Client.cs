@@ -31,7 +31,14 @@ public class Client : Entity
 
 	public Bank Bank { get; set; } = null!;
 
-	public bool IsSuspended { get; set; }
+	/// <summary>
+	/// When the client was suspended (UTC); null while the client is active. It records when service ended, so it is easy to tell
+	/// later whether the retention period for the records has passed. It is an aid, not the legal start of that period.
+	/// </summary>
+	public DateTime? SuspendedAt { get; set; }
+
+	/// <summary>True while the client is suspended. Derived from <see cref="SuspendedAt"/>, not stored.</summary>
+	public bool IsSuspended => SuspendedAt is not null;
 
 	public string Notes { get; set; } = string.Empty;
 

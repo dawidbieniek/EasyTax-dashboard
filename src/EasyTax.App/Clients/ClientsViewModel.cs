@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using EasyTax.App.Backups;
 using EasyTax.App.Infrastructure;
 using EasyTax.App.Localization;
 using EasyTax.App.Shell;
@@ -19,6 +20,7 @@ public sealed partial class ClientsViewModel(
 	IDialogService dialogs,
 	ILocalizer localizer,
 	IToastService toasts,
+	ClientDeletionService deletion,
 	ILogger<ClientsViewModel> logger) : ViewModelBase
 {
 	private IReadOnlyList<ClientRow> _allRows = [];
@@ -105,7 +107,8 @@ public sealed partial class ClientsViewModel(
 		if (client is null)
 			return;
 
-		client.IsSuspended = !client.IsSuspended;
+		// Suspending records the moment; reactivating clears it.
+		client.SuspendedAt = client.IsSuspended ? null : DateTime.UtcNow;
 		await clients.UpdateAsync(client);
 
 		await context.ReloadAsync(dropSuspendedSelection: true);
@@ -121,10 +124,10 @@ public sealed partial class ClientsViewModel(
 		if (row is null)
 			return;
 
-		if (!await ClientDeleteDialog.ConfirmAsync(dialogs, localizer, row.FullName))
+		if (!await ClientDeleteDialog.ConfirmAsync(dialogs, localizer, row.FullName, row.SuspendedAt))
 			return;
 
-		await clients.DeleteAsync(row.Id);
+		await deletion.DeleteAsync(row.Id);
 
 		await context.ReloadAsync();
 		await LoadAsync();
@@ -148,6 +151,7 @@ public sealed partial class ClientsViewModel(
 			monthState,
 			localizer.Label(monthState),
 			client.IsSuspended,
+			client.SuspendedAt,
 			localizer[client.IsSuspended ? "List_Unsuspend" : "List_Suspend"],
 			photo);
 	}

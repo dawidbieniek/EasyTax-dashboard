@@ -76,9 +76,6 @@ namespace EasyTax.Data.Migrations
                     b.Property<DateTime?>("InvoicedAt")
                         .HasColumnType("TEXT");
 
-                    b.Property<bool>("IsSuspended")
-                        .HasColumnType("INTEGER");
-
                     b.Property<bool>("IsVatPayer")
                         .HasColumnType("INTEGER");
 
@@ -123,6 +120,9 @@ namespace EasyTax.Data.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<decimal>("SubscriptionFee")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("SuspendedAt")
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime?>("TaxDoneAt")
@@ -176,6 +176,19 @@ namespace EasyTax.Data.Migrations
                     b.HasKey("ClientId");
 
                     b.ToTable("ClientPhotos");
+                });
+
+            modelBuilder.Entity("EasyTax.Core.Domain.Clients.DeletedClient", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("DeletedAt")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DeletedClients", (string)null);
                 });
 
             modelBuilder.Entity("EasyTax.Core.Domain.Months.MonthRecord", b =>

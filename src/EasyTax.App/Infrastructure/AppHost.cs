@@ -1,3 +1,4 @@
+using EasyTax.App.Backups;
 using EasyTax.App.Clients;
 using EasyTax.App.Dashboard;
 using EasyTax.App.Localization;
@@ -8,7 +9,6 @@ using EasyTax.App.Shell;
 using EasyTax.Data;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Serilog;
 
 namespace EasyTax.App.Infrastructure;
@@ -27,10 +27,10 @@ internal static class AppHost
 		// Information level, which would drown everything else, so it is limited to warnings.
 		var logger = new LoggerConfiguration()
 			.MinimumLevel.Information()
-			.WriteTo.File(Path.Combine(AppPaths.LogDirectory, "easytax-.log"), rollingInterval: RollingInterval.Day, retainedFileCountLimit: 14)
+			.MinimumLevel.Override("Microsoft.EntityFrameworkCore", Serilog.Events.LogEventLevel.Warning)
+			.WriteTo.File(Path.Combine(AppPaths.LogDirectory, "easytax-.log"), rollingInterval: RollingInterval.Day, retainedFileCountLimit: 14, shared: true)
 			.CreateLogger();
 		builder.Logging.AddSerilog(logger, dispose: true);
-		builder.Logging.AddFilter("Microsoft.EntityFrameworkCore", LogLevel.Warning);
 
 		var services = builder.Services;
 
@@ -47,6 +47,10 @@ internal static class AppHost
 		services.AddSingleton<IDialogService, DialogService>();
 		services.AddSingleton<IToastService, ToastService>();
 		services.AddSingleton<IShellWindow, ShellWindow>();
+		services.AddSingleton<IPickerService, PickerService>();
+		services.AddSingleton<ClientDeletionService>();
+		services.AddSingleton<BackupManager>();
+		services.AddSingleton<RestoreCoordinator>();
 		services.AddSingleton<IPhotoService, PhotoService>();
 		services.AddTransient<AddClientViewModel>();
 

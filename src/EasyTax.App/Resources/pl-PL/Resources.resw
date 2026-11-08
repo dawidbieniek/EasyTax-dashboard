@@ -184,6 +184,99 @@
   <data name="Settings_Licenses_Close" xml:space="preserve">
     <value>Zamknij</value>
   </data>
+  <data name="Toast_BackupDone" xml:space="preserve">
+    <value>Utworzono kopię zapasową.</value>
+  </data>
+  <data name="Toast_BackupFailed" xml:space="preserve">
+    <value>Nie udało się wykonać kopii zapasowej. {0}</value>
+  </data>
+  <data name="Backup_NotABackup" xml:space="preserve">
+    <value>To nie jest kopia zapasowa EasyTax.</value>
+  </data>
+  <data name="Backup_TooNew" xml:space="preserve">
+    <value>Ta kopia pochodzi z nowszej wersji programu. Zaktualizuj program i spróbuj ponownie.</value>
+  </data>
+  <data name="Restore_Confirm_Title" xml:space="preserve">
+    <value>Przywrócić dane z kopii?</value>
+  </data>
+  <data name="Restore_Confirm_Message" xml:space="preserve">
+    <value>Obecne dane zostaną zastąpione danymi z kopii z {0}. Najpierw program zapisze kopię obecnych danych w folderze kopii zapasowych (plik z dopiskiem prerestore), a potem uruchomi się ponownie.</value>
+  </data>
+  <data name="Restore_Confirm_Yes" xml:space="preserve">
+    <value>Przywróć</value>
+  </data>
+  <data name="Restore_Key_Message" xml:space="preserve">
+    <value>Ta kopia nie otwiera się kluczem zapisanym na tym komputerze (została wykonana na innym komputerze albo po reinstalacji). Wpisz klucz odzyskiwania z komputera, na którym ją wykonano. Jeśli klucz jest poprawny, a kopia nadal się nie otwiera, plik może być uszkodzony.</value>
+  </data>
+  <data name="Toast_RestoreFailed" xml:space="preserve">
+    <value>Nie udało się przywrócić danych. {0}</value>
+  </data>
+  <data name="Toast_RestoreRestart" xml:space="preserve">
+    <value>Dane przywrócono. Uruchom program ponownie.</value>
+  </data>
+  <data name="Backup_Last" xml:space="preserve">
+    <value>Ostatnia kopia: {0}</value>
+  </data>
+  <data name="Backup_None" xml:space="preserve">
+    <value>Brak kopii w tym folderze.</value>
+  </data>
+  <data name="Settings_Backup_Title.Text" xml:space="preserve">
+    <value>Kopie zapasowe</value>
+  </data>
+  <data name="Settings_Backup_Description.Text" xml:space="preserve">
+    <value>Kopia zawiera zaszyfrowaną bazę danych, więc do jej otwarcia na innym komputerze potrzebny jest klucz odzyskiwania.</value>
+  </data>
+  <data name="Settings_Backup_Folder.Header" xml:space="preserve">
+    <value>Folder kopii zapasowych</value>
+  </data>
+  <data name="Settings_Backup_Browse.Content" xml:space="preserve">
+    <value>Wybierz…</value>
+  </data>
+  <data name="Settings_Backup_Scheduled.Content" xml:space="preserve">
+    <value>Automatyczna kopia co 7 dni (przy uruchomieniu programu)</value>
+  </data>
+  <data name="Settings_Backup_Now.Content" xml:space="preserve">
+    <value>Utwórz kopię teraz</value>
+  </data>
+  <data name="Settings_Backup_Restore.Content" xml:space="preserve">
+    <value>Przywróć z pliku…</value>
+  </data>
+  <data name="Restore_Key_Cancel" xml:space="preserve">
+    <value>Anuluj</value>
+  </data>
+  <data name="Toast_DeletionLogFailed" xml:space="preserve">
+    <value>Klient został usunięty, ale nie udało się zapisać dziennika usunięć w folderze kopii zapasowych. Program zapisze go przy następnym uruchomieniu.</value>
+  </data>
+  <data name="Restore_LogUnreadable_Message" xml:space="preserve">
+    <value>Nie można odczytać dziennika usunięć (deletions.log) w folderze kopii zapasowych. Bez niego przywrócenie może przywrócić klientów, którzy zostali usunięci wcześniej. Kontynuować mimo to?</value>
+  </data>
+  <data name="Restore_LogUnreadable_Yes" xml:space="preserve">
+    <value>Kontynuuj</value>
+  </data>
+  <data name="Restore_Done_Title" xml:space="preserve">
+    <value>Dane przywrócone</value>
+  </data>
+  <data name="Restore_Done_Message" xml:space="preserve">
+    <value>Przywrócono dane z kopii z {0}.</value>
+  </data>
+  <data name="Restore_Done_Removed" xml:space="preserve">
+    <value>Ponownie usunięto klientów, którzy zostali usunięci po wykonaniu tej kopii: {0}.</value>
+  </data>
+  <data name="Restore_Done_Skipped" xml:space="preserve">
+    <value>Pominięto uszkodzone wiersze w dzienniku usunięć: {0}.</value>
+  </data>
+  <data name="Restore_Done_Close" xml:space="preserve">
+    <value>Uruchom program ponownie</value>
+  </data>
+  <data name="Details_Status_SuspendedSince" xml:space="preserve">
+    <value>Zawieszony od {0}</value>
+  </data>
+  <data name="List_Delete_Retention" xml:space="preserve">
+    <value>Dane księgowe i podatkowe klienta mogą podlegać obowiązkowi przechowywania przez okres wymagany przepisami (zwykle kilka lat). Jeśli klient tylko zakończył współpracę, lepiej go zawiesić niż usunąć.</value>
+  </data>
+  <data name="List_Delete_SuspendedSince" xml:space="preserve">
+    <value>Klient jest zawieszony od {0}.</value>
+  </data>
   <data name="Dashboard_NoClients.Text" xml:space="preserve">
     <value>Nie masz jeszcze żadnych klientów.</value>
   </data>

@@ -13,6 +13,8 @@ public class EasyTaxDbContext(DbContextOptions<EasyTaxDbContext> options) : DbCo
 
 	public DbSet<ClientPhoto> ClientPhotos => Set<ClientPhoto>();
 
+	public DbSet<DeletedClient> DeletedClients => Set<DeletedClient>();
+
 	public DbSet<Bank> Banks => Set<Bank>();
 
 	public DbSet<MonthRecord> MonthRecords => Set<MonthRecord>();

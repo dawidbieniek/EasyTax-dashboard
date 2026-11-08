@@ -114,25 +114,25 @@ All of M5 is done and checked in the running app (edit, restart to confirm it wa
   - Test an update with a real encrypted DB before shipping. Uninstall deletes the data folder, so the uninstall docs must point at backups and the recovery key.
 - [x] 7.5 Demo data for development: `EasyTax.exe --seed-demo` (Debug builds only) fills an empty database with five sample clients and 2026 month records. `EASYTAX_DATA_DIR` redirects the data folder (database and settings), so testing never touches real data.
 
-## Backups (planned, post-v1)
-Settled with the user; not scheduled in a milestone yet.
+## Backups (built)
+Settled with the user. Everything below is built, including re-applying the deletion log on restore.
 
 **Prerequisite: single instance**
-- [ ] B.0 Enforce one app instance (`AppInstance.FindOrRegisterForKey`). A second launch activates the first and exits. Guarantees backup and restore never overlap.
+- [x] B.0 Single instance: `AppInstance.FindOrRegisterForKey("EasyTax.MainInstance")` at the top of `OnLaunched`; a second launch redirects to the first (which comes to the front, restored if minimized) and exits. After a restore the old process starts the new one with `--restart-after <pid>` and the new one waits for it to end first (`WaitForPreviousInstance`), so it is not mistaken for a second copy. The log sink is shared so a short-lived second launch can still write.
 
 **Settings** (new card on the Settings page)
 - `BackupFolder` (default `Documents\EasyTax\Backups`, user-configurable, a fileshare path must work as plain file copy) and a scheduled-backups on/off toggle. Interval fixed at 7 days. No retention/pruning: keep all.
 
 **Backup flow** (`Backups/` feature folder, `BackupService`, plain methods with guard clauses)
-- [ ] B.1 `RunAsync()`: copy the live DB with the SQLite online backup API (`SqliteConnection.BackupDatabase`) into a temp `.db`. **Both ends are opened with the install key** (source = live DB, destination = the temp file), so the copy is an encrypted database with the same key; no separate backup password. Run `PRAGMA integrity_check` on the copy (opened with the key), zip it with `manifest.json` (app version, schema/migration version, timestamp; no client data) as `EasyTax-yyyy-MM-dd-HHmm.zip.tmp`, then rename to `.zip` as the last step (atomic, so a `.zip` is always complete). The zip itself is not encrypted again: the database inside already is.
-- [ ] B.2 Interruption safety: the live DB is only read, so closing mid-backup is harmless. On startup `DeleteStaleTempFiles()` removes leftover `.tmp` files; they never count as backups.
-- [ ] B.3 Schedule on startup: `GetLatestBackup()` reads the newest valid `.zip` in the folder (the folder is the source of truth, not a stored setting). If the toggle is on and it is older than 7 days or missing, run `RunAsync()` in the background. Startup only, no timer.
-- [ ] B.4 Toasts: success toast on finish; error toast on any failure, including an unreachable destination.
+- [x] B.1 `IBackupService.RunAsync` (`EasyTax.Data/Backups/BackupService`): SQLite online backup into a temp file, both ends keyed; integrity check on the copy; zip (`easytax.db` stored without compression, `manifest.json`) written as `.zip.tmp` and renamed last. Checked: the zip holds an encrypted database (random header) and a readable manifest.
+- [x] B.2 `DeleteStaleTempFiles` at startup removes `.zip.tmp` leftovers; they never count as backups (`GetLatestBackup` only accepts `EasyTax-yyyy-MM-dd-HHmm.zip`, so the `prerestore` safety copies are ignored too).
+- [x] B.3 `BackupManager.RunScheduledIfDueAsync` runs after the main window opens: if automatic backups are on and the newest valid backup is older than 7 days (or missing) it backs up in the background. Startup only, no timer. Checked: the first start with an empty folder made a backup by itself.
+- [x] B.4 Success toast "Utworzono kopię zapasową."; failure toast with the friendly reason (disk, busy database, ...); details in the log.
 
 **Restore**
-- [ ] B.5 "Restore from file": file picker for a `.zip`, confirmation dialog saying the current data will be replaced, unzip to temp, then open the database with the local key; **if that fails (a backup from another install, or after a reinstall), ask for that install's recovery key** (same window as E.4, `KeyRecoveryWindow`) and check it by opening the file. Then integrity check, manifest check (refuse a newer schema, migrate an older one), safety backup of the current DB, close connections, swap the file, **store the key that opened the restored file** (re-wrap with DPAPI, replacing `easytax.key`, so the next start opens it), re-apply the deletion log (P.3), restart the app. A plain (unencrypted) backup is refused like a plain database (E.5).
+- [x] B.5 `RestoreCoordinator`: file picker, manifest check ("not a backup" and "newer version" are refused with a toast), confirmation dialog naming the backup date, extract to temp, open with the local key or ask for the recovery key (`KeyRecoveryWindow`, restore wording), migrate an older schema, safety backup (`EasyTax-prerestore-...zip`, aborts the restore if it fails), swap the file, store the key that worked, restart. Checked end to end: data rolled back and the app restarted; a backup from another install asked for its key, then opened after the restart with the stored key. The deletion log step (P.3) is part of the restore.
 
-**Settings UI** (B.6): folder path + Browse, scheduled toggle, last backup time/status, "Back up now" and "Restore from file" buttons.
+- [x] B.6 Settings card "Kopie zapasowe": folder (read-only box + Wybierz), automatic-backup checkbox, last backup time, "Utwórz kopię teraz", "Przywróć z pliku...". Buttons are disabled while a backup or restore runs.
 
 Out of scope: retention, off-machine copies, Windows scheduled tasks. Encryption has its own section below; once it lands, backups are encrypted copies of the encrypted DB (B.1 opens both ends of `BackupDatabase` with the key; B.5 needs the key to run its integrity check, and asks for the recovery key when the local one cannot open the file).
 
@@ -163,17 +163,17 @@ Settled with the user. Goal: a stolen `.db` file or backup `.zip` is useless wit
 
 Open decisions (defaults assumed unless changed): the key format is a grouped code; the recovery-key step in first-run setup is mandatory.
 
-## Privacy and data retention (planned, post-v1)
+## Privacy and data retention (built)
 Not legal advice; confirm the final policy with whoever handles GDPR for the practice. Background: erasure (Art. 17) does not apply to data that must be kept for a legal obligation (as understood, accounting/tax records are kept about 5 years in Poland), and data in backups is acceptable only if it stays unused and eventually expires.
 
 **Decisions**
 - **No backup retention policy for now.** Backups are kept forever (see Backups). Known gap: a deleted client's data lives on in old backups with no expiry. Accepted for now; revisit before real client data, with a configurable retention period and a prune step.
-- **Suspension timestamp:** `Client.SuspendedAt` (replaces the `IsSuspended` flag, which becomes derived). It records when service ended, so it is easy to tell later whether the retention period has passed. It is an aid, not the legal start of the period (that depends on the tax year of the records). Needs an EF migration (the app is unreleased, so a regenerated `Initial` is also fine) and a changed suspend / unsuspend path in `ClientsViewModel`.
+- **Suspension timestamp (built):** `Client.SuspendedAt` (replaces the `IsSuspended` flag, which becomes derived). It records when service ended, so it is easy to tell later whether the retention period has passed. It is an aid, not the legal start of the period (that depends on the tax year of the records). Done (folded into the single `Initial` migration, see ARCHITECTURE "Migrations"); suspending sets `DateTime.UtcNow`, reactivating clears it; the client page shows "Zawieszony od dd.MM.yyyy"; `IsSuspended` is derived.
 - **Deletion log** so a restored backup cannot bring deleted clients back:
-  - [ ] P.1 New `DeletedClient` table: client `Id` (Guid), `DeletedAt`. No personal data. Written in the same transaction as the client delete. Because it lives in the DB, every backup contains it.
-  - [ ] P.2 Sidecar file `deletions.log` in the backup folder (append-only, one line per deletion: Guid and timestamp), written at delete time. This covers deletions made after the last backup, e.g. if the machine dies before the next backup. Same plain file copy, so it works on a fileshare.
-  - [ ] P.3 Restore (B.5) re-applies deletions: after unzipping, read the deletion tables from the restored DB, the live DB (before the swap) and `deletions.log`, then delete those clients (and their month records / photos via cascade) from the restored DB and merge the entries into its log. Shows a summary ("N clients removed again").
-- [ ] P.4 Client delete dialog warns that records may need to be kept for the legal retention period, and suggests suspending instead; the warning shows the suspension date when there is one.
+  - [x] P.1 `DeletedClient` table (id + UTC time, no personal data; migration `AddDeletedClients`). `IClientRepository.DeleteAsync` removes the client, month records and photo and writes the record in one transaction (tested: a failing record insert rolls the whole delete back). Returns the record, or null for an unknown id (nothing recorded).
+  - [x] P.2 `deletions.log` in the backup folder, written through `ClientDeletionService` (the only place that deletes a client) right after the delete. Format `id;time` per line, append-only, idempotent, safe against a torn last line, shared read. `SyncLogAsync` copies every deletion the database knows into the file at startup, after each backup and when the backup folder changes, so a write that failed earlier (unreachable folder, user is warned with a toast) or a new folder gets complete. A line with a readable id but a damaged time still counts as a deletion (time becomes "now"); only lines without an id are skipped and reported.
+  - [x] P.3 Restore collects deletions from three sources (the backup's own table, the live database, the log file), merges them (earliest time wins), removes those clients with their months and photos from the restored copy in one transaction (batched, so any number of ids), and merges them into the restored database and the log. If the log exists but cannot be read, the user is asked whether to continue (cancel changes nothing). The summary dialog says how many clients were removed again and how many damaged log lines were skipped. Works for old-schema backups (they are migrated first).
+- [x] P.4 The delete dialog (clients list and client page) warns that accounting and tax records may have to be kept for the legal period and suggests suspending instead; for a suspended client it also says since when.
 - Still open (not blocking): a "give me all data about this client" export for access requests; privacy notice and records of processing are paperwork outside the app.
 
 ## Later (not in v1)

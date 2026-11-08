@@ -125,6 +125,10 @@ SQLCipher, one random key per install. `DatabaseKeyStartup` runs before the data
 
 Debug builds: `EASYTAX_DEV_KEY=<32-character key>` skips the key windows (with `EASYTAX_DATA_DIR` and `--seed-demo` this gives a fresh encrypted demo database without typing).
 
+## Backups
+
+`IBackupService` (Core) / `BackupService` (Data) do the file work; `BackupManager` (App) runs manual, scheduled and safety backups and reports with toasts; `RestoreCoordinator` is the restore flow. A backup is `EasyTax-yyyy-MM-dd-HHmm.zip` holding an encrypted copy of the database (same key as the install) and a manifest, written under a `.tmp` name and renamed when complete. Settings keep the folder (default `Documents\EasyTax\Backups`) and the automatic-backup switch; the folder itself is the record of what exists. One app instance only (`AppInstance`), which also guarantees backup and restore never overlap. A deleted client cannot come back from a restore: the database keeps a `DeletedClients` table (written in the same transaction as the delete) and `ClientDeletionService` mirrors it into `deletions.log` in the backup folder. A restore merges the backup's table, the live table and the log, removes those clients from the restored copy and tells the user how many. Tests for all of this lived in a throwaway console harness (99 checks on real encrypted files: log parsing and damage, atomic delete and apply, batching, old-schema backups, lost-database and unreachable-log scenarios) plus runs of every dialog in the real app. A suspended client has `Client.SuspendedAt` (UTC, null = active; `IsSuspended` is derived). Dev tip: set `BackupFolder` in the test data folder's `settings.json`, otherwise tests write into your real Documents.
+
 ## Third-party notices
 
 `THIRD-PARTY-NOTICES.txt` (repo root) is generated: build, then run `powershell tools/Update-ThirdPartyNotices.ps1`, and commit the result. It lists every shipped package with its copyright and licence and holds the licence texts; the build copies it next to the exe and Settings shows it. Re-run it after adding, removing or updating a package.
@@ -189,6 +193,8 @@ Windows only. Libraries (`Core`, `Data`) target `net10.0-windows` (no Windows SD
 the Windows SDK projection.
 
 ## Migrations
+
+**Until the first release, development databases are disposable.** Do not write data-preserving migrations or custom SQL for them: change the model, delete the migrations folder, run `dotnet ef migrations add Initial` and delete old test databases. From the first release on, add normal incremental migrations (and test restoring an older backup, which migrates it).
 `dotnet-ef` is a repo-local tool (`dotnet-tools.json`, run `dotnet tool restore` once).
 ```bash
 dotnet tool run dotnet-ef migrations add <Name> --project src/EasyTax.Data --output-dir Migrations

@@ -88,8 +88,19 @@ public sealed record ClientDisplay(
 			localizer.Label(client.ReliefType),
 			client.ReliefType == ReliefType.ZusPlus ? ClientFormatting.Date(client.ReliefSinceDate) : "—",
 			reliefEnd,
-			localizer[client.IsSuspended ? "Details_Status_Suspended" : "Details_Status_Active"],
+			StatusText(client, localizer),
 			string.Join(" · ", contact),
 			chips);
+	}
+
+	// "Active", or "Suspended since <date>" (the date is shown in local time).
+	private static string StatusText(Client client, ILocalizer localizer)
+	{
+		if (client.SuspendedAt is not { } since)
+			return localizer["Details_Status_Active"];
+
+		var date = ClientFormatting.Date(DateOnly.FromDateTime(since.ToLocalTime()));
+
+		return string.Format(System.Globalization.CultureInfo.CurrentCulture, localizer["Details_Status_SuspendedSince"], date);
 	}
 }

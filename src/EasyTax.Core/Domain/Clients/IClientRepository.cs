@@ -14,6 +14,12 @@ public interface IClientRepository
 
 	Task UpdateAsync(Client client, CancellationToken cancellationToken = default);
 
-	/// <summary>Deletes the client together with its month records and photo.</summary>
-	Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);
+	/// <summary>
+	/// Deletes the client together with its month records and photo and, in the same transaction, records the deletion
+	/// (see <see cref="DeletedClient"/>). Returns the record, or null when there was no such client.
+	/// </summary>
+	Task<DeletedClient?> DeleteAsync(Guid id, CancellationToken cancellationToken = default);
+
+	/// <summary>Every deletion recorded in this database.</summary>
+	Task<IReadOnlyList<DeletedClient>> GetDeletionsAsync(CancellationToken cancellationToken = default);
 }

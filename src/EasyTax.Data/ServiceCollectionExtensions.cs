@@ -1,4 +1,6 @@
+using EasyTax.Core.Backups;
 using EasyTax.Core.Database;
+using EasyTax.Data.Backups;
 using EasyTax.Core.Domain.Banks;
 using EasyTax.Core.Domain.Clients;
 using EasyTax.Core.Domain.Months;
@@ -28,6 +30,8 @@ public static class ServiceCollectionExtensions
 			// The key is read when the first context is created, so the app can set it after the host is built.
 			services.AddDbContextFactory<EasyTaxDbContext>((provider, builder) => builder.UseSqlite(provider.GetRequiredService<EasyTaxDataOptions>().ConnectionString()));
 			services.AddSingleton<IDatabaseInitializer, DatabaseInitializer>();
+			services.AddSingleton<IBackupService, BackupService>();
+			services.AddSingleton<IDeletionLog, DeletionLog>();
 			services.AddSingleton<IClientRepository, ClientRepository>();
 			services.AddSingleton<IClientPhotoRepository, ClientPhotoRepository>();
 			services.AddSingleton<IBankRepository, BankRepository>();

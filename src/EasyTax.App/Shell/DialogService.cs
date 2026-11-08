@@ -54,7 +54,7 @@ public sealed class DialogService(ILocalizer localizer) : IDialogService
 				Margin = new Thickness(0, 0, 16, 0),
 			},
 			MinWidth = 640,
-			Height = 420,
+			MaxHeight = 420,
 			VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
 		};
 
@@ -65,6 +65,9 @@ public sealed class DialogService(ILocalizer localizer) : IDialogService
 			CloseButtonText = closeText,
 			DefaultButton = ContentDialogButton.Close,
 		};
+
+		// The standard dialog is narrower than this content, which clipped the right edge of long lines.
+		dialog.Resources["ContentDialogMaxWidth"] = 760d;
 
 		return ShowAsync(dialog);
 	}

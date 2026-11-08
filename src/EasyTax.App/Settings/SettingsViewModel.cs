@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Reflection;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using EasyTax.App.Backups;
 using EasyTax.App.Localization;
 using EasyTax.App.Security;
 using EasyTax.App.Shell;
@@ -22,8 +23,11 @@ public sealed partial class SettingsViewModel : ViewModelBase
 	private readonly ILocalizer _localizer;
 	private readonly IDialogService _dialogs;
 	private readonly DatabaseKeyService _keys;
+	private readonly BackupManager _backups;
+	private readonly RestoreCoordinator _restore;
+	private readonly IPickerService _pickers;
 
-	public SettingsViewModel(ISettingsService settings, ILocalizer localizer, IAccountingYearRepository yearRepository, IClientContext context, IToastService toasts, IDialogService dialogs, DatabaseKeyService keys)
+	public SettingsViewModel(ISettingsService settings, ILocalizer localizer, IAccountingYearRepository yearRepository, IClientContext context, IToastService toasts, IDialogService dialogs, DatabaseKeyService keys, BackupManager backups, RestoreCoordinator restore, IPickerService pickers)
 	{
 		_settings = settings;
 		_yearRepository = yearRepository;
@@ -32,6 +36,13 @@ public sealed partial class SettingsViewModel : ViewModelBase
 		_localizer = localizer;
 		_dialogs = dialogs;
 		_keys = keys;
+		_backups = backups;
+		_restore = restore;
+		_pickers = pickers;
+
+		ScheduledBackups = settings.Current.ScheduledBackups;
+		BackupFolder = backups.Folder;
+		RefreshBackupStatus();
 
 		ThemeOptions =
 		[
@@ -60,10 +71,37 @@ public sealed partial class SettingsViewModel : ViewModelBase
 	[NotifyCanExecuteChangedFor(nameof(AddYearCommand))]
 	public partial double NewYear { get; set; }
 
+	/// <summary>The folder backups are written to.</summary>
+	[ObservableProperty]
+	public partial string BackupFolder { get; set; } = string.Empty;
+
+	[ObservableProperty]
+	public partial bool ScheduledBackups { get; set; }
+
+	/// <summary>"Last backup: ..." or "no backups in this folder".</summary>
+	[ObservableProperty]
+	public partial string BackupStatus { get; set; } = string.Empty;
+
+	/// <summary>True while a backup or restore runs, so the buttons cannot be pressed twice.</summary>
+	[ObservableProperty]
+	[NotifyCanExecuteChangedFor(nameof(BackupNowCommand), nameof(RestoreCommand))]
+	public partial bool IsBackupBusy { get; set; }
+
+	partial void OnScheduledBackupsChanged(bool value)
+		=> _settings.Update(s => s with { ScheduledBackups = value });
+
 	partial void OnSelectedThemeChanged(ThemeOption value)
 		=> _settings.Update(s => s with { Theme = value.Value });
 
-	public override Task OnNavigatedToAsync(object? parameter) => LoadYearsAsync();
+	public override Task OnNavigatedToAsync(object? parameter)
+	{
+		_backups.Finished += OnBackupFinished;
+		RefreshBackupStatus();
+
+		return LoadYearsAsync();
+	}
+
+	public override void OnNavigatedFrom() => _backups.Finished -= OnBackupFinished;
 
 	private bool CanAddYear() => !double.IsNaN(NewYear) && NewYear is >= FirstAllowedYear and <= LastAllowedYear && Years.All(y => y.Year != (int)NewYear);
 
@@ -101,6 +139,61 @@ public sealed partial class SettingsViewModel : ViewModelBase
 
 		var text = await File.ReadAllTextAsync(path);
 		await _dialogs.ShowTextAsync(_localizer["Settings_Licenses_Title"], text, _localizer["Settings_Licenses_Close"]);
+	}
+
+	[RelayCommand]
+	private async Task BrowseBackupFolderAsync()
+	{
+		var folder = await _pickers.PickFolderAsync();
+		if (folder is null)
+			return;
+
+		_settings.Update(s => s with { BackupFolder = folder });
+		BackupFolder = _backups.Folder;
+		RefreshBackupStatus();
+
+		// The new folder gets the full deletion history, so it protects restores like the old one did.
+		await _backups.SyncDeletionLogAsync();
+	}
+
+	[RelayCommand(CanExecute = nameof(CanUseBackups))]
+	private async Task BackupNowAsync()
+	{
+		IsBackupBusy = true;
+		try
+		{
+			await _backups.RunNowAsync();
+		}
+		finally
+		{
+			IsBackupBusy = false;
+		}
+	}
+
+	[RelayCommand(CanExecute = nameof(CanUseBackups))]
+	private async Task RestoreAsync()
+	{
+		IsBackupBusy = true;
+		try
+		{
+			await _restore.RestoreAsync();
+		}
+		finally
+		{
+			IsBackupBusy = false;
+		}
+	}
+
+	private bool CanUseBackups() => !IsBackupBusy;
+
+	private void OnBackupFinished(object? sender, EventArgs e) => RefreshBackupStatus();
+
+	private void RefreshBackupStatus()
+	{
+		var latest = _backups.Latest();
+		BackupStatus = latest is null
+			? _localizer["Backup_None"]
+			: string.Format(System.Globalization.CultureInfo.CurrentCulture, _localizer["Backup_Last"], latest.Manifest.CreatedAt.LocalDateTime.ToString("g", System.Globalization.CultureInfo.CurrentCulture));
 	}
 
 	[RelayCommand(CanExecute = nameof(CanAddYear))]

@@ -68,6 +68,36 @@
 			</StackPanel>
 		</StackPanel>
 
+		<!-- Backups -->
+		<StackPanel Spacing="8">
+			<TextBlock x:Uid="Settings_Backup_Title" Style="{StaticResource SubtitleTextBlockStyle}" />
+			<TextBlock
+				x:Uid="Settings_Backup_Description"
+				Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+				TextWrapping="Wrap" />
+			<Grid ColumnSpacing="8">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="*" />
+					<ColumnDefinition Width="Auto" />
+				</Grid.ColumnDefinitions>
+				<TextBox
+					x:Uid="Settings_Backup_Folder"
+					IsReadOnly="True"
+					Text="{x:Bind ViewModel.BackupFolder, Mode=OneWay}" />
+				<Button
+					x:Uid="Settings_Backup_Browse"
+					Grid.Column="1"
+					VerticalAlignment="Bottom"
+					Command="{x:Bind ViewModel.BrowseBackupFolderCommand}" />
+			</Grid>
+			<CheckBox x:Uid="Settings_Backup_Scheduled" IsChecked="{x:Bind ViewModel.ScheduledBackups, Mode=TwoWay}" />
+			<TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="{x:Bind ViewModel.BackupStatus, Mode=OneWay}" />
+			<StackPanel Orientation="Horizontal" Spacing="8">
+				<Button x:Uid="Settings_Backup_Now" Command="{x:Bind ViewModel.BackupNowCommand}" />
+				<Button x:Uid="Settings_Backup_Restore" Command="{x:Bind ViewModel.RestoreCommand}" />
+			</StackPanel>
+		</StackPanel>
+
 		<!-- Data encryption: the recovery key can be shown again here. -->
 		<StackPanel Spacing="8">
 			<TextBlock x:Uid="Settings_Security_Title" Style="{StaticResource SubtitleTextBlockStyle}" />

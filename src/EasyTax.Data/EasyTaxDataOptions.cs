@@ -23,6 +23,9 @@ public sealed class EasyTaxDataOptions(string databasePath)
 		return ConnectionString(Password, pooling: true);
 	}
 
-	internal string ConnectionString(string password, bool pooling)
-		=> new SqliteConnectionStringBuilder { DataSource = DatabasePath, Password = password, Pooling = pooling }.ToString();
+	internal string ConnectionString(string password, bool pooling) => ConnectionString(DatabasePath, password, pooling);
+
+	/// <summary>Connection string for another database file (a backup being checked or restored).</summary>
+	internal static string ConnectionString(string databasePath, string password, bool pooling)
+		=> new SqliteConnectionStringBuilder { DataSource = databasePath, Password = password, Pooling = pooling }.ToString();
 }

@@ -45,9 +45,32 @@ internal sealed class ClientRepository(IDbContextFactory<EasyTaxDbContext> conte
 		await context.SaveChangesAsync(cancellationToken);
 	}
 
-	public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
+	public async Task<DeletedClient?> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
 	{
 		await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
-		await context.Clients.Where(c => c.Id == id).ExecuteDeleteAsync(cancellationToken);
+
+		// One transaction: the client and the note that it was deleted either both happen or neither does.
+		await using var transaction = await context.Database.BeginTransactionAsync(cancellationToken);
+
+		await context.MonthRecords.Where(m => m.ClientId == id).ExecuteDeleteAsync(cancellationToken);
+		await context.ClientPhotos.Where(p => p.ClientId == id).ExecuteDeleteAsync(cancellationToken);
+		var removed = await context.Clients.Where(c => c.Id == id).ExecuteDeleteAsync(cancellationToken);
+		if (removed == 0)
+			return null;
+
+		var deleted = new DeletedClient { Id = id, DeletedAt = DateTime.UtcNow };
+		context.DeletedClients.Add(deleted);
+		await context.SaveChangesAsync(cancellationToken);
+
+		await transaction.CommitAsync(cancellationToken);
+
+		return deleted;
 	}
+
+	public async Task<IReadOnlyList<DeletedClient>> GetDeletionsAsync(CancellationToken cancellationToken = default)
+	{
+		await using var context = await contextFactory.CreateDbContextAsync(cancellationToken);
+		return await context.DeletedClients.AsNoTracking().OrderBy(d => d.DeletedAt).ToListAsync(cancellationToken);
+	}
+
 }
