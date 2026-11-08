@@ -12,6 +12,9 @@ internal static class AppPaths
 
 	public static string DatabaseFile { get; } = Path.Combine(DataDirectory, "easytax.db");
 
+	/// <summary>The database key, wrapped with Windows DPAPI.</summary>
+	public static string KeyFile { get; } = Path.Combine(DataDirectory, "easytax.key");
+
 	public static string LogDirectory { get; } = Path.Combine(DataDirectory, "logs");
 
 	public static string SettingsFile { get; } = Path.Combine(DataDirectory, "settings.json");

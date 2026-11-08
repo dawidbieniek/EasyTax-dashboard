@@ -7,5 +7,8 @@ namespace EasyTax.Data;
 internal sealed class EasyTaxDbContextFactory : IDesignTimeDbContextFactory<EasyTaxDbContext>
 {
 	public EasyTaxDbContext CreateDbContext(string[] args)
-		=> new(new DbContextOptionsBuilder<EasyTaxDbContext>().UseSqlite("Data Source=design-time.db").Options);
+	{
+		SQLitePCL.Batteries_V2.Init();
+		return new(new DbContextOptionsBuilder<EasyTaxDbContext>().UseSqlite("Data Source=design-time.db").Options);
+	}
 }

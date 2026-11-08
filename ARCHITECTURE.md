@@ -8,7 +8,7 @@ Deliberately lightweight: no DDD, no vertical-slice framework, no unit tests. Co
 - WinUI 3 (Windows App SDK 2.6), unpackaged, self-contained
 - MVVM with CommunityToolkit.Mvvm (source generators, partial properties)
 - Generic Host (`Microsoft.Extensions.Hosting`) for DI, configuration and logging
-- EF Core 10 + SQLite (not encrypted for now)
+- EF Core 10 + SQLite encrypted with SQLCipher (`SQLitePCLRaw.bundle_e_sqlcipher`)
 - UI language: Polish, all strings in `.resw` resources
 
 ## Solution layout
@@ -119,6 +119,12 @@ Everything else uses constructor injection.
   (`extension(IServiceCollection services) { public IServiceCollection AddEasyTaxData(...) }`).
 - **Logging**: `ILogger<T>` from the host (debug output for now; file sink is a later task).
 
+## Database encryption
+
+SQLCipher, one random key per install. `DatabaseKeyStartup` runs before the database is touched: stored key that opens the database, else first start (new key shown once in `KeySetupWindow`, stored only after the user confirmed), else recovery (`KeyRecoveryWindow`). The wrapped key (DPAPI, current Windows user) lives in `easytax.key` next to `easytax.db`. `EasyTaxDataOptions.Password` carries the key into the connection string and is read when the first context is created, which is why `DatabaseInitializer` fetches the context factory lazily. A plain (old) database is refused. Details of each case are in PLAN.md (E.1 to E.5).
+
+Debug builds: `EASYTAX_DEV_KEY=<32-character key>` skips the key windows (with `EASYTAX_DATA_DIR` and `--seed-demo` this gives a fresh encrypted demo database without typing).
+
 ## Errors, logging and toasts
 
 - **Log:** Serilog writes `%LocalAppData%\EasyTax\logs\easytax-<date>.log` (14 days). Technical details only go there, never on screen.
@@ -216,5 +222,4 @@ dotnet run --project src/EasyTax.App        # or launch src/EasyTax.App/bin/Debu
 
 ## Deferred
 - Charts (LiveCharts2) come with the dashboard milestone. The data grid (WinUI.TableView) is in use on the clients list. The accent colour is the Windows system accent (WinUI default), so there is no colour setting.
-- Database encryption is postponed.
-- Packaging/installer and auto-update approach are undecided (the app currently runs unpackaged).
+- Planned, with the decisions already made in PLAN.md: packaging as MSIX with an `.appinstaller` and a self-signed certificate, backups, and the third-party notices file. The app currently runs unpackaged.

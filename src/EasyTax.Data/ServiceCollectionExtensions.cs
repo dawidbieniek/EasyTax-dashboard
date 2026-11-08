@@ -20,10 +20,13 @@ public static class ServiceCollectionExtensions
 		/// <summary>Registers the DbContext factory, repositories and the database initializer.</summary>
 		public IServiceCollection AddEasyTaxData(EasyTaxDataOptions options)
 		{
-			var connectionString = new SqliteConnectionStringBuilder { DataSource = options.DatabasePath }.ToString();
+			// The native SQLCipher library has to be registered once before the first connection.
+			SQLitePCL.Batteries_V2.Init();
 
 			services.AddSingleton(options);
-			services.AddDbContextFactory<EasyTaxDbContext>(builder => builder.UseSqlite(connectionString));
+
+			// The key is read when the first context is created, so the app can set it after the host is built.
+			services.AddDbContextFactory<EasyTaxDbContext>((provider, builder) => builder.UseSqlite(provider.GetRequiredService<EasyTaxDataOptions>().ConnectionString()));
 			services.AddSingleton<IDatabaseInitializer, DatabaseInitializer>();
 			services.AddSingleton<IClientRepository, ClientRepository>();
 			services.AddSingleton<IClientPhotoRepository, ClientPhotoRepository>();

@@ -4,4 +4,7 @@ namespace EasyTax.Core.Database;
 public interface IDatabaseInitializer
 {
 	Task InitializeAsync(CancellationToken cancellationToken = default);
+
+	/// <summary>True when the database file can be opened and read with this key (used to check a recovery key before it is kept).</summary>
+	Task<bool> CanOpenAsync(string key, CancellationToken cancellationToken = default);
 }

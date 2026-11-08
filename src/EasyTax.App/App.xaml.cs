@@ -1,9 +1,11 @@
 using System.Globalization;
 using EasyTax.App.Infrastructure;
 using EasyTax.App.Localization;
+using EasyTax.App.Security;
 using EasyTax.App.Settings;
 using EasyTax.App.Shell;
 using EasyTax.Core.Database;
+using EasyTax.Data;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -45,7 +47,23 @@ public partial class App : Application
 		{
 			await _host.StartAsync();
 
-			await Services.GetRequiredService<ISettingsService>().LoadAsync();
+			var settings = Services.GetRequiredService<ISettingsService>();
+			await settings.LoadAsync();
+
+			// Which key opens the database: the stored one, a new one (first start) or the recovery key.
+			var options = Services.GetRequiredService<EasyTaxDataOptions>();
+			var keyReady = TryDevelopmentKey(options) || await DatabaseKeyStartup.PrepareAsync(
+				Services.GetRequiredService<DatabaseKeyService>(),
+				options,
+				Services.GetRequiredService<IDatabaseInitializer>(),
+				Services.GetRequiredService<ILocalizer>(),
+				settings.Current.Theme);
+			if (!keyReady)
+			{
+				Exit();
+				return;
+			}
+
 			await Services.GetRequiredService<IDatabaseInitializer>().InitializeAsync();
 
 #if DEBUG
@@ -67,13 +85,29 @@ public partial class App : Application
 		_window.Activate();
 	}
 
+	// Development helper (Debug builds): EASYTAX_DEV_KEY=<a key> skips the key windows, so test databases need no typing.
+	private static bool TryDevelopmentKey(EasyTaxDataOptions options)
+	{
+#if DEBUG
+		if (!DatabaseKeyService.TryNormalize(Environment.GetEnvironmentVariable("EASYTAX_DEV_KEY"), out var key))
+			return false;
+
+		options.Password = key;
+
+		return true;
+#else
+		return false;
+#endif
+	}
+
 	private void ShowStartupFailure(Exception exception)
 	{
 		Services.GetRequiredService<ILogger<App>>().LogCritical(exception, "The app could not start");
 
 		var localizer = Services.GetRequiredService<ILocalizer>();
 		var details = string.Format(CultureInfo.CurrentCulture, localizer["Startup_LogFile"], AppPaths.LogDirectory);
-		new StartupErrorWindow(localizer["Startup_Title"], localizer["Startup_Message"], details, localizer["Startup_Close"]).Activate();
+		var message = localizer[exception is PlainDatabaseException ? "Startup_PlainDatabase" : "Startup_Message"];
+		new StartupErrorWindow(localizer["Startup_Title"], message, details, localizer["Startup_Close"]).Activate();
 	}
 
 	private async void OnWindowClosed(object sender, WindowEventArgs args)

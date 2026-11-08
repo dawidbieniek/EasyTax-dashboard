@@ -68,6 +68,16 @@
 			</StackPanel>
 		</StackPanel>
 
+		<!-- Data encryption: the recovery key can be shown again here. -->
+		<StackPanel Spacing="8">
+			<TextBlock x:Uid="Settings_Security_Title" Style="{StaticResource SubtitleTextBlockStyle}" />
+			<TextBlock
+				x:Uid="Settings_Security_Description"
+				Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+				TextWrapping="Wrap" />
+			<Button x:Uid="Settings_ShowKey" Command="{x:Bind ViewModel.ShowRecoveryKeyCommand}" />
+		</StackPanel>
+
 		<StackPanel Spacing="2">
 			<TextBlock
 				x:Uid="Settings_Version"

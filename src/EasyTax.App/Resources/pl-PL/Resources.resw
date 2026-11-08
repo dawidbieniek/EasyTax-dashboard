@@ -88,6 +88,93 @@
   <data name="Clients_LoadError.Title" xml:space="preserve">
     <value>Nie udało się wczytać listy klientów</value>
   </data>
+  <data name="Key_Setup_Title" xml:space="preserve">
+    <value>Klucz odzyskiwania bazy danych</value>
+  </data>
+  <data name="Key_Setup_Message" xml:space="preserve">
+    <value>Dane klientów są zaszyfrowane. Ten klucz jest jedynym sposobem na odzyskanie danych, jeśli komputer albo profil Windows przestanie działać (nowy komputer, reinstalacja, awaria dysku). Zapisz go w bezpiecznym miejscu, na przykład w menedżerze haseł, albo wydrukuj. Jeśli stracisz zarówno komputer, jak i ten klucz, dane przepadną bezpowrotnie. Nikt, w tym twórca programu, nie może ich odzyskać.</value>
+  </data>
+  <data name="Key_Setup_Copy" xml:space="preserve">
+    <value>Kopiuj</value>
+  </data>
+  <data name="Key_Setup_Save" xml:space="preserve">
+    <value>Zapisz do pliku</value>
+  </data>
+  <data name="Key_Setup_Print" xml:space="preserve">
+    <value>Drukuj</value>
+  </data>
+  <data name="Key_Setup_Copied" xml:space="preserve">
+    <value>Skopiowano do schowka.</value>
+  </data>
+  <data name="Key_Setup_Saved" xml:space="preserve">
+    <value>Zapisano plik z kluczem.</value>
+  </data>
+  <data name="Key_Setup_Printed" xml:space="preserve">
+    <value>Wysłano do drukarki.</value>
+  </data>
+  <data name="Key_Setup_PrintFailed" xml:space="preserve">
+    <value>Nie udało się wydrukować. Zapisz klucz do pliku albo skopiuj go.</value>
+  </data>
+  <data name="Key_Setup_CheckPrompt" xml:space="preserve">
+    <value>Żeby kontynuować, przepisz z klucza pierwszą i ostatnią grupę znaków (pierwsze i ostatnie 4 znaki), na przykład AAAA-ZZZZ.</value>
+  </data>
+  <data name="Key_Setup_CheckPlaceholder" xml:space="preserve">
+    <value>Pierwsza i ostatnia grupa</value>
+  </data>
+  <data name="Key_Setup_Continue" xml:space="preserve">
+    <value>Zapisałem klucz, kontynuuj</value>
+  </data>
+  <data name="Key_Setup_FileHeader" xml:space="preserve">
+    <value>EasyTax: klucz odzyskiwania bazy danych</value>
+  </data>
+  <data name="Key_Setup_FileNote" xml:space="preserve">
+    <value>Przechowuj ten plik w bezpiecznym miejscu. Kto go ma, może odczytać dane klientów. Bez tego klucza dane nie da się odzyskać, jeśli komputer przestanie działać.</value>
+  </data>
+  <data name="Key_Recovery_Title" xml:space="preserve">
+    <value>Wpisz klucz odzyskiwania</value>
+  </data>
+  <data name="Key_Recovery_Message" xml:space="preserve">
+    <value>Nie można otworzyć bazy danych kluczem zapisanym na tym komputerze. Zdarza się to po przeniesieniu danych na nowy komputer albo po zmianie profilu Windows. Wpisz klucz odzyskiwania, który program pokazał przy pierwszym uruchomieniu.</value>
+  </data>
+  <data name="Key_Recovery_Continue" xml:space="preserve">
+    <value>Dalej</value>
+  </data>
+  <data name="Key_Recovery_Quit" xml:space="preserve">
+    <value>Zamknij program</value>
+  </data>
+  <data name="Key_Recovery_Invalid" xml:space="preserve">
+    <value>To nie wygląda na klucz odzyskiwania. Klucz ma 32 znaki w grupach po 4.</value>
+  </data>
+  <data name="Key_Recovery_Wrong" xml:space="preserve">
+    <value>Ten klucz nie otwiera bazy danych. Sprawdź, czy jest przepisany bez błędów.</value>
+  </data>
+  <data name="Startup_PlainDatabase" xml:space="preserve">
+    <value>Plik bazy danych nie jest zaszyfrowany (pochodzi ze starej wersji programu). Przenieś go w inne miejsce lub usuń, a program utworzy nową, zaszyfrowaną bazę.</value>
+  </data>
+  <data name="Settings_Security_Title.Text" xml:space="preserve">
+    <value>Szyfrowanie danych</value>
+  </data>
+  <data name="Settings_Security_Description.Text" xml:space="preserve">
+    <value>Dane klientów są zaszyfrowane. Klucz odzyskiwania pozwala otworzyć je na nowym komputerze lub po zmianie profilu Windows.</value>
+  </data>
+  <data name="Settings_ShowKey.Content" xml:space="preserve">
+    <value>Pokaż klucz odzyskiwania</value>
+  </data>
+  <data name="Settings_Key_Title" xml:space="preserve">
+    <value>Klucz odzyskiwania</value>
+  </data>
+  <data name="Settings_Key_Message" xml:space="preserve">
+    <value>Przechowuj go w bezpiecznym miejscu. Kto ma ten klucz razem z plikiem bazy danych, może odczytać dane klientów.</value>
+  </data>
+  <data name="Settings_Key_Copy" xml:space="preserve">
+    <value>Kopiuj</value>
+  </data>
+  <data name="Settings_Key_Close" xml:space="preserve">
+    <value>Zamknij</value>
+  </data>
+  <data name="Toast_KeyCopied" xml:space="preserve">
+    <value>Skopiowano klucz do schowka.</value>
+  </data>
   <data name="Dashboard_NoClients.Text" xml:space="preserve">
     <value>Nie masz jeszcze żadnych klientów.</value>
   </data>

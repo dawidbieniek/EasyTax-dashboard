@@ -12,7 +12,7 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done · **(?)** needs a decisio
 - **No unit tests** for now. **No heavy architecture** (no DDD / vertical-slice frameworks): code is organised by feature folders as needed.
 - Core = the domain layer: EF entities are the rich domain objects (no separate persistence models). Ids are **Guid v7** assigned by the domain.
 - DI registration via `ServiceCollectionExtensions` using C# 14 extension blocks.
-- Data: EF Core + SQLite. **Encryption skipped for now** (no DB password flow); planned later with SQLCipher, see "Database encryption".
+- Data: EF Core + SQLite, encrypted with SQLCipher: one random key per install, shown once to the user as a recovery key and wrapped with Windows DPAPI for daily use. Built (E.1–E.5); backups (E.6) and the notices file (E.7) are still open.
 - Charts/gauges: LiveChartsCore.SkiaSharpView.WinUI (spike verified). Added with the dashboard milestone.
 - Grid: WinUI.TableView candidate; verify in the clients-list task.
 - UI language: **Polish**, all strings in `.resw` resources (English can be added later).
@@ -20,13 +20,13 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done · **(?)** needs a decisio
 - Years are **user-managed**: seeded 2026–2030, user can add years and remove a year only if it has no data.
 - Settings page: theme (System / Light / **Dark default**) and app version shown as plain text. No DB settings.
 - **Accent colour = the Windows system accent** (WinUI's default), so the app follows the user's Windows personalisation. No colour setting, no custom palette.
-- Out of scope for v1: backups, notifications, email, tax calculator, list filters, DB encryption.
+- Out of scope for v1: backups, notifications, email, tax calculator, list filters.
 
 ## Data model (draft)
 One `MonthRecord` per client per month replaces the old app's five child tables.
 
 - All entities derive from `Entity` (`Guid Id`, v7). `AccountingYear` is keyed by its year number instead.
-- `Client`: FirstName, LastName, Gender, Nip, Phone, Email, JoinDate, BankId, IsSuspended, Notes, PlanName, AuthorizationFee, SubscriptionFee, EmploymentContract, CashMethod, TaxType, PitPaymentFrequency, IsVatPayer, VatPaymentFrequency, UsesCashRegister, FirstCashRegisterDate, ReliefType, ReliefSinceDate (dates are `DateOnly`; enums are stored as text)
+- `Client`: FirstName, LastName, Gender, Nip, Phone, Email, JoinDate, BankId, SuspendedAt (nullable timestamp, null = active; `IsSuspended` becomes derived; set on suspend, cleared on unsuspend; see "Privacy and data retention"), Notes, PlanName, AuthorizationFee, SubscriptionFee, EmploymentContract, CashMethod, TaxType, PitPaymentFrequency, IsVatPayer, VatPaymentFrequency, UsesCashRegister, FirstCashRegisterDate, ReliefType, ReliefSinceDate (dates are `DateOnly`; enums are stored as text)
   - **per-client checklist items** (same rules as the old app; stored as done-at timestamps, null = not done): `VatRDoneAt`, `Ceidg1DoneAt`, `ZusDoneAt`, `InvoicedAt`, `ZusDraDoneAt`, `TaxDoneAt`
 - `ClientPhoto`: ClientId (PK/FK), Bytes, ContentType
 - `Bank`: Id, Name (seeded)
@@ -130,13 +130,13 @@ Settled with the user; not scheduled in a milestone yet.
 - [ ] B.4 Toasts: success toast on finish; error toast on any failure, including an unreachable destination.
 
 **Restore**
-- [ ] B.5 "Restore from file": file picker for a `.zip`, confirmation dialog saying the current data will be replaced, unzip to temp, integrity check, manifest check (refuse a newer schema, migrate an older one), safety backup of the current DB, close connections, swap the file, restart the app.
+- [ ] B.5 "Restore from file": file picker for a `.zip`, confirmation dialog saying the current data will be replaced, unzip to temp, integrity check, manifest check (refuse a newer schema, migrate an older one), safety backup of the current DB, close connections, swap the file, re-apply the deletion log (P.3), restart the app.
 
 **Settings UI** (B.6): folder path + Browse, scheduled toggle, last backup time/status, "Back up now" and "Restore from file" buttons.
 
 Out of scope: retention, off-machine copies, Windows scheduled tasks. Encryption has its own section below; once it lands, backups are encrypted copies of the encrypted DB (B.1 opens both ends of `BackupDatabase` with the key; B.5 needs the key to run its integrity check, and asks for the recovery key when the local one cannot open the file).
 
-## Database encryption (planned, post-v1, ideally before the first release)
+## Database encryption (planned, before the first release)
 Settled with the user. Goal: a stolen `.db` file or backup `.zip` is useless without the app's key. Not protected against: someone using the user's logged-in Windows account (they already have the app). No password prompt at launch.
 
 - **Engine:** SQLCipher (swap the SQLite native bundle, e.g. `SQLitePCLRaw.bundle_e_sqlcipher`; the password is set on the connection string). EF Core and the migrations keep working.
@@ -146,15 +146,35 @@ Settled with the user. Goal: a stolen `.db` file or backup `.zip` is useless wit
 - **Not chosen:** hardcoded key (extractable from the binary, one leak exposes every install), key fetched from a server (needs a service plus per-install enrollment; too heavy), admin-typed key at setup (fallback if the user flow proves too awkward).
 
 **Tasks**
-- [ ] E.0 Spike: confirm the SQLCipher package's licence and that it works with .NET 10, unpackaged WinUI 3 and EF Core 10 migrations. Stop and revisit if not.
-- [ ] E.1 `DatabaseKeyService` (in `Infrastructure/` or a `Security/` feature folder): generate the key, wrap and unwrap it with DPAPI, load it at startup before the DB opens. Wired into the connection string in `EasyTax.Data`. **Rule: never generate a new key when a DB file already exists** (an update, a lost key file or a new profile must go to the recovery flow E.4, never silently create a key that would make the existing DB unreadable).
-- [ ] E.2 First-run dialog: shows the recovery key with Copy, Save to file and Print; cannot be skipped; the user retypes a few characters to confirm they stored it. Explains that losing the key and the machine means losing the data.
-- [ ] E.3 Settings card: "Show recovery key" (the user is already inside the app, so showing it again is fine).
-- [ ] E.4 Recovery flow: when the local key is missing or cannot open the DB (new machine, new Windows profile), ask for the recovery key, verify it by opening the DB, then re-wrap it with DPAPI for this machine.
-- [ ] E.5 Existing plain databases: demo DBs are disposable, so no migration path; an unencrypted file is simply rejected with a clear message.
+- [x] E.0 Spike **passed**, done on a throwaway copy of the repo (the real code is untouched). Findings:
+  - **Packages:** in `EasyTax.Data` replace `Microsoft.EntityFrameworkCore.Sqlite` with `Microsoft.EntityFrameworkCore.Sqlite.Core` (10.0.14) + `SQLitePCLRaw.bundle_e_sqlcipher` (2.1.11). Call `SQLitePCL.Batteries_V2.Init()` once before the first connection (call it from `EasyTaxDbContextFactory` too, to be safe). The password goes on the connection string (`SqliteConnectionStringBuilder.Password`). `e_sqlcipher.dll` is copied next to `EasyTax.exe` automatically.
+  - **Works with** .NET 10, unpackaged WinUI 3 (app starts, dashboard and charts load), EF Core 10: the existing `Initial` migration applied and the demo seed ran on an encrypted file. `dotnet ef migrations list` still works.
+  - **Really encrypted:** the `.db` header is random bytes (no "SQLite format 3"), and so is the `-wal` file.
+  - **Failure cases** all end in the startup error window, no crash: wrong key, no key on an encrypted DB, plain DB opened with a key (this is also E.5's rejection of plain databases). The right key opens normally.
+  - **Licence:** the NuGet wrappers are Apache-2.0; the native library is SQLCipher Community Edition, BSD-3-Clause (Zetetic), free for commercial use but the copyright notice and licence text must ship with the app (add a third-party notices file to the package, task E.7). The builds are SourceGear's "unofficial and unsupported"; Zetetic sells official builds if that ever matters.
+  - **Not covered by the spike:** the packaged MSIX (check that `e_sqlcipher.dll` is inside the package when 7.4 is done) and the cost of an `ALTER`-style migration on a large encrypted DB (not a concern at this data size).
+- [ ] E.7 Third-party notices: a `THIRD-PARTY-NOTICES.txt` shipped with the app (and inside the MSIX) with the licence text and copyright of every package we ship: SQLCipher (BSD-3-Clause), SQLitePCLRaw (Apache-2.0), Serilog (Apache-2.0), and the MIT ones (Windows App SDK, CommunityToolkit, EF Core, LiveCharts, SkiaSharp, WinUI.TableView). Regenerate when packages change. A small "Licencje" link next to the version on the Settings page opens the same text in a dialog (part of the Settings overhaul). No separate About page.
+- [x] E.1 `DatabaseKeyService` (`Security/` in the app): 32-character Crockford base32 key (160 bits), wrapped with DPAPI (CurrentUser, app-specific entropy) into `easytax.key` next to the database, written via a temporary file. `EasyTaxDataOptions.Password` is set once before the database is touched; opening without it throws, so an unencrypted file is never created. Rule kept: a new key is only created when no database file exists (`DatabaseKeyStartup`).
+- [x] E.2 First-run window (`KeySetupWindow`): key in groups of four, Copy / Save to file / Print (the text file goes to the default printer through the shell "print" verb), and the user must retype the first and last group before Continue. The key is stored only after that; closing the window leaves nothing behind. Checked in the running app.
+- [x] E.3 Settings card "Szyfrowanie danych" with "Pokaż klucz odzyskiwania": a dialog with the key and a Copy button (toast on copy).
+- [x] E.4 Recovery (`KeyRecoveryWindow`): when the stored key is missing, unreadable or does not open the database, the user types the recovery key; it is checked by actually opening the database (`IDatabaseInitializer.CanOpenAsync`, own unpooled connection) before it is re-wrapped for this machine. Checked: missing key file, wrong key (message), right key.
+- [x] E.5 A database with the plain SQLite header is refused at startup with its own message (`PlainDatabaseException`), without touching the file. Old development databases must be moved or deleted.
 - [ ] E.6 Backup tasks B.1 and B.5 updated for the encrypted DB (see Backups).
 
 Open decisions (defaults assumed unless changed): the key format is a grouped code; the recovery-key step in first-run setup is mandatory.
+
+## Privacy and data retention (planned, post-v1)
+Not legal advice; confirm the final policy with whoever handles GDPR for the practice. Background: erasure (Art. 17) does not apply to data that must be kept for a legal obligation (as understood, accounting/tax records are kept about 5 years in Poland), and data in backups is acceptable only if it stays unused and eventually expires.
+
+**Decisions**
+- **No backup retention policy for now.** Backups are kept forever (see Backups). Known gap: a deleted client's data lives on in old backups with no expiry. Accepted for now; revisit before real client data, with a configurable retention period and a prune step.
+- **Suspension timestamp:** `Client.SuspendedAt` (replaces the `IsSuspended` flag, which becomes derived). It records when service ended, so it is easy to tell later whether the retention period has passed. It is an aid, not the legal start of the period (that depends on the tax year of the records). Needs an EF migration (the app is unreleased, so a regenerated `Initial` is also fine) and a changed suspend / unsuspend path in `ClientsViewModel`.
+- **Deletion log** so a restored backup cannot bring deleted clients back:
+  - [ ] P.1 New `DeletedClient` table: client `Id` (Guid), `DeletedAt`. No personal data. Written in the same transaction as the client delete. Because it lives in the DB, every backup contains it.
+  - [ ] P.2 Sidecar file `deletions.log` in the backup folder (append-only, one line per deletion: Guid and timestamp), written at delete time. This covers deletions made after the last backup, e.g. if the machine dies before the next backup. Same plain file copy, so it works on a fileshare.
+  - [ ] P.3 Restore (B.5) re-applies deletions: after unzipping, read the deletion tables from the restored DB, the live DB (before the swap) and `deletions.log`, then delete those clients (and their month records / photos via cascade) from the restored DB and merge the entries into its log. Shows a summary ("N clients removed again").
+- [ ] P.4 Client delete dialog warns that records may need to be kept for the legal retention period, and suggests suspending instead; the warning shows the suspension date when there is one.
+- Still open (not blocking): a "give me all data about this client" export for access requests; privacy notice and records of processing are paperwork outside the app.
 
 ## Later (not in v1)
 Notifications/reminders, emails + templates (needs notifications), list filters (search + filter flyout), CSV/Excel export (unclear what to export), tax calculator (needs the exact rules for forms of taxation, ZUS and the yearly rates before it can be designed; the old TaxDashboard code in `C:\Users\dawid\Desktop\TaxDashboard` may hold some). Backups and DB encryption have their own sections above.

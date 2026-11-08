@@ -2,6 +2,7 @@ using EasyTax.App.Clients;
 using EasyTax.App.Dashboard;
 using EasyTax.App.Localization;
 using EasyTax.App.Photos;
+using EasyTax.App.Security;
 using EasyTax.App.Settings;
 using EasyTax.App.Shell;
 using EasyTax.Data;
@@ -38,6 +39,7 @@ internal static class AppHost
 
 		// App services
 		services.AddSingleton<ILocalizer, Localizer>();
+		services.AddSingleton(_ => new DatabaseKeyService(AppPaths.KeyFile));
 		services.AddSingleton<ISettingsService>(_ => new JsonSettingsService(AppPaths.SettingsFile));
 		services.AddSingleton<IThemeService, ThemeService>();
 		services.AddSingleton<INavigationService, NavigationService>();

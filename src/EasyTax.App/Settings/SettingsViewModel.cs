@@ -3,8 +3,10 @@ using System.Reflection;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EasyTax.App.Localization;
+using EasyTax.App.Security;
 using EasyTax.App.Shell;
 using EasyTax.Core.Domain.Years;
+using Windows.ApplicationModel.DataTransfer;
 
 namespace EasyTax.App.Settings;
 
@@ -18,14 +20,18 @@ public sealed partial class SettingsViewModel : ViewModelBase
 	private readonly IClientContext _context;
 	private readonly IToastService _toasts;
 	private readonly ILocalizer _localizer;
+	private readonly IDialogService _dialogs;
+	private readonly DatabaseKeyService _keys;
 
-	public SettingsViewModel(ISettingsService settings, ILocalizer localizer, IAccountingYearRepository yearRepository, IClientContext context, IToastService toasts)
+	public SettingsViewModel(ISettingsService settings, ILocalizer localizer, IAccountingYearRepository yearRepository, IClientContext context, IToastService toasts, IDialogService dialogs, DatabaseKeyService keys)
 	{
 		_settings = settings;
 		_yearRepository = yearRepository;
 		_context = context;
 		_toasts = toasts;
 		_localizer = localizer;
+		_dialogs = dialogs;
+		_keys = keys;
 
 		ThemeOptions =
 		[
@@ -60,6 +66,30 @@ public sealed partial class SettingsViewModel : ViewModelBase
 	public override Task OnNavigatedToAsync(object? parameter) => LoadYearsAsync();
 
 	private bool CanAddYear() => !double.IsNaN(NewYear) && NewYear is >= FirstAllowedYear and <= LastAllowedYear && Years.All(y => y.Year != (int)NewYear);
+
+	/// <summary>Shows the recovery key again. The user is already inside the app, so nothing is asked first.</summary>
+	[RelayCommand]
+	private async Task ShowRecoveryKeyAsync()
+	{
+		var key = _keys.TryLoad();
+		if (key is null)
+			return;
+
+		var formatted = DatabaseKeyService.Format(key);
+		var copy = await _dialogs.ConfirmAsync(
+			_localizer["Settings_Key_Title"],
+			[new DialogText(_localizer["Settings_Key_Message"]), new DialogText(formatted, IsBold: true)],
+			_localizer["Settings_Key_Copy"],
+			_localizer["Settings_Key_Close"]);
+
+		if (!copy)
+			return;
+
+		var package = new DataPackage();
+		package.SetText(formatted);
+		Clipboard.SetContent(package);
+		_toasts.Success(_localizer["Toast_KeyCopied"]);
+	}
 
 	[RelayCommand(CanExecute = nameof(CanAddYear))]
 	private async Task AddYearAsync()
