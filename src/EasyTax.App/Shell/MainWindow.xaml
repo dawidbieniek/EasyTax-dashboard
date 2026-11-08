@@ -5,7 +5,7 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
 	<!-- The root paints the theme-aware background; a Window has none of its own, so without it a theme switch would only recolor the controls. -->
-	<Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+	<Grid x:Name="RootGrid" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto" />
 			<RowDefinition Height="*" />
@@ -31,12 +31,12 @@
 			PaneDisplayMode="LeftCompact">
 
 			<NavigationView.MenuItems>
-				<NavigationViewItem x:Uid="Nav_Dashboard" Tag="Dashboard">
+				<NavigationViewItem x:Name="DashboardItem" x:Uid="Nav_Dashboard" Tag="Dashboard">
 					<NavigationViewItem.Icon>
 						<SymbolIcon Symbol="Home" />
 					</NavigationViewItem.Icon>
 				</NavigationViewItem>
-				<NavigationViewItem x:Uid="Nav_Clients" Tag="Clients">
+				<NavigationViewItem x:Name="ClientsItem" x:Uid="Nav_Clients" Tag="Clients">
 					<NavigationViewItem.Icon>
 						<SymbolIcon Symbol="People" />
 					</NavigationViewItem.Icon>
@@ -50,7 +50,12 @@
 				</Grid.RowDefinitions>
 
 				<local:AppBar x:Name="AppBarControl" Visibility="Collapsed" />
-				<Frame x:Name="ContentFrame" Grid.Row="1" />
+				<Frame
+					x:Name="ContentFrame"
+					Grid.Row="1"
+					FocusVisualPrimaryThickness="0"
+					FocusVisualSecondaryThickness="0"
+					IsTabStop="True" />
 			</Grid>
 		</NavigationView>
 	</Grid>

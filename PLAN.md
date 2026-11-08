@@ -105,7 +105,7 @@ All of M5 is done and checked in the running app (edit, restart to confirm it wa
 - [x] 6.1 Years management UI in Settings: list of years (a year with data shows "Zawiera dane" and cannot be removed), add a year 2000–2100. Theme and version were done earlier.
 
 ### M7 — Polish & release
-- [ ] 7.1 Keyboard: Ctrl+F search, Ctrl+S save, arrow navigation for clients/months
+- [x] 7.1 Keyboard shortcuts, one `Shortcuts` helper; keys listed in ARCHITECTURE.md. Tooltips show "name (key)" on buttons.
 - [ ] 7.2 Accessibility pass (automation names, contrast, focus order)
 - [ ] 7.3 Error handling + friendly messages for DB errors
 - [ ] 7.4 Packaging/installer and auto-update decision

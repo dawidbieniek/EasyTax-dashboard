@@ -1,6 +1,7 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
+using Windows.System;
 
 namespace EasyTax.App.Shell;
 
@@ -11,6 +12,19 @@ public sealed partial class AppBar : UserControl
 	{
 		ViewModel = App.GetService<AppBarViewModel>();
 		InitializeComponent();
+
+		Shortcuts.Add(ClientBox, Shortcuts.Slash, FocusClientBox);
+		Shortcuts.Add(ClientBox, VirtualKey.F, FocusClientBox, VirtualKeyModifiers.Control);
+		Shortcuts.Add(PreviousClientButton, VirtualKey.Left, () => Run(ViewModel.SelectPreviousClientCommand), VirtualKeyModifiers.Menu);
+		Shortcuts.Add(NextClientButton, VirtualKey.Right, () => Run(ViewModel.SelectNextClientCommand), VirtualKeyModifiers.Menu);
+
+		Shortcuts.Add(YearBox, VirtualKey.Left, () => RunInFullMode(() => ViewModel.ShiftMonthAsync(-1)));
+		Shortcuts.Add(YearBox, VirtualKey.Right, () => RunInFullMode(() => ViewModel.ShiftMonthAsync(1)));
+		Shortcuts.Add(YearBox, Shortcuts.Comma, () => RunInFullMode(() => ViewModel.ShiftMonthAsync(-1)));
+		Shortcuts.Add(YearBox, Shortcuts.Period, () => RunInFullMode(() => ViewModel.ShiftMonthAsync(1)));
+		Shortcuts.Add(YearBox, Shortcuts.Comma, () => RunInFullMode(() => ViewModel.ShiftYearAsync(-1)), VirtualKeyModifiers.Shift);
+		Shortcuts.Add(YearBox, Shortcuts.Period, () => RunInFullMode(() => ViewModel.ShiftYearAsync(1)), VirtualKeyModifiers.Shift);
+		Shortcuts.Add(AccountedToggle, VirtualKey.A, () => RunInFullMode(ViewModel.ToggleAccountedAsync));
 	}
 
 	public AppBarViewModel ViewModel { get; }
@@ -19,6 +33,25 @@ public sealed partial class AppBar : UserControl
 	{
 		Visibility = mode == AppBarMode.Hidden ? Visibility.Collapsed : Visibility.Visible;
 		MonthControls.Visibility = mode == AppBarMode.Full ? Visibility.Visible : Visibility.Collapsed;
+	}
+
+	private void FocusClientBox()
+	{
+		if (Visibility == Visibility.Visible && ClientBox.IsEnabled)
+			Shortcuts.FocusLater(ClientBox);
+	}
+
+	private void Run(System.Windows.Input.ICommand command)
+	{
+		if (Visibility == Visibility.Visible && command.CanExecute(null))
+			command.Execute(null);
+	}
+
+	// Month, year and accounted controls exist only in full mode.
+	private async void RunInFullMode(Func<Task> action)
+	{
+		if (Visibility == Visibility.Visible && MonthControls.Visibility == Visibility.Visible)
+			await action();
 	}
 
 	private void OnClientBoxGotFocus(object sender, RoutedEventArgs e)

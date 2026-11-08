@@ -76,7 +76,9 @@
 		<DataTemplate x:Key="ChecklistItemTemplate" x:DataType="local:ChecklistItem">
 			<ToggleButton
 				HorizontalAlignment="Stretch"
+				AutomationProperties.Name="{x:Bind Label}"
 				Click="OnChecklistClick"
+				Loaded="OnChecklistLoaded"
 				IsChecked="{x:Bind IsDone, Mode=OneWay}"
 				Style="{StaticResource StatusToggleButtonStyle}"
 				Tag="{x:Bind Key}">
@@ -341,6 +343,7 @@
 
 								<RichEditBox
 									x:Name="NotesEditor"
+									MaxHeight="240"
 									Grid.Row="2"
 									TextChanged="OnNotesTextChanged" />
 							</Grid>

@@ -137,11 +137,13 @@
 					<Grid Grid.Column="3" VerticalAlignment="Center">
 						<StackPanel Spacing="8" Visibility="{x:Bind ViewModel.IsViewing, Mode=OneWay}">
 							<Button
+								x:Name="EditButton"
 								x:Uid="Details_Edit"
 								HorizontalAlignment="Stretch"
 								Command="{x:Bind ViewModel.EditCommand}"
 								Style="{StaticResource AccentButtonStyle}" />
 							<Button
+								x:Name="DeleteButton"
 								x:Uid="Details_Delete"
 								HorizontalAlignment="Stretch"
 								Command="{x:Bind ViewModel.DeleteCommand}"
@@ -149,11 +151,13 @@
 						</StackPanel>
 						<StackPanel Spacing="8" Visibility="{x:Bind ViewModel.IsEditing, Mode=OneWay}">
 							<Button
+								x:Name="SaveButton"
 								x:Uid="Details_Save"
 								HorizontalAlignment="Stretch"
 								Command="{x:Bind ViewModel.SaveCommand}"
 								Style="{StaticResource AccentButtonStyle}" />
 							<Button
+								x:Name="CancelButton"
 								x:Uid="Details_Cancel"
 								HorizontalAlignment="Stretch"
 								Command="{x:Bind ViewModel.CancelCommand}" />

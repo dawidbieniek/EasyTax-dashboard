@@ -24,6 +24,7 @@
 			</Grid.ColumnDefinitions>
 
 			<TextBox
+				x:Name="SearchBox"
 				x:Uid="List_Search"
 				Text="{x:Bind ViewModel.SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 			<TextBlock
@@ -32,6 +33,7 @@
 				Foreground="{ThemeResource TextFillColorSecondaryBrush}"
 				Text="{x:Bind ViewModel.Summary, Mode=OneWay}" />
 			<Button
+				x:Name="AddButton"
 				x:Uid="List_Add"
 				Grid.Column="2"
 				Click="OnAddClientClick"

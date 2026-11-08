@@ -5,6 +5,7 @@ using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Windows.Graphics;
+using Windows.System;
 
 namespace EasyTax.App.Shell;
 
@@ -26,6 +27,11 @@ public sealed partial class MainWindow : Window
 
 		shellWindow.Attach(this);
 
+		Shortcuts.Add(DashboardItem, VirtualKey.Number1, () => _ = ShowAsync(typeof(DashboardViewModel)));
+		Shortcuts.Add(ClientsItem, VirtualKey.Number2, () => _ = ShowAsync(typeof(ClientsViewModel)));
+		Shortcuts.Add(RootGrid, VirtualKey.Escape, () => Shortcuts.Blur(RootGrid.XamlRoot, ContentFrame), whileTyping: true);
+		Shortcuts.BlurOnClickAway(RootGrid, ContentFrame);
+
 		Title = "EasyTax";
 		ExtendsContentIntoTitleBar = true;
 		SetTitleBar(AppTitleBar);
@@ -39,6 +45,9 @@ public sealed partial class MainWindow : Window
 		{
 			dialogService.Attach(Content.XamlRoot);
 
+			if (Navigation.SettingsItem is NavigationViewItem settingsItem)
+				Shortcuts.Add(settingsItem, VirtualKey.Number3, () => _ = ShowAsync(typeof(SettingsViewModel)));
+
 			// The presenter works in pixels, the constant is in device-independent pixels.
 			if (AppWindow.Presenter is OverlappedPresenter presenter)
 				presenter.PreferredMinimumWidth = (int)(MinimumWindowWidth * Content.XamlRoot.RasterizationScale);
@@ -47,6 +56,18 @@ public sealed partial class MainWindow : Window
 		_navigation.Initialize(ContentFrame);
 		_navigation.Navigated += OnNavigated;
 		_navigation.NavigateTo<DashboardViewModel>();
+	}
+
+	// Keyboard navigation: the rail did not move its highlight, so there is nothing to put back when leaving is refused.
+	private async Task ShowAsync(Type viewModelType)
+	{
+		if (_currentViewModel?.GetType() == viewModelType)
+			return;
+
+		if (!await _navigation.CanLeaveAsync())
+			return;
+
+		_navigation.NavigateTo(viewModelType);
 	}
 
 	private async void OnItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)

@@ -3,6 +3,8 @@ using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
+using EasyTax.App.Shell;
+using Windows.System;
 using Windows.Globalization.NumberFormatting;
 
 namespace EasyTax.App.Dashboard;
@@ -27,12 +29,50 @@ public sealed partial class DashboardPage : Page
 		SalesBox.NumberFormatter = CreateFormatter(fractionDigits: 0);
 		CostBox.NumberFormatter = CreateFormatter(fractionDigits: 0);
 
+		Shortcuts.Add(IncomeBox, VirtualKey.I, () => Shortcuts.FocusLater(IncomeBox));
+		Shortcuts.Add(SalesBox, VirtualKey.S, () => Shortcuts.FocusLater(SalesBox));
+		Shortcuts.Add(CostBox, VirtualKey.C, () => Shortcuts.FocusLater(CostBox));
+		Shortcuts.Add(NotesEditor, VirtualKey.N, () => Shortcuts.FocusLater(NotesEditor));
+
 		LoadNotes(ViewModel.Notes);
 		ViewModel.PropertyChanged += OnViewModelPropertyChanged;
 		Unloaded += (_, _) => ViewModel.PropertyChanged -= OnViewModelPropertyChanged;
 	}
 
 	public DashboardViewModel ViewModel { get; }
+
+	// Checklist buttons come from a template, so each one gets its shortcut when it is created.
+	private void OnChecklistLoaded(object sender, RoutedEventArgs e)
+	{
+		if (sender is not ToggleButton { Tag: ChecklistKey key } button)
+			return;
+
+		if (button.KeyboardAccelerators.Count > 0)
+			return;
+
+		Shortcuts.Add(button, KeyFor(key), () => ToggleChecklist(key));
+	}
+
+	private async void ToggleChecklist(ChecklistKey key)
+	{
+		var isMonthItem = key is ChecklistKey.JpkV7 or ChecklistKey.VatUe;
+		if (isMonthItem && !ViewModel.IsMonthEditable)
+			return;
+
+		await ViewModel.ToggleChecklistCommand.ExecuteAsync(key);
+	}
+
+	private static VirtualKey KeyFor(ChecklistKey key) => key switch
+	{
+		ChecklistKey.VatR => VirtualKey.R,
+		ChecklistKey.Ceidg1 => VirtualKey.E,
+		ChecklistKey.Zus => VirtualKey.U,
+		ChecklistKey.Invoiced => VirtualKey.F,
+		ChecklistKey.ZusDra => VirtualKey.D,
+		ChecklistKey.Tax => VirtualKey.T,
+		ChecklistKey.JpkV7 => VirtualKey.J,
+		_ => VirtualKey.V,
+	};
 
 	private async void OnChecklistClick(object sender, RoutedEventArgs e)
 	{

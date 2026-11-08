@@ -75,6 +75,49 @@ public sealed partial class AppBarViewModel : ObservableObject
 
 	public Task SetAccountedAsync(bool isAccounted) => _context.SetAccountedAsync(isAccounted);
 
+	public Task ToggleAccountedAsync()
+	{
+		if (!CanAccount)
+			return Task.CompletedTask;
+
+		return _context.SetAccountedAsync(!IsAccounted);
+	}
+
+	/// <summary>Moves to the previous (-1) or next (+1) month, across the year boundary when that year exists.</summary>
+	public async Task ShiftMonthAsync(int offset)
+	{
+		var month = _context.Month + offset;
+		var year = _context.Year;
+		if (month < 1)
+		{
+			month = 12;
+			year--;
+		}
+		else if (month > 12)
+		{
+			month = 1;
+			year++;
+		}
+
+		if (!_context.Years.Contains(year))
+			return;
+
+		if (year != _context.Year)
+			await _context.SelectYearAsync(year);
+
+		await _context.SelectMonthAsync(month);
+	}
+
+	/// <summary>Moves to the previous (-1) or next (+1) year in the list.</summary>
+	public Task ShiftYearAsync(int offset)
+	{
+		var index = _context.Years.ToList().IndexOf(_context.Year) + offset;
+		if (index < 0 || index >= _context.Years.Count)
+			return Task.CompletedTask;
+
+		return _context.SelectYearAsync(_context.Years[index]);
+	}
+
 	[RelayCommand]
 	private Task SelectPreviousClientAsync() => _context.SelectAdjacentClientAsync(-1);
 

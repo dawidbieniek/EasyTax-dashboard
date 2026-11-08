@@ -99,6 +99,7 @@
 					</AutoSuggestBox.ItemTemplate>
 				</AutoSuggestBox>
 				<Button
+					x:Name="PreviousClientButton"
 					x:Uid="AppBar_Previous"
 					Command="{x:Bind ViewModel.SelectPreviousClientCommand}"
 					IsEnabled="{x:Bind ViewModel.CanSelectPrevious, Mode=OneWay}"
@@ -106,6 +107,7 @@
 					<FontIcon FontSize="14" Glyph="&#xE76B;" />
 				</Button>
 				<Button
+					x:Name="NextClientButton"
 					x:Uid="AppBar_Next"
 					Command="{x:Bind ViewModel.SelectNextClientCommand}"
 					IsEnabled="{x:Bind ViewModel.CanSelectNext, Mode=OneWay}"
@@ -127,6 +129,7 @@
 				</Grid.ColumnDefinitions>
 
 				<ComboBox
+					x:Name="YearBox"
 					x:Uid="AppBar_Year"
 					MinWidth="100"
 					VerticalAlignment="Center"
@@ -149,6 +152,7 @@
 				</ScrollViewer>
 
 				<ToggleButton
+					x:Name="AccountedToggle"
 					Grid.Column="2"
 					MinWidth="140"
 					VerticalAlignment="Center"

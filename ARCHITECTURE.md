@@ -119,6 +119,31 @@ Everything else uses constructor injection.
   (`extension(IServiceCollection services) { public IServiceCollection AddEasyTaxData(...) }`).
 - **Logging**: `ILogger<T>` from the host (debug output for now; file sink is a later task).
 
+## Keyboard shortcuts
+
+Declared with `Shortcuts.Add(control, key, action, modifiers)` (Shell/Shortcuts.cs) in the code-behind of the page or control that owns them; it adds a `KeyboardAccelerator` and, for buttons, a tooltip "name (key)". Plain keys are ignored while a text control has focus or a dialog/drop-down is open; chords with Ctrl or Alt always run. Focus shortcuts use `Shortcuts.FocusLater`, otherwise the text box receives the shortcut character. Keys can be changed in the one `Add` call.
+
+| Where | Key | Action |
+|---|---|---|
+| Everywhere | `1` `2` `3` | Dashboard / Clients / Settings |
+| Everywhere | `Esc`, click on empty space | Leave the text box (focus goes to the page, so single-key shortcuts work again) |
+| App bar | `/`, `Ctrl+F` | Focus the client picker |
+| App bar | `Alt+Left`, `Alt+Right` | Previous / next client |
+| App bar | `,` `.` or `Left` `Right` | Previous / next month (across years) |
+| App bar | `Shift+,` `Shift+.` | Previous / next year |
+| App bar | `A` | Toggle accounted |
+| Dashboard | `I` `S` `C` | Focus income / sales invoices / cost invoices |
+| Dashboard | `N` | Focus notes |
+| Dashboard | `R` `E` `U` `F` `D` `T` | Toggle VAT-R, CEIDG-1, ZUS, invoiced, ZUS DRA, tax |
+| Dashboard | `J` `V` | Toggle JPK V7, VAT UE |
+| Clients | `/`, `Ctrl+F` | Focus search |
+| Clients | `N`, `Ctrl+N` | New client |
+| Clients | `Enter`, `Delete` | Open / delete the selected client |
+| Client details | `E`, `Delete` | Edit / delete (view mode) |
+| Client details | `Ctrl+S`, `Esc` | Save / cancel (edit mode) |
+
+WinUI notes: `KeyboardAccelerator` does not match the bracket keys (VK 219/221), so months use `,` `.`. The built-in accelerator tooltip did not show on these buttons, hence the explicit tooltips.
+
 ## Conventions
 Formatting is enforced by `.editorconfig` and `.gitattributes` (tabs, CRLF, UTF-8) — never fix it by hand or by script.
 
