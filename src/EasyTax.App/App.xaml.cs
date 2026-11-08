@@ -59,7 +59,8 @@ public partial class App : Application
 			return;
 		}
 
-		instance.Activated += (_, _) => ShowMainWindow();
+		// A later launch lands here: bring forward whichever window is on top (a start-up window, the main window, ...).
+		instance.Activated += (_, _) => WindowStack.BringToFront();
 
 		try
 		{
@@ -100,6 +101,7 @@ public partial class App : Application
 
 		_window = Services.GetRequiredService<MainWindow>();
 		_window.Closed += OnWindowClosed;
+		WindowStack.Push(_window);
 		_window.Activate();
 
 		// Automatic backup (when due) runs in the background; it reports with a toast.
@@ -124,19 +126,6 @@ public partial class App : Application
 		{
 			// Already gone.
 		}
-	}
-
-	// Another launch was redirected here: bring the window to the front (the event arrives on a background thread).
-	private void ShowMainWindow()
-	{
-		var window = _window;
-		window?.DispatcherQueue.TryEnqueue(() =>
-		{
-			if (window.AppWindow.Presenter is Microsoft.UI.Windowing.OverlappedPresenter { State: Microsoft.UI.Windowing.OverlappedPresenterState.Minimized } presenter)
-				presenter.Restore();
-
-			window.Activate();
-		});
 	}
 
 	// Development helper (Debug builds): EASYTAX_DEV_KEY=<a key> skips the key windows, so test databases need no typing.

@@ -19,8 +19,9 @@ to get the data back after a computer failure or a reinstall.
 
 ## Updates
 
-Nothing to do. Every time the app starts, Windows checks for a newer version and installs it first (there is a short prompt).
-Without internet the app simply starts.
+Nothing to do. Every time the app starts, Windows checks for a newer version and downloads it in the background. It cannot replace the
+app while it is running, so the new version takes effect the **next time the app is started**: close it and open it again after a
+release. Without internet the app simply starts.
 
 ## Backups and uninstalling
 

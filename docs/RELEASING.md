@@ -32,7 +32,8 @@ checks it every time the app starts and installs a newer version before the app 
 2. Merge to `main`. The *Release* workflow builds the signed package and publishes release `v0.2.0` with four files:
    `EasyTaxDashboard.msix`, `EasyTaxDashboard.appinstaller`, `EasyTaxDashboard.cer`, `Install-Certificate.ps1`.
    If a release for that version already exists the workflow does nothing, so normal pushes to `main` are harmless.
-3. Computers pick the update up the next time the app starts.
+3. Computers pick the update up in two steps: the next start downloads it in the background, the start after that runs the new version
+   (tested: 0.1.0 became 0.1.1 this way, with data, key and settings intact).
 
 To build the same files on this computer (output in `artifacts/release`):
 

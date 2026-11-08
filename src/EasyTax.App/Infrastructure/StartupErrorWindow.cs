@@ -36,6 +36,7 @@ internal sealed class StartupErrorWindow : Window
 			Children = { panel },
 		};
 
+		WindowStack.Push(this);
 		Closed += (_, _) => Application.Current.Exit();
 	}
 }
