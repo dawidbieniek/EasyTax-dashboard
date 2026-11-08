@@ -9,13 +9,30 @@
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<UseWinUI>true</UseWinUI>
 		<EnableMsixTooling>true</EnableMsixTooling>
-		<WindowsPackageType>None</WindowsPackageType>
 		<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
 		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
 		<DefaultLanguage>pl-PL</DefaultLanguage>
 	</PropertyGroup>
 
+	<!-- Development runs unpackaged. The release build adds -p:Packaged=true (tools/Build-Package.ps1) to produce the signed MSIX. -->
+	<PropertyGroup Condition="'$(Packaged)' != 'true'">
+		<WindowsPackageType>None</WindowsPackageType>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Packaged)' == 'true'">
+		<WindowsPackageType>MSIX</WindowsPackageType>
+		<!-- The installed app carries its own .NET runtime, so office computers need no prerequisites. -->
+		<SelfContained>true</SelfContained>
+		<GenerateAppxPackageOnBuild>true</GenerateAppxPackageOnBuild>
+		<AppxPackageSigningEnabled>true</AppxPackageSigningEnabled>
+		<UapAppxPackageBuildMode>SideloadOnly</UapAppxPackageBuildMode>
+		<AppxBundle>Never</AppxBundle>
+		<AppxAutoIncrementPackageRevision>false</AppxAutoIncrementPackageRevision>
+		<GenerateTemporaryStoreCertificate>false</GenerateTemporaryStoreCertificate>
+	</PropertyGroup>
+
 	<ItemGroup>
+		<Content Include="Assets\**\*.png" />
 		<Content Include="..\..\THIRD-PARTY-NOTICES.txt" Link="THIRD-PARTY-NOTICES.txt" CopyToOutputDirectory="PreserveNewest" />
 		<PackageReference Include="Microsoft.WindowsAppSDK" />
 		<PackageReference Include="Microsoft.Windows.SDK.BuildTools" />

@@ -11,3 +11,7 @@ artifacts/
 *.db-shm
 *.db-wal
 .claude/settings.local.json
+
+# Signing keys never go into the repository
+*.pfx
+password.txt

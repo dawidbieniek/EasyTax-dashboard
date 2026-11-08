@@ -10,6 +10,7 @@ using EasyTax.Core.Domain.Clients;
 using EasyTax.Data;
 using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml;
+using Microsoft.Windows.AppLifecycle;
 
 namespace EasyTax.App.Backups;
 
@@ -180,9 +181,20 @@ public sealed class RestoreCoordinator(
 		await dialogs.ShowTextAsync(localizer["Restore_Done_Title"], string.Join(Environment.NewLine, lines), localizer["Restore_Done_Close"]);
 	}
 
-	// A new process that waits for this one to end (see App.WaitForPreviousInstance), so the single-instance check does not mistake it for a second copy.
+	// Installed (MSIX): Windows restarts the app itself, so the new process keeps its package identity. Launching the exe from
+	// inside the package folder would not. AppInstance.Restart only returns when it failed.
+	// Unpackaged (development): start a new process that waits for this one to end (see App.WaitForPreviousInstance), so the
+	// single-instance check does not mistake it for a second copy.
 	private void Restart()
 	{
+		if (PackageInfo.IsPackaged)
+		{
+			var reason = AppInstance.Restart(string.Empty);
+			logger.LogError("Windows could not restart the app after a restore: {Reason}", reason);
+			toasts.Warning(localizer["Toast_RestoreRestart"]);
+			return;
+		}
+
 		try
 		{
 			Process.Start(new ProcessStartInfo(Environment.ProcessPath!, $"--restart-after {Environment.ProcessId}") { UseShellExecute = false });
