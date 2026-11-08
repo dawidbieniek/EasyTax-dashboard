@@ -327,7 +327,7 @@
     <value>Email</value>
   </data>
   <data name="List_Column_Month.Header" xml:space="preserve">
-    <value>Rozliczenie</value>
+    <value>Ten miesiąc</value>
   </data>
   <data name="List_Open.Text" xml:space="preserve">
     <value>Otwórz</value>
@@ -496,7 +496,7 @@
     <value>Bank</value>
   </data>
   <data name="Details_Stat_Month.Text" xml:space="preserve">
-    <value>Wybrany miesiąc</value>
+    <value>Ten miesiąc</value>
   </data>
   <data name="Details_ChangePhoto.Content" xml:space="preserve">
     <value>Zmień</value>
@@ -801,6 +801,57 @@
   </data>
   <data name="Settings_AddYear.Content" xml:space="preserve">
     <value>Dodaj rok</value>
+  </data>
+  <data name="Settings_Accent_Header.Text" xml:space="preserve">
+    <value>Kolor wyróżnienia</value>
+  </data>
+  <data name="Accent_System" xml:space="preserve">
+    <value>Kolor systemu Windows</value>
+  </data>
+  <data name="Accent_Blue" xml:space="preserve">
+    <value>Niebieski</value>
+  </data>
+  <data name="Accent_Navy" xml:space="preserve">
+    <value>Granatowy</value>
+  </data>
+  <data name="Accent_Iris" xml:space="preserve">
+    <value>Fioletowy</value>
+  </data>
+  <data name="Accent_Plum" xml:space="preserve">
+    <value>Śliwkowy</value>
+  </data>
+  <data name="Accent_Rose" xml:space="preserve">
+    <value>Różowy</value>
+  </data>
+  <data name="Accent_Red" xml:space="preserve">
+    <value>Czerwony</value>
+  </data>
+  <data name="Accent_Orange" xml:space="preserve">
+    <value>Pomarańczowy</value>
+  </data>
+  <data name="Accent_Teal" xml:space="preserve">
+    <value>Morski</value>
+  </data>
+  <data name="Accent_Green" xml:space="preserve">
+    <value>Zielony</value>
+  </data>
+  <data name="Accent_Steel" xml:space="preserve">
+    <value>Stalowy</value>
+  </data>
+  <data name="Accent_Gray" xml:space="preserve">
+    <value>Szary</value>
+  </data>
+  <data name="Settings_Tab_General.Text" xml:space="preserve">
+    <value>Ogólne</value>
+  </data>
+  <data name="Settings_Tab_Data.Text" xml:space="preserve">
+    <value>Dane</value>
+  </data>
+  <data name="Settings_Tab_About.Text" xml:space="preserve">
+    <value>O programie</value>
+  </data>
+  <data name="Settings_Appearance_Title.Text" xml:space="preserve">
+    <value>Wygląd</value>
   </data>
   <data name="Settings_Title.Text" xml:space="preserve">
     <value>Ustawienia</value>

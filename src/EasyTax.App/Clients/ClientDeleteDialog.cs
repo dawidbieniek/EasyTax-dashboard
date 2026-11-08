@@ -27,6 +27,6 @@ internal static class ClientDeleteDialog
 			message.Add(new DialogText(string.Format(CultureInfo.CurrentCulture, localizer["List_Delete_SuspendedSince"], date), IsBold: true));
 		}
 
-		return dialogs.ConfirmAsync(localizer["List_Delete_Title"], message, localizer["List_Delete_Confirm"], localizer["Dialog_Cancel"]);
+		return dialogs.ConfirmAsync(localizer["List_Delete_Title"], message, localizer["List_Delete_Confirm"], localizer["Dialog_Cancel"], destructive: true);
 	}
 }

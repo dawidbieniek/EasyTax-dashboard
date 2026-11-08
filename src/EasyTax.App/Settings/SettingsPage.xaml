@@ -1,124 +1,207 @@
 <Page
 	x:Class="EasyTax.App.Settings.SettingsPage"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:dashboard="using:EasyTax.App.Dashboard"
 	xmlns:local="using:EasyTax.App.Settings"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-	<StackPanel
-		Padding="24"
+	<Page.Resources>
+		<dashboard:ColorBrushConverter x:Key="ColorBrush" />
+		<!-- One group of related options: a rounded card with a heading. -->
+		<Style x:Key="SettingsCardStyle" TargetType="Border">
+			<Setter Property="Background" Value="{ThemeResource CardBackgroundFillColorDefaultBrush}" />
+			<Setter Property="BorderBrush" Value="{ThemeResource CardStrokeColorDefaultBrush}" />
+			<Setter Property="BorderThickness" Value="1" />
+			<Setter Property="CornerRadius" Value="8" />
+			<Setter Property="Padding" Value="20" />
+		</Style>
+	</Page.Resources>
+
+	<!-- Stretch with a MaxWidth centers the whole column (title, tabs, cards) in the window. -->
+	<Grid
 		MaxWidth="720"
-		HorizontalAlignment="Left"
-		Spacing="16">
+		Padding="24,24,24,0"
+		HorizontalAlignment="Stretch"
+		RowSpacing="12">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="*" />
+		</Grid.RowDefinitions>
 
-		<TextBlock
-			x:Uid="Settings_Title"
-			Style="{StaticResource TitleTextBlockStyle}" />
+		<TextBlock x:Uid="Settings_Title" Style="{StaticResource TitleTextBlockStyle}" />
 
-		<ComboBox
-			x:Uid="Settings_Theme"
-			MinWidth="240"
-			DisplayMemberPath="Label"
-			ItemsSource="{x:Bind ViewModel.ThemeOptions}"
-			SelectedItem="{x:Bind ViewModel.SelectedTheme, Mode=TwoWay}" />
+		<SelectorBar
+			x:Name="Tabs"
+			Grid.Row="1"
+			SelectionChanged="OnTabChanged">
+			<SelectorBarItem x:Uid="Settings_Tab_General" IsSelected="True" Tag="General" />
+			<SelectorBarItem x:Uid="Settings_Tab_Data" Tag="Data" />
+			<SelectorBarItem x:Uid="Settings_Tab_About" Tag="About" />
+		</SelectorBar>
 
-		<!-- Years offered in the app bar. A year that has data cannot be removed. -->
-		<StackPanel Spacing="8">
-			<TextBlock x:Uid="Settings_Years_Title" Style="{StaticResource SubtitleTextBlockStyle}" />
+		<ScrollViewer Grid.Row="2" HorizontalAlignment="Stretch">
+			<Grid Margin="0,0,0,24">
 
-			<ItemsControl ItemsSource="{x:Bind ViewModel.Years, Mode=OneWay}">
-				<ItemsControl.ItemTemplate>
-					<DataTemplate x:DataType="local:YearItem">
-						<Grid Width="360" Padding="0,4" ColumnSpacing="12">
-							<Grid.ColumnDefinitions>
-								<ColumnDefinition Width="80" />
-								<ColumnDefinition Width="*" />
-								<ColumnDefinition Width="Auto" />
-							</Grid.ColumnDefinitions>
-							<TextBlock VerticalAlignment="Center" Text="{x:Bind Year}" />
+				<!-- General: appearance and the years the app offers. -->
+				<StackPanel x:Name="GeneralPanel" Spacing="12">
+					<Border Style="{StaticResource SettingsCardStyle}">
+						<StackPanel Spacing="12">
+							<TextBlock x:Uid="Settings_Appearance_Title" Style="{StaticResource SubtitleTextBlockStyle}" />
+							<ComboBox
+								x:Uid="Settings_Theme"
+								MinWidth="240"
+								DisplayMemberPath="Label"
+								ItemsSource="{x:Bind ViewModel.ThemeOptions}"
+								SelectedItem="{x:Bind ViewModel.SelectedTheme, Mode=TwoWay}" />
+
+							<!-- Accent colour: the Windows palette; the first swatch follows the colour Windows is set to. -->
+							<StackPanel Spacing="4">
+								<TextBlock x:Uid="Settings_Accent_Header" />
+								<GridView
+									Margin="-8,0,0,0"
+									ItemsSource="{x:Bind ViewModel.AccentOptions}"
+									SelectedItem="{x:Bind ViewModel.SelectedAccent, Mode=TwoWay}"
+									SelectionMode="Single">
+									<GridView.ItemTemplate>
+										<DataTemplate x:DataType="local:AccentOption">
+											<Ellipse
+												Width="28"
+												Height="28"
+												Fill="{x:Bind Swatch, Converter={StaticResource ColorBrush}}"
+												ToolTipService.ToolTip="{x:Bind Label}" />
+										</DataTemplate>
+									</GridView.ItemTemplate>
+								</GridView>
+							</StackPanel>
+						</StackPanel>
+					</Border>
+
+					<!-- Years offered in the app bar. A year that has data cannot be removed. -->
+					<Border Style="{StaticResource SettingsCardStyle}">
+						<StackPanel Spacing="12">
+							<TextBlock x:Uid="Settings_Years_Title" Style="{StaticResource SubtitleTextBlockStyle}" />
+
+							<ItemsControl ItemsSource="{x:Bind ViewModel.Years, Mode=OneWay}">
+								<ItemsControl.ItemTemplate>
+									<DataTemplate x:DataType="local:YearItem">
+										<Grid Padding="0,4" ColumnSpacing="12">
+											<Grid.ColumnDefinitions>
+												<ColumnDefinition Width="80" />
+												<ColumnDefinition Width="*" />
+												<ColumnDefinition Width="Auto" />
+											</Grid.ColumnDefinitions>
+											<TextBlock VerticalAlignment="Center" Text="{x:Bind Year}" />
+											<TextBlock
+												x:Uid="Settings_Year_HasData"
+												Grid.Column="1"
+												VerticalAlignment="Center"
+												Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+												Style="{StaticResource CaptionTextBlockStyle}"
+												Visibility="{x:Bind HasData}" />
+											<Button
+												x:Uid="Settings_Year_Remove"
+												Grid.Column="2"
+												Click="OnRemoveYearClick"
+												IsEnabled="{x:Bind CanRemove}"
+												Tag="{x:Bind Year}" />
+										</Grid>
+									</DataTemplate>
+								</ItemsControl.ItemTemplate>
+							</ItemsControl>
+
+							<StackPanel Orientation="Horizontal" Spacing="8">
+								<NumberBox
+									x:Uid="Settings_NewYear"
+									Width="140"
+									Maximum="2100"
+									Minimum="2000"
+									SpinButtonPlacementMode="Hidden"
+									Value="{x:Bind ViewModel.NewYear, Mode=TwoWay}" />
+								<Button
+									x:Uid="Settings_AddYear"
+									VerticalAlignment="Bottom"
+									Command="{x:Bind ViewModel.AddYearCommand}" />
+							</StackPanel>
+						</StackPanel>
+					</Border>
+				</StackPanel>
+
+				<!-- Data: backups and encryption. -->
+				<StackPanel
+					x:Name="DataPanel"
+					Spacing="12"
+					Visibility="Collapsed">
+					<Border Style="{StaticResource SettingsCardStyle}">
+						<StackPanel Spacing="12">
+							<TextBlock x:Uid="Settings_Backup_Title" Style="{StaticResource SubtitleTextBlockStyle}" />
 							<TextBlock
-								x:Uid="Settings_Year_HasData"
-								Grid.Column="1"
-								VerticalAlignment="Center"
+								x:Uid="Settings_Backup_Description"
+								Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+								TextWrapping="Wrap" />
+							<Grid ColumnSpacing="8">
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="*" />
+									<ColumnDefinition Width="Auto" />
+								</Grid.ColumnDefinitions>
+								<TextBox
+									x:Uid="Settings_Backup_Folder"
+									IsReadOnly="True"
+									Text="{x:Bind ViewModel.BackupFolder, Mode=OneWay}" />
+								<Button
+									x:Uid="Settings_Backup_Browse"
+									Grid.Column="1"
+									VerticalAlignment="Bottom"
+									Command="{x:Bind ViewModel.BrowseBackupFolderCommand}" />
+							</Grid>
+							<CheckBox x:Uid="Settings_Backup_Scheduled" IsChecked="{x:Bind ViewModel.ScheduledBackups, Mode=TwoWay}" />
+							<StackPanel Orientation="Horizontal" Spacing="8">
+								<Button x:Uid="Settings_Backup_Now" Command="{x:Bind ViewModel.BackupNowCommand}" />
+								<Button x:Uid="Settings_Backup_Restore" Command="{x:Bind ViewModel.RestoreCommand}" />
+							</StackPanel>
+							<TextBlock
 								Foreground="{ThemeResource TextFillColorSecondaryBrush}"
 								Style="{StaticResource CaptionTextBlockStyle}"
-								Visibility="{x:Bind HasData}" />
-							<Button
-								x:Uid="Settings_Year_Remove"
-								Grid.Column="2"
-								Click="OnRemoveYearClick"
-								IsEnabled="{x:Bind CanRemove}"
-								Tag="{x:Bind Year}" />
-						</Grid>
-					</DataTemplate>
-				</ItemsControl.ItemTemplate>
-			</ItemsControl>
+								Text="{x:Bind ViewModel.BackupStatus, Mode=OneWay}" />
+						</StackPanel>
+					</Border>
 
-			<StackPanel Orientation="Horizontal" Spacing="8">
-				<NumberBox
-					x:Uid="Settings_NewYear"
-					Width="140"
-					Maximum="2100"
-					Minimum="2000"
-					SpinButtonPlacementMode="Hidden"
-					Value="{x:Bind ViewModel.NewYear, Mode=TwoWay}" />
-				<Button
-					x:Uid="Settings_AddYear"
-					VerticalAlignment="Bottom"
-					Command="{x:Bind ViewModel.AddYearCommand}" />
-			</StackPanel>
-		</StackPanel>
+					<!-- Data encryption: the recovery key can be shown again here. -->
+					<Border Style="{StaticResource SettingsCardStyle}">
+						<StackPanel Spacing="12">
+							<TextBlock x:Uid="Settings_Security_Title" Style="{StaticResource SubtitleTextBlockStyle}" />
+							<TextBlock
+								x:Uid="Settings_Security_Description"
+								Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+								TextWrapping="Wrap" />
+							<Button x:Uid="Settings_ShowKey" Command="{x:Bind ViewModel.ShowRecoveryKeyCommand}" />
+						</StackPanel>
+					</Border>
+				</StackPanel>
 
-		<!-- Backups -->
-		<StackPanel Spacing="8">
-			<TextBlock x:Uid="Settings_Backup_Title" Style="{StaticResource SubtitleTextBlockStyle}" />
-			<TextBlock
-				x:Uid="Settings_Backup_Description"
-				Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-				TextWrapping="Wrap" />
-			<Grid ColumnSpacing="8">
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="*" />
-					<ColumnDefinition Width="Auto" />
-				</Grid.ColumnDefinitions>
-				<TextBox
-					x:Uid="Settings_Backup_Folder"
-					IsReadOnly="True"
-					Text="{x:Bind ViewModel.BackupFolder, Mode=OneWay}" />
-				<Button
-					x:Uid="Settings_Backup_Browse"
-					Grid.Column="1"
-					VerticalAlignment="Bottom"
-					Command="{x:Bind ViewModel.BrowseBackupFolderCommand}" />
+				<!-- About: version and third-party licences. -->
+				<StackPanel
+					x:Name="AboutPanel"
+					Spacing="12"
+					Visibility="Collapsed">
+					<Border Style="{StaticResource SettingsCardStyle}">
+						<StackPanel Spacing="12">
+							<TextBlock x:Uid="Settings_Tab_About" Style="{StaticResource SubtitleTextBlockStyle}" />
+							<StackPanel Spacing="2">
+								<TextBlock
+									x:Uid="Settings_Version"
+									Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+									Style="{StaticResource CaptionTextBlockStyle}" />
+								<TextBlock Text="{x:Bind ViewModel.AppVersion}" />
+							</StackPanel>
+							<HyperlinkButton
+								x:Uid="Settings_Licenses"
+								Padding="0"
+								Command="{x:Bind ViewModel.ShowLicensesCommand}" />
+						</StackPanel>
+					</Border>
+				</StackPanel>
 			</Grid>
-			<CheckBox x:Uid="Settings_Backup_Scheduled" IsChecked="{x:Bind ViewModel.ScheduledBackups, Mode=TwoWay}" />
-			<TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Text="{x:Bind ViewModel.BackupStatus, Mode=OneWay}" />
-			<StackPanel Orientation="Horizontal" Spacing="8">
-				<Button x:Uid="Settings_Backup_Now" Command="{x:Bind ViewModel.BackupNowCommand}" />
-				<Button x:Uid="Settings_Backup_Restore" Command="{x:Bind ViewModel.RestoreCommand}" />
-			</StackPanel>
-		</StackPanel>
-
-		<!-- Data encryption: the recovery key can be shown again here. -->
-		<StackPanel Spacing="8">
-			<TextBlock x:Uid="Settings_Security_Title" Style="{StaticResource SubtitleTextBlockStyle}" />
-			<TextBlock
-				x:Uid="Settings_Security_Description"
-				Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-				TextWrapping="Wrap" />
-			<Button x:Uid="Settings_ShowKey" Command="{x:Bind ViewModel.ShowRecoveryKeyCommand}" />
-		</StackPanel>
-
-		<StackPanel Spacing="2">
-			<TextBlock
-				x:Uid="Settings_Version"
-				Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-				Style="{StaticResource CaptionTextBlockStyle}" />
-			<TextBlock Text="{x:Bind ViewModel.AppVersion}" />
-		</StackPanel>
-
-		<HyperlinkButton
-			x:Uid="Settings_Licenses"
-			Padding="0"
-			Command="{x:Bind ViewModel.ShowLicensesCommand}" />
-	</StackPanel>
+		</ScrollViewer>
+	</Grid>
 </Page>

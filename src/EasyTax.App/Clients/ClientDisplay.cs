@@ -28,9 +28,9 @@ public sealed record ClientDisplay(
 	string Relief,
 	string ReliefSinceDate,
 	string ReliefEndDate,
-	string Status,
+	ChipItem Status,
 	string ContactLine,
-	IReadOnlyList<string> Chips)
+	IReadOnlyList<ChipItem> Chips)
 {
 	public static ClientDisplay From(Client client, ILocalizer localizer)
 	{
@@ -38,24 +38,26 @@ public sealed record ClientDisplay(
 
 		var reliefEnd = ClientFormatting.Date(client.ReliefEndDate);
 
-		var chips = new List<string>
+		var chips = new List<ChipItem>
 		{
-			localizer.Label(client.TaxType),
-			$"{localizer["Chip_Pit"]}: {localizer.Label(client.PitPaymentFrequency).ToLower(ClientFormatting.Culture)}",
+			new(localizer.Label(client.TaxType), ChipItem.Blue),
+			new($"{localizer["Chip_Pit"]}: {localizer.Label(client.PitPaymentFrequency).ToLower(ClientFormatting.Culture)}", ChipItem.Indigo),
 		};
 
 		if (client.IsVatPayer)
-			chips.Add($"{localizer["Chip_Vat"]}: {localizer.Label(client.VatPaymentFrequency).ToLower(ClientFormatting.Culture)}");
+			chips.Add(new($"{localizer["Chip_Vat"]}: {localizer.Label(client.VatPaymentFrequency).ToLower(ClientFormatting.Culture)}", ChipItem.Teal));
 
 		if (client.UsesCashRegister)
-			chips.Add(localizer["Chip_CashRegister"]);
+			chips.Add(new(localizer["Chip_CashRegister"], ChipItem.Pink));
 
-		chips.Add(client.ReliefEndDate is null
-			? localizer.Label(client.ReliefType)
-			: $"{localizer.Label(client.ReliefType)} · {localizer["Chip_Until"]} {reliefEnd}");
+		chips.Add(new(
+			client.ReliefEndDate is null
+				? localizer.Label(client.ReliefType)
+				: $"{localizer.Label(client.ReliefType)} · {localizer["Chip_Until"]} {reliefEnd}",
+			ChipItem.Purple));
 
 		if (!string.IsNullOrWhiteSpace(client.PlanName))
-			chips.Add($"{localizer["Chip_Plan"]}: {client.PlanName}");
+			chips.Add(new($"{localizer["Chip_Plan"]}: {client.PlanName}", ChipItem.BlueGrey));
 
 		var contact = new List<string> { $"NIP {ClientFormatting.Nip(client.Nip)}" };
 		if (!string.IsNullOrWhiteSpace(client.Email))
@@ -94,13 +96,13 @@ public sealed record ClientDisplay(
 	}
 
 	// "Active", or "Suspended since <date>" (the date is shown in local time).
-	private static string StatusText(Client client, ILocalizer localizer)
+	private static ChipItem StatusText(Client client, ILocalizer localizer)
 	{
 		if (client.SuspendedAt is not { } since)
-			return localizer["Details_Status_Active"];
+			return new ChipItem(localizer["Details_Status_Active"], ChipItem.Green);
 
 		var date = ClientFormatting.Date(DateOnly.FromDateTime(since.ToLocalTime()));
 
-		return string.Format(System.Globalization.CultureInfo.CurrentCulture, localizer["Details_Status_SuspendedSince"], date);
+		return new ChipItem(string.Format(System.Globalization.CultureInfo.CurrentCulture, localizer["Details_Status_SuspendedSince"], date), ChipItem.Amber);
 	}
 }

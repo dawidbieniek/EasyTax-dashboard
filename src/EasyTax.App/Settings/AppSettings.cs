@@ -8,6 +8,8 @@ public sealed record AppSettings
 {
 	public AppTheme Theme { get; init; } = AppTheme.Dark;
 
+	public AppAccent Accent { get; init; } = AppAccent.System;
+
 	/// <summary>Where backups are written. Null means the default (Documents\EasyTax\Backups).</summary>
 	public string? BackupFolder { get; init; }
 

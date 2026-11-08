@@ -11,6 +11,13 @@ internal static class ClientFormatting
 	public static string Nip(string nip)
 		=> nip.Length == 10 ? $"{nip[..3]}-{nip[3..6]}-{nip[6..8]}-{nip[8..]}" : nip;
 
+	/// <summary>First day of the current calendar month: the month the client list and the client page report on.</summary>
+	public static DateOnly CurrentMonth()
+	{
+		var today = DateTime.Today;
+		return new DateOnly(today.Year, today.Month, 1);
+	}
+
 	public static string Date(DateOnly? date) => date is { } value ? value.ToString("dd.MM.yyyy", Culture) : "—";
 
 	public static string Money(decimal amount) => amount.ToString("C2", Culture);

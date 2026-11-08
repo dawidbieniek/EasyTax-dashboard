@@ -38,6 +38,7 @@ public sealed partial class DashboardViewModel : ViewModelBase
 	private readonly string[] _monthLabels;
 
 	private AppTheme _theme;
+	private AppAccent _accent;
 	private ChartPalette _palette;
 	private bool _refreshing;
 	private Guid? _notesClientId;
@@ -50,7 +51,8 @@ public sealed partial class DashboardViewModel : ViewModelBase
 		_settings = settings;
 
 		_theme = settings.Current.Theme;
-		_palette = ChartPalette.Create(_theme);
+		_accent = settings.Current.Accent;
+		_palette = ChartPalette.Create(_theme, _accent);
 		_monthLabels = [.. Enumerable.Range(1, MonthsInYear).Select(month => localizer[$"Month_{month}"])];
 
 		VatGauge = new LimitGaugeViewModel(localizer, "Gauge_Vat_Title", "Gauge_Vat_NotApplicable");
@@ -240,12 +242,13 @@ public sealed partial class DashboardViewModel : ViewModelBase
 
 	private void OnSettingsChanged(object? sender, EventArgs e)
 	{
-		// Settings also change when the selection is remembered; only a different theme needs new chart colours.
-		if (_settings.Current.Theme == _theme)
+		// Settings also change when the selection is remembered; only a different theme or accent needs new chart colours.
+		if (_settings.Current.Theme == _theme && _settings.Current.Accent == _accent)
 			return;
 
 		_theme = _settings.Current.Theme;
-		_palette = ChartPalette.Create(_theme);
+		_accent = _settings.Current.Accent;
+		_palette = ChartPalette.Create(_theme, _accent);
 		BuildCharts();
 		Refresh();
 	}
