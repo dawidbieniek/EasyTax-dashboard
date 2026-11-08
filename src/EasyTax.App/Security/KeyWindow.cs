@@ -1,3 +1,4 @@
+using EasyTax.App.Infrastructure;
 using EasyTax.App.Settings;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -36,6 +37,7 @@ internal abstract class KeyWindow : Window
 
 	public Task<bool> ShowAsync()
 	{
+		WindowStack.Push(this);
 		Activate();
 		return _completion.Task;
 	}
