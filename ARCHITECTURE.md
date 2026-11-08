@@ -125,6 +125,10 @@ SQLCipher, one random key per install. `DatabaseKeyStartup` runs before the data
 
 Debug builds: `EASYTAX_DEV_KEY=<32-character key>` skips the key windows (with `EASYTAX_DATA_DIR` and `--seed-demo` this gives a fresh encrypted demo database without typing).
 
+## Third-party notices
+
+`THIRD-PARTY-NOTICES.txt` (repo root) is generated: build, then run `powershell tools/Update-ThirdPartyNotices.ps1`, and commit the result. It lists every shipped package with its copyright and licence and holds the licence texts; the build copies it next to the exe and Settings shows it. Re-run it after adding, removing or updating a package.
+
 ## Errors, logging and toasts
 
 - **Log:** Serilog writes `%LocalAppData%\EasyTax\logs\easytax-<date>.log` (14 days). Technical details only go there, never on screen.

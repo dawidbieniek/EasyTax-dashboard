@@ -39,6 +39,36 @@ public sealed class DialogService(ILocalizer localizer) : IDialogService
 		return await ShowAsync(dialog) == ContentDialogResult.Primary;
 	}
 
+	public Task ShowTextAsync(string title, string text, string closeText)
+	{
+		// A read-only TextBox showed only the first line of a long text; a selectable TextBlock in a ScrollViewer does not.
+		var content = new ScrollViewer
+		{
+			Content = new TextBlock
+			{
+				Text = text,
+				IsTextSelectionEnabled = true,
+				TextWrapping = TextWrapping.Wrap,
+				FontFamily = new Microsoft.UI.Xaml.Media.FontFamily("Consolas"),
+				FontSize = 12,
+				Margin = new Thickness(0, 0, 16, 0),
+			},
+			MinWidth = 640,
+			Height = 420,
+			VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+		};
+
+		var dialog = new ContentDialog
+		{
+			Title = title,
+			Content = content,
+			CloseButtonText = closeText,
+			DefaultButton = ContentDialogButton.Close,
+		};
+
+		return ShowAsync(dialog);
+	}
+
 	public async Task<UnsavedChangesChoice> AskUnsavedChangesAsync()
 	{
 		var dialog = new ContentDialog

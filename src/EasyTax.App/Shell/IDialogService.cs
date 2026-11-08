@@ -18,6 +18,9 @@ public interface IDialogService
 	/// <summary>"You have unsaved changes": save, discard or stay.</summary>
 	Task<UnsavedChangesChoice> AskUnsavedChangesAsync();
 
+	/// <summary>Shows long read-only text (for example the licences) in a scrollable dialog with one close button.</summary>
+	Task ShowTextAsync(string title, string text, string closeText);
+
 	/// <summary>Shows a custom dialog (for example the add-client form).</summary>
 	Task<ContentDialogResult> ShowAsync(ContentDialog dialog);
 }
