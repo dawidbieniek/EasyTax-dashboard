@@ -13,6 +13,7 @@
 	<Grid Padding="16" RowSpacing="12">
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto" />
 			<RowDefinition Height="*" />
 		</Grid.RowDefinitions>
 
@@ -40,9 +41,21 @@
 				Style="{StaticResource AccentButtonStyle}" />
 		</Grid>
 
+		<InfoBar
+			x:Uid="Clients_LoadError"
+			Grid.Row="1"
+			IsClosable="False"
+			IsOpen="{x:Bind ViewModel.HasLoadError, Mode=OneWay}"
+			Message="{x:Bind ViewModel.LoadError, Mode=OneWay}"
+			Severity="Error">
+			<InfoBar.ActionButton>
+				<Button x:Uid="Clients_Retry" Command="{x:Bind ViewModel.RetryCommand}" />
+			</InfoBar.ActionButton>
+		</InfoBar>
+
 		<tv:TableView
 			x:Name="ClientsGrid"
-			Grid.Row="1"
+			Grid.Row="2"
 			AutoGenerateColumns="False"
 			CanFilterColumns="False"
 			CanGroupColumns="False"

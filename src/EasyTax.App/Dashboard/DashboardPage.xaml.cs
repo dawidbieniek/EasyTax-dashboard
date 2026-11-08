@@ -76,8 +76,21 @@ public sealed partial class DashboardPage : Page
 
 	private async void OnChecklistClick(object sender, RoutedEventArgs e)
 	{
-		if (sender is ToggleButton { Tag: ChecklistKey key })
+		if (sender is not ToggleButton { Tag: ChecklistKey key } toggle)
+			return;
+
+		try
+		{
 			await ViewModel.ToggleChecklistCommand.ExecuteAsync(key);
+		}
+		catch
+		{
+			// The button flipped itself when clicked; put it back to what is actually saved before the error is reported.
+			if (toggle.DataContext is ChecklistItem item)
+				toggle.IsChecked = item.IsDone;
+
+			throw;
+		}
 	}
 
 	private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)

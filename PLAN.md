@@ -12,7 +12,7 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done · **(?)** needs a decisio
 - **No unit tests** for now. **No heavy architecture** (no DDD / vertical-slice frameworks): code is organised by feature folders as needed.
 - Core = the domain layer: EF entities are the rich domain objects (no separate persistence models). Ids are **Guid v7** assigned by the domain.
 - DI registration via `ServiceCollectionExtensions` using C# 14 extension blocks.
-- Data: EF Core + SQLite. **Encryption skipped for now** (no DB password flow).
+- Data: EF Core + SQLite. **Encryption skipped for now** (no DB password flow); planned later with SQLCipher, see "Database encryption".
 - Charts/gauges: LiveChartsCore.SkiaSharpView.WinUI (spike verified). Added with the dashboard milestone.
 - Grid: WinUI.TableView candidate; verify in the clients-list task.
 - UI language: **Polish**, all strings in `.resw` resources (English can be added later).
@@ -55,7 +55,7 @@ Resolved: checklist = old app's rules (VAT-R, CEIDG-1, ZUS, Invoiced, ZUS DRA, T
 - [x] 1.6 Data layer wired end to end: `DbContext`, repository, initializer; Clients page reads a count from the DB
 - [x] 1.7 Reorganised into feature folders (Clients, Dashboard, Settings, Shell…), Guid v7 ids, extension-block DI, `Resources/` folder, code-style rules enforced in the build (unit tests dropped)
 - [x] 1.8 Architecture approved; `EnsureCreated` replaced by migrations (task 2.0)
-- [ ] 1.9 File logging sink
+- [x] 1.9 File logging: Serilog, one file per day in `%LocalAppData%\EasyTax\logs`, 14 days kept; Entity Framework limited to warnings
 
 ### M2 — Domain model & core logic (pure, no UI)
 All of M2 is done and was checked with a throwaway console program (not part of the repo; no unit tests by decision): 56 checks, including the old app's relief example (join 14.01.2025 → ends 31.07.2025).
@@ -106,9 +106,12 @@ All of M5 is done and checked in the running app (edit, restart to confirm it wa
 
 ### M7 — Polish & release
 - [x] 7.1 Keyboard shortcuts, one `Shortcuts` helper; keys listed in ARCHITECTURE.md. Tooltips show "name (key)" on buttons.
-- [ ] 7.2 Accessibility pass (automation names, contrast, focus order)
-- [ ] 7.3 Error handling + friendly messages for DB errors
-- [ ] 7.4 Packaging/installer and auto-update decision
+- [x] 7.3 Error handling: toasts (in-app `InfoBar`s, `IToastService`), friendly Polish messages for database / disk errors, startup failure window, error bar with retry on the clients list, success toasts for save / add / delete / suspend / years
+- [ ] 7.4 Packaging and updates. **Decided: packaged MSIX with an `.appinstaller`** (on a fileshare or web URL) for Windows' built-in "check remote version and update", **signed with a self-signed certificate**. Do it before the first real release, because packaged apps get redirected, private app data and switching later moves the data folder and the wrapped encryption key.
+  - Create the certificate once (subject = the manifest `Publisher`); keep the `.pfx` in the admin's password manager; install the public `.cer` into "Trusted People" on each machine (one-time, admin).
+  - Keep the same certificate subject and package identity for the life of the app. A renewed or recreated certificate with the same subject still counts as an update, but must be trusted again on every machine.
+  - If the app is ever installed on machines the admin does not control, move to Trusted Signing or a commercial certificate first (the subject text must stay the same).
+  - Test an update with a real encrypted DB before shipping. Uninstall deletes the data folder, so the uninstall docs must point at backups and the recovery key.
 - [x] 7.5 Demo data for development: `EasyTax.exe --seed-demo` (Debug builds only) fills an empty database with five sample clients and 2026 month records. `EASYTAX_DATA_DIR` redirects the data folder (database and settings), so testing never touches real data.
 
 ## Backups (planned, post-v1)
@@ -131,7 +134,27 @@ Settled with the user; not scheduled in a milestone yet.
 
 **Settings UI** (B.6): folder path + Browse, scheduled toggle, last backup time/status, "Back up now" and "Restore from file" buttons.
 
-Out of scope: retention, encryption, off-machine copies, Windows scheduled tasks.
+Out of scope: retention, off-machine copies, Windows scheduled tasks. Encryption has its own section below; once it lands, backups are encrypted copies of the encrypted DB (B.1 opens both ends of `BackupDatabase` with the key; B.5 needs the key to run its integrity check, and asks for the recovery key when the local one cannot open the file).
+
+## Database encryption (planned, post-v1, ideally before the first release)
+Settled with the user. Goal: a stolen `.db` file or backup `.zip` is useless without the app's key. Not protected against: someone using the user's logged-in Windows account (they already have the app). No password prompt at launch.
+
+- **Engine:** SQLCipher (swap the SQLite native bundle, e.g. `SQLitePCLRaw.bundle_e_sqlcipher`; the password is set on the connection string). EF Core and the migrations keep working.
+- **One key per install**, generated randomly on first run. The same key encrypts the DB and every backup made from it, so one recovery key opens any backup.
+- **Daily use:** the key is wrapped with Windows DPAPI (`ProtectedData`, scope CurrentUser) and stored in the app data folder next to the DB. Unwrapped silently on start; no prompt.
+- **Recovery key:** the same key is shown to the user once, as a grouped code (e.g. `A1B2-C3D4-...`), so it survives a dead machine or a lost Windows profile. If the user loses both the machine and the recovery key, the data is gone. This is by design and the setup dialog says so plainly.
+- **Not chosen:** hardcoded key (extractable from the binary, one leak exposes every install), key fetched from a server (needs a service plus per-install enrollment; too heavy), admin-typed key at setup (fallback if the user flow proves too awkward).
+
+**Tasks**
+- [ ] E.0 Spike: confirm the SQLCipher package's licence and that it works with .NET 10, unpackaged WinUI 3 and EF Core 10 migrations. Stop and revisit if not.
+- [ ] E.1 `DatabaseKeyService` (in `Infrastructure/` or a `Security/` feature folder): generate the key, wrap and unwrap it with DPAPI, load it at startup before the DB opens. Wired into the connection string in `EasyTax.Data`. **Rule: never generate a new key when a DB file already exists** (an update, a lost key file or a new profile must go to the recovery flow E.4, never silently create a key that would make the existing DB unreadable).
+- [ ] E.2 First-run dialog: shows the recovery key with Copy, Save to file and Print; cannot be skipped; the user retypes a few characters to confirm they stored it. Explains that losing the key and the machine means losing the data.
+- [ ] E.3 Settings card: "Show recovery key" (the user is already inside the app, so showing it again is fine).
+- [ ] E.4 Recovery flow: when the local key is missing or cannot open the DB (new machine, new Windows profile), ask for the recovery key, verify it by opening the DB, then re-wrap it with DPAPI for this machine.
+- [ ] E.5 Existing plain databases: demo DBs are disposable, so no migration path; an unencrypted file is simply rejected with a clear message.
+- [ ] E.6 Backup tasks B.1 and B.5 updated for the encrypted DB (see Backups).
+
+Open decisions (defaults assumed unless changed): the key format is a grouped code; the recovery-key step in first-run setup is mandatory.
 
 ## Later (not in v1)
-DB encryption, backups (see above), notifications/reminders, emails + templates, tax calculator, list filters (search + filter flyout), CSV/Excel export.
+Notifications/reminders, emails + templates (needs notifications), list filters (search + filter flyout), CSV/Excel export (unclear what to export), tax calculator (needs the exact rules for forms of taxation, ZUS and the yearly rates before it can be designed; the old TaxDashboard code in `C:\Users\dawid\Desktop\TaxDashboard` may hold some). Backups and DB encryption have their own sections above.

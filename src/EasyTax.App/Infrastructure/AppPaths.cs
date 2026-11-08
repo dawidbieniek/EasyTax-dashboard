@@ -12,5 +12,7 @@ internal static class AppPaths
 
 	public static string DatabaseFile { get; } = Path.Combine(DataDirectory, "easytax.db");
 
+	public static string LogDirectory { get; } = Path.Combine(DataDirectory, "logs");
+
 	public static string SettingsFile { get; } = Path.Combine(DataDirectory, "settings.json");
 }

@@ -58,5 +58,27 @@
 					IsTabStop="True" />
 			</Grid>
 		</NavigationView>
+
+		<!-- Toasts: short messages in the bottom-right corner. -->
+		<ItemsControl
+			Grid.Row="1"
+			Margin="16"
+			HorizontalAlignment="Right"
+			VerticalAlignment="Bottom"
+			ItemsSource="{x:Bind Toasts}">
+			<ItemsControl.ItemTemplate>
+				<DataTemplate x:DataType="local:ToastItem">
+					<InfoBar
+						MinWidth="320"
+						MaxWidth="480"
+						Margin="0,4,0,0"
+						Closed="OnToastClosed"
+						IsClosable="True"
+						IsOpen="True"
+						Message="{x:Bind Message}"
+						Severity="{x:Bind Severity}" />
+				</DataTemplate>
+			</ItemsControl.ItemTemplate>
+		</ItemsControl>
 	</Grid>
 </Window>

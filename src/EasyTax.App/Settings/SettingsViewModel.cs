@@ -16,12 +16,16 @@ public sealed partial class SettingsViewModel : ViewModelBase
 	private readonly ISettingsService _settings;
 	private readonly IAccountingYearRepository _yearRepository;
 	private readonly IClientContext _context;
+	private readonly IToastService _toasts;
+	private readonly ILocalizer _localizer;
 
-	public SettingsViewModel(ISettingsService settings, ILocalizer localizer, IAccountingYearRepository yearRepository, IClientContext context)
+	public SettingsViewModel(ISettingsService settings, ILocalizer localizer, IAccountingYearRepository yearRepository, IClientContext context, IToastService toasts)
 	{
 		_settings = settings;
 		_yearRepository = yearRepository;
 		_context = context;
+		_toasts = toasts;
+		_localizer = localizer;
 
 		ThemeOptions =
 		[
@@ -60,10 +64,12 @@ public sealed partial class SettingsViewModel : ViewModelBase
 	[RelayCommand(CanExecute = nameof(CanAddYear))]
 	private async Task AddYearAsync()
 	{
-		if (!await _yearRepository.AddAsync((int)NewYear))
+		var year = (int)NewYear;
+		if (!await _yearRepository.AddAsync(year))
 			return;
 
 		await ReloadYearsEverywhereAsync();
+		_toasts.Success(string.Format(System.Globalization.CultureInfo.CurrentCulture, _localizer["Toast_YearAdded"], year));
 	}
 
 	[RelayCommand]
@@ -73,6 +79,7 @@ public sealed partial class SettingsViewModel : ViewModelBase
 			return;
 
 		await ReloadYearsEverywhereAsync();
+		_toasts.Success(string.Format(System.Globalization.CultureInfo.CurrentCulture, _localizer["Toast_YearRemoved"], year));
 	}
 
 	// The app bar and dashboard read the years from the shared context, so it has to reload too.

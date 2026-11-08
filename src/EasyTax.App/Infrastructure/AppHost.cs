@@ -7,6 +7,8 @@ using EasyTax.App.Shell;
 using EasyTax.Data;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Serilog;
 
 namespace EasyTax.App.Infrastructure;
 
@@ -20,6 +22,15 @@ internal static class AppHost
 			ContentRootPath = AppContext.BaseDirectory,
 		});
 
+		// Logging: a file per day under the data folder, two weeks kept. Entity Framework logs every SQL command at
+		// Information level, which would drown everything else, so it is limited to warnings.
+		var logger = new LoggerConfiguration()
+			.MinimumLevel.Information()
+			.WriteTo.File(Path.Combine(AppPaths.LogDirectory, "easytax-.log"), rollingInterval: RollingInterval.Day, retainedFileCountLimit: 14)
+			.CreateLogger();
+		builder.Logging.AddSerilog(logger, dispose: true);
+		builder.Logging.AddFilter("Microsoft.EntityFrameworkCore", LogLevel.Warning);
+
 		var services = builder.Services;
 
 		// Persistence (EasyTax.Data)
@@ -32,6 +43,7 @@ internal static class AppHost
 		services.AddSingleton<INavigationService, NavigationService>();
 		services.AddSingleton<IClientContext, ClientContext>();
 		services.AddSingleton<IDialogService, DialogService>();
+		services.AddSingleton<IToastService, ToastService>();
 		services.AddSingleton<IShellWindow, ShellWindow>();
 		services.AddSingleton<IPhotoService, PhotoService>();
 		services.AddTransient<AddClientViewModel>();

@@ -2,10 +2,12 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using EasyTax.App.Infrastructure;
 using EasyTax.App.Localization;
 using EasyTax.App.Shell;
 using EasyTax.Core.Domain.Clients;
 using EasyTax.Core.Domain.Months;
+using Microsoft.Extensions.Logging;
 
 namespace EasyTax.App.Clients;
 
@@ -15,7 +17,9 @@ public sealed partial class ClientsViewModel(
 	IClientContext context,
 	INavigationService navigation,
 	IDialogService dialogs,
-	ILocalizer localizer) : ViewModelBase
+	ILocalizer localizer,
+	IToastService toasts,
+	ILogger<ClientsViewModel> logger) : ViewModelBase
 {
 	private IReadOnlyList<ClientRow> _allRows = [];
 
@@ -27,10 +31,37 @@ public sealed partial class ClientsViewModel(
 	[ObservableProperty]
 	public partial string Summary { get; set; } = string.Empty;
 
+	/// <summary>Why the list could not be loaded; empty when it loaded fine. The page shows an error bar with a retry button.</summary>
+	[ObservableProperty]
+	[NotifyPropertyChangedFor(nameof(HasLoadError))]
+	public partial string LoadError { get; set; } = string.Empty;
+
+	public bool HasLoadError => LoadError.Length > 0;
+
 	public override Task OnNavigatedToAsync(object? parameter) => LoadAsync();
 
 	/// <summary>Reloads the list from the database. Also called after a client was added.</summary>
 	public async Task LoadAsync()
+	{
+		try
+		{
+			await LoadRowsAsync();
+			LoadError = string.Empty;
+		}
+		catch (Exception ex)
+		{
+			logger.LogError(ex, "Could not load the client list");
+			LoadError = UserFacingErrors.Describe(ex, localizer);
+		}
+	}
+
+	/// <summary>Shows the "client added" toast; the add dialog itself belongs to the page.</summary>
+	public void NotifyClientAdded(string name) => toasts.Success(string.Format(CultureInfo.CurrentCulture, localizer["Toast_ClientAdded"], name));
+
+	[RelayCommand]
+	private Task RetryAsync() => LoadAsync();
+
+	private async Task LoadRowsAsync()
 	{
 		var allClients = await clients.GetAllAsync();
 
@@ -79,6 +110,9 @@ public sealed partial class ClientsViewModel(
 
 		await context.ReloadAsync(dropSuspendedSelection: true);
 		await LoadAsync();
+
+		var key = client.IsSuspended ? "Toast_ClientSuspended" : "Toast_ClientActivated";
+		toasts.Success(string.Format(CultureInfo.CurrentCulture, localizer[key], client.FullName));
 	}
 
 	[RelayCommand]
@@ -94,6 +128,8 @@ public sealed partial class ClientsViewModel(
 
 		await context.ReloadAsync();
 		await LoadAsync();
+
+		toasts.Success(string.Format(CultureInfo.CurrentCulture, localizer["Toast_ClientDeleted"], row.FullName));
 	}
 
 	private ClientRow ToRow(Client client, DateOnly month, IEnumerable<MonthRecord> records, byte[]? photo)

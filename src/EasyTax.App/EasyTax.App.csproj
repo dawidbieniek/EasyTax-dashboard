@@ -20,6 +20,8 @@
 		<PackageReference Include="Microsoft.Windows.SDK.BuildTools" />
 		<PackageReference Include="CommunityToolkit.Mvvm" />
 		<PackageReference Include="Microsoft.Extensions.Hosting" />
+		<PackageReference Include="Serilog.Extensions.Logging" />
+		<PackageReference Include="Serilog.Sinks.File" />
 		<PackageReference Include="WinUI.TableView" />
 		<PackageReference Include="LiveChartsCore.SkiaSharpView.WinUI" />
 	</ItemGroup>

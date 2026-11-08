@@ -28,6 +28,66 @@
   <data name="Dash_NoChartData.Text" xml:space="preserve">
     <value>Brak danych za ten rok.</value>
   </data>
+  <data name="Error_Generic" xml:space="preserve">
+    <value>Coś poszło nie tak. Szczegóły zapisano w dzienniku.</value>
+  </data>
+  <data name="Error_Db" xml:space="preserve">
+    <value>Nie udało się zapisać lub odczytać danych. Szczegóły zapisano w dzienniku.</value>
+  </data>
+  <data name="Error_DbBusy" xml:space="preserve">
+    <value>Baza danych jest zajęta. Spróbuj ponownie za chwilę.</value>
+  </data>
+  <data name="Error_DbReadOnly" xml:space="preserve">
+    <value>Baza danych jest tylko do odczytu. Sprawdź uprawnienia do folderu z danymi.</value>
+  </data>
+  <data name="Error_DbCorrupt" xml:space="preserve">
+    <value>Plik bazy danych jest uszkodzony. Przywróć kopię zapasową.</value>
+  </data>
+  <data name="Error_DiskFull" xml:space="preserve">
+    <value>Brak miejsca na dysku.</value>
+  </data>
+  <data name="Error_Disk" xml:space="preserve">
+    <value>Nie udało się odczytać lub zapisać pliku. Sprawdź dysk i uprawnienia.</value>
+  </data>
+  <data name="Startup_Title" xml:space="preserve">
+    <value>EasyTax nie może się uruchomić</value>
+  </data>
+  <data name="Startup_Message" xml:space="preserve">
+    <value>Nie udało się otworzyć bazy danych lub ustawień. Dane nie zostały zmienione.</value>
+  </data>
+  <data name="Startup_LogFile" xml:space="preserve">
+    <value>Szczegóły w folderze: {0}</value>
+  </data>
+  <data name="Startup_Close" xml:space="preserve">
+    <value>Zamknij</value>
+  </data>
+  <data name="Toast_Saved" xml:space="preserve">
+    <value>Zapisano zmiany.</value>
+  </data>
+  <data name="Toast_ClientAdded" xml:space="preserve">
+    <value>Dodano klienta {0}.</value>
+  </data>
+  <data name="Toast_ClientDeleted" xml:space="preserve">
+    <value>Usunięto klienta {0}.</value>
+  </data>
+  <data name="Toast_ClientSuspended" xml:space="preserve">
+    <value>Klient {0} został zawieszony.</value>
+  </data>
+  <data name="Toast_ClientActivated" xml:space="preserve">
+    <value>Klient {0} jest znowu aktywny.</value>
+  </data>
+  <data name="Toast_YearAdded" xml:space="preserve">
+    <value>Dodano rok {0}.</value>
+  </data>
+  <data name="Toast_YearRemoved" xml:space="preserve">
+    <value>Usunięto rok {0}.</value>
+  </data>
+  <data name="Clients_Retry.Content" xml:space="preserve">
+    <value>Spróbuj ponownie</value>
+  </data>
+  <data name="Clients_LoadError.Title" xml:space="preserve">
+    <value>Nie udało się wczytać listy klientów</value>
+  </data>
   <data name="Dashboard_NoClients.Text" xml:space="preserve">
     <value>Nie masz jeszcze żadnych klientów.</value>
   </data>

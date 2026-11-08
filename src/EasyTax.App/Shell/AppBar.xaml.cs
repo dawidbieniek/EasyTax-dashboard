@@ -105,7 +105,18 @@ public sealed partial class AppBar : UserControl
 
 	private async void OnAccountedClick(object sender, RoutedEventArgs e)
 	{
-		if (sender is ToggleButton toggle)
+		if (sender is not ToggleButton toggle)
+			return;
+
+		try
+		{
 			await ViewModel.SetAccountedAsync(toggle.IsChecked == true);
+		}
+		catch
+		{
+			// The button flipped itself when clicked; put it back to what is actually saved before the error is reported.
+			toggle.IsChecked = ViewModel.IsAccounted;
+			throw;
+		}
 	}
 }

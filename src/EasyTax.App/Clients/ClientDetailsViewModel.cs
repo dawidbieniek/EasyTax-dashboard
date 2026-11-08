@@ -23,6 +23,7 @@ public sealed partial class ClientDetailsViewModel : ViewModelBase
 	private readonly IDialogService _dialogs;
 	private readonly INavigationService _navigation;
 	private readonly ILocalizer _localizer;
+	private readonly IToastService _toasts;
 
 	private Client? _client;
 
@@ -34,7 +35,8 @@ public sealed partial class ClientDetailsViewModel : ViewModelBase
 		IClientContext context,
 		IDialogService dialogs,
 		INavigationService navigation,
-		ILocalizer localizer)
+		ILocalizer localizer,
+		IToastService toasts)
 	{
 		_clients = clients;
 		_banks = banks;
@@ -44,6 +46,7 @@ public sealed partial class ClientDetailsViewModel : ViewModelBase
 		_dialogs = dialogs;
 		_navigation = navigation;
 		_localizer = localizer;
+		_toasts = toasts;
 
 		Form = new ClientForm(localizer);
 		GenderOptions = localizer.Options<Gender>();
@@ -215,11 +218,14 @@ public sealed partial class ClientDetailsViewModel : ViewModelBase
 		if (!await ClientDeleteDialog.ConfirmAsync(_dialogs, _localizer, _client.FullName))
 			return;
 
+		var name = _client.FullName;
+
 		EndEditing();
 		await _clients.DeleteAsync(_client.Id);
 		await _context.ReloadAsync();
 
 		_navigation.NavigateTo<ClientsViewModel>();
+		_toasts.Success(string.Format(System.Globalization.CultureInfo.CurrentCulture, _localizer["Toast_ClientDeleted"], name));
 	}
 
 	[RelayCommand]
@@ -258,6 +264,8 @@ public sealed partial class ClientDetailsViewModel : ViewModelBase
 
 		await LoadAsync();
 		EndEditing();
+
+		_toasts.Success(_localizer["Toast_Saved"]);
 
 		return true;
 	}

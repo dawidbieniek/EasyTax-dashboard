@@ -17,11 +17,13 @@ public sealed partial class MainWindow : Window
 	private const int MinimumWindowWidth = 1280;
 
 	private readonly INavigationService _navigation;
+	private readonly IToastService _toasts;
 	private ViewModelBase? _currentViewModel;
 
-	public MainWindow(INavigationService navigation, IThemeService themeService, IDialogService dialogService, IShellWindow shellWindow)
+	public MainWindow(INavigationService navigation, IThemeService themeService, IDialogService dialogService, IShellWindow shellWindow, IToastService toastService)
 	{
 		_navigation = navigation;
+		_toasts = toastService;
 
 		InitializeComponent();
 
@@ -56,6 +58,14 @@ public sealed partial class MainWindow : Window
 		_navigation.Initialize(ContentFrame);
 		_navigation.Navigated += OnNavigated;
 		_navigation.NavigateTo<DashboardViewModel>();
+	}
+
+	public System.Collections.ObjectModel.ObservableCollection<ToastItem> Toasts => _toasts.Toasts;
+
+	private void OnToastClosed(InfoBar sender, InfoBarClosedEventArgs args)
+	{
+		if (sender.DataContext is ToastItem toast)
+			_toasts.Dismiss(toast);
 	}
 
 	// Keyboard navigation: the rail did not move its highlight, so there is nothing to put back when leaving is refused.

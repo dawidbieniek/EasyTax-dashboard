@@ -53,8 +53,11 @@ public sealed partial class ClientsPage : Page
 		await addViewModel.InitializeAsync();
 
 		var result = await App.GetService<IDialogService>().ShowAsync(new AddClientDialog(addViewModel));
-		if (result == ContentDialogResult.Primary)
-			await ViewModel.RefreshAsync();
+		if (result != ContentDialogResult.Primary)
+			return;
+
+		await ViewModel.RefreshAsync();
+		ViewModel.NotifyClientAdded(addViewModel.DisplayName);
 	}
 
 	private async void OnGridTapped(object sender, TappedRoutedEventArgs e)

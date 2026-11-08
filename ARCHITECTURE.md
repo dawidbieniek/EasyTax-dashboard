@@ -119,6 +119,17 @@ Everything else uses constructor injection.
   (`extension(IServiceCollection services) { public IServiceCollection AddEasyTaxData(...) }`).
 - **Logging**: `ILogger<T>` from the host (debug output for now; file sink is a later task).
 
+## Errors, logging and toasts
+
+- **Log:** Serilog writes `%LocalAppData%\EasyTax\logs\easytax-<date>.log` (14 days). Technical details only go there, never on screen.
+- **Toasts:** `IToastService` (Shell) shows self-closing `InfoBar`s in the bottom-right corner of the main window (success and info 4 s, warning 6 s, error 8 s, at most four). View models inject it; messages are `Toast_*` resources.
+- **Unexpected errors:** `App.ReportError` logs the exception and shows a toast with `UserFacingErrors.Describe` (busy / read-only / corrupt database, disk full, generic). It is reached from `Application.UnhandledException` and from `ErrorHandlingSynchronizationContext`.
+- **Startup failure** (unreadable database or settings): `StartupErrorWindow` explains it and points to the log folder instead of crashing.
+- **Component error state:** the clients list shows an error bar with a retry button when loading fails (`ClientsViewModel.LoadError`).
+- **Toggle buttons** flip themselves on click; a handler whose save fails puts the button back (`OnAccountedClick`, `OnChecklistClick`) before rethrowing.
+
+WinUI note (cost an hour): an exception thrown after an `await` in an `async void` method does **not** reach `Application.UnhandledException`; WinUI crashes the process (stowed exception 0xc000027b). The wrapper context catches it, but it only works when it is installed in the `App` constructor: a context set inside an async method (`OnLaunched`) is reverted when that method's first segment ends.
+
 ## Keyboard shortcuts
 
 Declared with `Shortcuts.Add(control, key, action, modifiers)` (Shell/Shortcuts.cs) in the code-behind of the page or control that owns them; it adds a `KeyboardAccelerator` and, for buttons, a tooltip "name (key)". Plain keys are ignored while a text control has focus or a dialog/drop-down is open; chords with Ctrl or Alt always run. Focus shortcuts use `Shortcuts.FocusLater`, otherwise the text box receives the shortcut character. Keys can be changed in the one `Add` call.
