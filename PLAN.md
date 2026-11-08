@@ -102,7 +102,7 @@ All of M5 is done and checked in the running app (edit, restart to confirm it wa
 - Polish done: minimum window width 1200 px keeps the month strip whole; charts show "Brak danych za ten rok." when the year has no data.
 
 ### M6 — Settings
-- [ ] 6.1 Years management UI (add / remove where allowed)
+- [x] 6.1 Years management UI in Settings: list of years (a year with data shows "Zawiera dane" and cannot be removed), add a year 2000–2100. Theme and version were done earlier.
 
 ### M7 — Polish & release
 - [ ] 7.1 Keyboard: Ctrl+F search, Ctrl+S save, arrow navigation for clients/months
