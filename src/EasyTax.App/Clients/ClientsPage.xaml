@@ -81,7 +81,7 @@
 			<tv:TableView.Columns>
 				<tv:TableViewTemplateColumn
 					x:Uid="List_Column_Name"
-					Width="300"
+					Width="260"
 					SortMemberPath="FullName">
 					<tv:TableViewTemplateColumn.CellTemplate>
 						<DataTemplate x:DataType="local:ClientRow">

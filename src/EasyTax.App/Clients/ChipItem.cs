@@ -15,7 +15,7 @@ public sealed record ChipItem(string Text, Color Color)
 	public static readonly Color Green = Color.FromArgb(255, 0x66, 0xBB, 0x6A);
 	public static readonly Color Amber = Color.FromArgb(255, 0xFF, 0xCA, 0x28);
 
-	public Color Fill => Color.FromArgb(40, Color.R, Color.G, Color.B);
+	public Color Fill => Color.FromArgb(75, Color.R, Color.G, Color.B);
 
 	public Color Stroke => Color.FromArgb(170, Color.R, Color.G, Color.B);
 }
