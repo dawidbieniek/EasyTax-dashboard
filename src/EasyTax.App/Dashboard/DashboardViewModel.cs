@@ -39,6 +39,7 @@ public sealed partial class DashboardViewModel : ViewModelBase
 
 	private AppTheme _theme;
 	private AppAccent _accent;
+	private int _warningPercent;
 	private ChartPalette _palette;
 	private bool _refreshing;
 	private Guid? _notesClientId;
@@ -52,6 +53,7 @@ public sealed partial class DashboardViewModel : ViewModelBase
 
 		_theme = settings.Current.Theme;
 		_accent = settings.Current.Accent;
+		_warningPercent = settings.Current.LimitWarningPercent;
 		_palette = ChartPalette.Create(_theme, _accent);
 		_monthLabels = [.. Enumerable.Range(1, MonthsInYear).Select(month => localizer[$"Month_{month}"])];
 
@@ -242,7 +244,13 @@ public sealed partial class DashboardViewModel : ViewModelBase
 
 	private void OnSettingsChanged(object? sender, EventArgs e)
 	{
-		// Settings also change when the selection is remembered; only a different theme or accent needs new chart colours.
+		// Settings also change when the selection is remembered; only a different warning threshold, theme or accent changes what is shown.
+		if (_settings.Current.LimitWarningPercent != _warningPercent)
+		{
+			_warningPercent = _settings.Current.LimitWarningPercent;
+			Refresh();
+		}
+
 		if (_settings.Current.Theme == _theme && _settings.Current.Accent == _accent)
 			return;
 
@@ -291,7 +299,7 @@ public sealed partial class DashboardViewModel : ViewModelBase
 
 	private void RefreshGauges(Client client)
 	{
-		foreach (var status in LimitCalculator.CalculateAll(client, _context.YearRecords.ToList(), _context.Year))
+		foreach (var status in LimitCalculator.CalculateAll(client, _context.YearRecords.ToList(), _context.Year, _settings.Current.Alerts.LimitWarningThreshold))
 		{
 			var gauge = status.Type switch
 			{

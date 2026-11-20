@@ -802,6 +802,18 @@
   <data name="Settings_AddYear.Content" xml:space="preserve">
     <value>Dodaj rok</value>
   </data>
+  <data name="Settings_Alerts_Title.Text" xml:space="preserve">
+    <value>Alerty</value>
+  </data>
+  <data name="Settings_Alerts_Description.Text" xml:space="preserve">
+    <value>Kiedy klient jest oznaczany jako wymagający uwagi. Próg limitu dotyczy też kolorów wskaźników na pulpicie.</value>
+  </data>
+  <data name="Settings_Alerts_LimitPercent.Header" xml:space="preserve">
+    <value>Ostrzegaj od (% limitu, 50–99)</value>
+  </data>
+  <data name="Settings_Alerts_ReliefDays.Header" xml:space="preserve">
+    <value>Ostrzegaj o końcu ulgi (dni przed, 1–90)</value>
+  </data>
   <data name="Settings_Accent_Header.Text" xml:space="preserve">
     <value>Kolor wyróżnienia</value>
   </data>

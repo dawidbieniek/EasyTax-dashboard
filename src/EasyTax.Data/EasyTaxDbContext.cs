@@ -1,4 +1,5 @@
 using EasyTax.Core.Common;
+using EasyTax.Core.Domain.Alerts;
 using EasyTax.Core.Domain.Banks;
 using EasyTax.Core.Domain.Clients;
 using EasyTax.Core.Domain.Months;
@@ -14,6 +15,8 @@ public class EasyTaxDbContext(DbContextOptions<EasyTaxDbContext> options) : DbCo
 	public DbSet<ClientPhoto> ClientPhotos => Set<ClientPhoto>();
 
 	public DbSet<DeletedClient> DeletedClients => Set<DeletedClient>();
+
+	public DbSet<AlertAcknowledgement> AlertAcknowledgements => Set<AlertAcknowledgement>();
 
 	public DbSet<Bank> Banks => Set<Bank>();
 

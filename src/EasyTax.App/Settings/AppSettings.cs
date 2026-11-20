@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using EasyTax.App.Infrastructure;
+using EasyTax.Core.Domain.Alerts;
 
 namespace EasyTax.App.Settings;
 
@@ -19,6 +20,24 @@ public sealed record AppSettings
 
 	/// <summary>Make a backup at startup when the newest one is older than seven days.</summary>
 	public bool ScheduledBackups { get; init; } = true;
+
+	/// <summary>Percent of an income limit at which a client gets a warning (gauges and alerts). Kept within the allowed range.</summary>
+	public int LimitWarningPercent
+	{
+		get;
+		init => field = Math.Clamp(value, AlertOptions.MinLimitWarningPercent, AlertOptions.MaxLimitWarningPercent);
+	} = AlertOptions.DefaultLimitWarningPercent;
+
+	/// <summary>Days before the end of a relief at which a client gets a warning. Kept within the allowed range.</summary>
+	public int ReliefWarningDays
+	{
+		get;
+		init => field = Math.Clamp(value, AlertOptions.MinReliefWarningDays, AlertOptions.MaxReliefWarningDays);
+	} = AlertOptions.DefaultReliefWarningDays;
+
+	/// <summary>The alert thresholds as the Core rules expect them.</summary>
+	[JsonIgnore]
+	public AlertOptions Alerts => new(LimitWarningPercent, ReliefWarningDays);
 
 	// Selection restored on the next start (see ClientContext).
 	public Guid? LastClientId { get; init; }

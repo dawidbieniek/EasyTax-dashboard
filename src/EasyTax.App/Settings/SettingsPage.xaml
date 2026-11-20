@@ -125,6 +125,35 @@
 							</StackPanel>
 						</StackPanel>
 					</Border>
+
+					<!-- Alerts: when a client is flagged. The same limit threshold colours the gauges. -->
+					<Border Style="{StaticResource SettingsCardStyle}">
+						<StackPanel Spacing="12">
+							<TextBlock x:Uid="Settings_Alerts_Title" Style="{StaticResource SubtitleTextBlockStyle}" />
+							<TextBlock
+								x:Uid="Settings_Alerts_Description"
+								Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+								TextWrapping="Wrap" />
+							<NumberBox
+								x:Uid="Settings_Alerts_LimitPercent"
+								Width="240"
+								HorizontalAlignment="Left"
+								Maximum="99"
+								Minimum="50"
+								SmallChange="1"
+								SpinButtonPlacementMode="Inline"
+								Value="{x:Bind ViewModel.LimitWarningPercent, Mode=TwoWay}" />
+							<NumberBox
+								x:Uid="Settings_Alerts_ReliefDays"
+								Width="240"
+								HorizontalAlignment="Left"
+								Maximum="90"
+								Minimum="1"
+								SmallChange="1"
+								SpinButtonPlacementMode="Inline"
+								Value="{x:Bind ViewModel.ReliefWarningDays, Mode=TwoWay}" />
+						</StackPanel>
+					</Border>
 				</StackPanel>
 
 				<!-- Data: backups and encryption. -->

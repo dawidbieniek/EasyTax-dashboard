@@ -6,6 +6,7 @@ using EasyTax.App.Backups;
 using EasyTax.App.Localization;
 using EasyTax.App.Security;
 using EasyTax.App.Shell;
+using EasyTax.Core.Domain.Alerts;
 using EasyTax.Core.Domain.Years;
 using Windows.ApplicationModel.DataTransfer;
 
@@ -56,6 +57,8 @@ public sealed partial class SettingsViewModel : ViewModelBase
 		AccentOptions = [.. Enum.GetValues<AppAccent>().Select(accent => new AccentOption(accent, localizer[$"Accent_{accent}"], AppAccentColors.Of(accent) ?? systemAccent))];
 		SelectedAccent = AccentOptions.First(o => o.Value == settings.Current.Accent);
 		NewYear = DateTime.Today.Year;
+		LimitWarningPercent = settings.Current.LimitWarningPercent;
+		ReliefWarningDays = settings.Current.ReliefWarningDays;
 
 		AppVersion = Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "?";
 	}
@@ -80,6 +83,14 @@ public sealed partial class SettingsViewModel : ViewModelBase
 	[NotifyCanExecuteChangedFor(nameof(AddYearCommand))]
 	public partial double NewYear { get; set; }
 
+	/// <summary>Value of the "warning from" box, in percent of a limit (NaN while the box is empty).</summary>
+	[ObservableProperty]
+	public partial double LimitWarningPercent { get; set; }
+
+	/// <summary>Value of the "relief warning" box, in days (NaN while the box is empty).</summary>
+	[ObservableProperty]
+	public partial double ReliefWarningDays { get; set; }
+
 	/// <summary>The folder backups are written to.</summary>
 	[ObservableProperty]
 	public partial string BackupFolder { get; set; } = string.Empty;
@@ -95,6 +106,19 @@ public sealed partial class SettingsViewModel : ViewModelBase
 	[ObservableProperty]
 	[NotifyCanExecuteChangedFor(nameof(BackupNowCommand), nameof(RestoreCommand))]
 	public partial bool IsBackupBusy { get; set; }
+
+	// An empty or out-of-range box is ignored (the box itself limits the range); the stored value is clamped anyway.
+	partial void OnLimitWarningPercentChanged(double value)
+	{
+		if (value is >= AlertOptions.MinLimitWarningPercent and <= AlertOptions.MaxLimitWarningPercent)
+			_settings.Update(s => s with { LimitWarningPercent = (int)value });
+	}
+
+	partial void OnReliefWarningDaysChanged(double value)
+	{
+		if (value is >= AlertOptions.MinReliefWarningDays and <= AlertOptions.MaxReliefWarningDays)
+			_settings.Update(s => s with { ReliefWarningDays = (int)value });
+	}
 
 	partial void OnScheduledBackupsChanged(bool value)
 		=> _settings.Update(s => s with { ScheduledBackups = value });
