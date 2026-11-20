@@ -41,6 +41,14 @@
 						<SymbolIcon Symbol="People" />
 					</NavigationViewItem.Icon>
 				</NavigationViewItem>
+				<NavigationViewItem x:Name="AlertsItem" x:Uid="Nav_Alerts" Tag="Alerts">
+					<NavigationViewItem.Icon>
+						<SymbolIcon Symbol="Important" />
+					</NavigationViewItem.Icon>
+					<NavigationViewItem.InfoBadge>
+						<InfoBadge x:Name="AlertsBadge" Visibility="Collapsed" />
+					</NavigationViewItem.InfoBadge>
+				</NavigationViewItem>
 			</NavigationView.MenuItems>
 
 			<Grid>

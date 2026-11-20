@@ -786,6 +786,65 @@
     <value>Liczba klientów: {0}</value>
   </data>
 
+  <!-- Alerts -->
+  <data name="Nav_Alerts.Content" xml:space="preserve">
+    <value>Alerty</value>
+  </data>
+  <data name="Alerts_ShowHandled.Header" xml:space="preserve">
+    <value>Pokaż obsłużone</value>
+  </data>
+  <data name="Alerts_Empty.Text" xml:space="preserve">
+    <value>Żaden klient nie wymaga teraz uwagi.</value>
+  </data>
+  <data name="Alerts_Open.Content" xml:space="preserve">
+    <value>Otwórz klienta</value>
+  </data>
+  <data name="Alerts_Acknowledge" xml:space="preserve">
+    <value>Oznacz jako powiadomiony</value>
+  </data>
+  <data name="Alerts_Unacknowledge" xml:space="preserve">
+    <value>Cofnij</value>
+  </data>
+  <data name="Alerts_Summary" xml:space="preserve">
+    <value>Wymaga uwagi: {0}</value>
+  </data>
+  <data name="Alert_Severity_Warning" xml:space="preserve">
+    <value>Uwaga</value>
+  </data>
+  <data name="Alert_Severity_Critical" xml:space="preserve">
+    <value>Pilne</value>
+  </data>
+  <data name="Alert_Vat_Title" xml:space="preserve">
+    <value>Limit zwolnienia z VAT</value>
+  </data>
+  <data name="Alert_CashRegister_Title" xml:space="preserve">
+    <value>Limit kasy fiskalnej</value>
+  </data>
+  <data name="Alert_ZusPlus_Title" xml:space="preserve">
+    <value>Limit Małego ZUS Plus</value>
+  </data>
+  <data name="Alert_Relief_Title" xml:space="preserve">
+    <value>Koniec ulgi: {0}</value>
+  </data>
+  <data name="Alert_Limit_Detail" xml:space="preserve">
+    <value>{0} z {1} ({2}%)</value>
+  </data>
+  <data name="Alert_Relief_Soon" xml:space="preserve">
+    <value>Ulga kończy się {0} (za {1} dni)</value>
+  </data>
+  <data name="Alert_Relief_Tomorrow" xml:space="preserve">
+    <value>Ulga kończy się jutro ({0})</value>
+  </data>
+  <data name="Alert_Relief_Today" xml:space="preserve">
+    <value>Ulga kończy się dzisiaj ({0})</value>
+  </data>
+  <data name="Alert_Relief_Ended" xml:space="preserve">
+    <value>Ulga zakończyła się {0}</value>
+  </data>
+  <data name="List_OnlyAlerts.Content" xml:space="preserve">
+    <value>Tylko z alertami</value>
+  </data>
+
   <!-- Settings -->
   <data name="Settings_Years_Title.Text" xml:space="preserve">
     <value>Lata</value>
