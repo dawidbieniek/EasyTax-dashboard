@@ -7,7 +7,8 @@ namespace EasyTax.Core.Domain.Limits;
 /// <param name="Limit">The limit for that year (prorated for the VAT limit in the join year).</param>
 /// <param name="CountedFrom">First day income is counted from.</param>
 /// <param name="CountedTo">Last day income is counted to.</param>
-public sealed record LimitStatus(LimitType Type, bool IsApplicable, decimal Income, decimal Limit, DateOnly CountedFrom, DateOnly CountedTo)
+/// <param name="WarningThreshold">Fraction of the limit at which the state turns to a warning.</param>
+public sealed record LimitStatus(LimitType Type, bool IsApplicable, decimal Income, decimal Limit, DateOnly CountedFrom, DateOnly CountedTo, decimal WarningThreshold = LimitCalculator.DefaultWarningThreshold)
 {
 	/// <summary>Income divided by the limit (1 = exactly at the limit).</summary>
 	public decimal Ratio => Limit > 0 ? Income / Limit : 0;
@@ -22,7 +23,7 @@ public sealed record LimitStatus(LimitType Type, bool IsApplicable, decimal Inco
 			if (Income >= Limit)
 				return LimitState.Over;
 
-			return Income >= Limit * LimitCalculator.WarningThreshold
+			return Income >= Limit * WarningThreshold
 				? LimitState.Warning
 				: LimitState.Ok;
 		}
