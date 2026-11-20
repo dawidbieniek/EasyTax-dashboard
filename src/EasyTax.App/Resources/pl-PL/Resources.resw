@@ -845,6 +845,98 @@
     <value>Tylko z alertami</value>
   </data>
 
+  <!-- Email -->
+  <data name="Settings_Tab_Templates.Text" xml:space="preserve">
+    <value>Szablony e-mail</value>
+  </data>
+  <data name="Settings_Templates_Title.Text" xml:space="preserve">
+    <value>Szablony e-maili do klientów</value>
+  </data>
+  <data name="Settings_Templates_Description.Text" xml:space="preserve">
+    <value>Treść wiadomości, które otwierają się w programie pocztowym po kliknięciu „Napisz e-mail” przy alercie. Zmiany zapisują się automatycznie.</value>
+  </data>
+  <data name="Settings_Templates_Select.Header" xml:space="preserve">
+    <value>Szablon</value>
+  </data>
+  <data name="Settings_Templates_Subject.Header" xml:space="preserve">
+    <value>Temat</value>
+  </data>
+  <data name="Settings_Templates_Body.Header" xml:space="preserve">
+    <value>Treść</value>
+  </data>
+  <data name="Settings_Templates_Tokens.Text" xml:space="preserve">
+    <value>Zmienne (zostaną zastąpione danymi klienta): {zwrot} – „Szanowny Panie” / „Szanowna Pani”; {panPani} – Pan / Pani; {panaPani} – Pana / Pani; {panuPani} – Panu / Pani; {panaPania} – Pana / Panią; {imie}; {nazwisko}; {nip}; {rok}; {dochod}; {limit}; {procent}; {pozostalo} – kwota do limitu; {ulga}; {dataKoniecUlgi}; {dniDoKoncaUlgi}.</value>
+  </data>
+  <data name="Settings_Templates_Preview.Text" xml:space="preserve">
+    <value>Podgląd (przykładowa klientka)</value>
+  </data>
+  <data name="Settings_Templates_Reset.Content" xml:space="preserve">
+    <value>Przywróć domyślny</value>
+  </data>
+  <data name="Alerts_Email.Content" xml:space="preserve">
+    <value>Napisz e-mail</value>
+  </data>
+  <data name="Gauge_WriteToClient.Content" xml:space="preserve">
+    <value>Napisz do klienta</value>
+  </data>
+  <data name="Mail_NoEmail" xml:space="preserve">
+    <value>Klient nie ma adresu e-mail.</value>
+  </data>
+  <data name="Mail_NoTemplate" xml:space="preserve">
+    <value>Brak szablonu wiadomości.</value>
+  </data>
+  <data name="Mail_OpenFailed" xml:space="preserve">
+    <value>Nie udało się otworzyć programu pocztowego.</value>
+  </data>
+  <data name="Mail_Done_Title" xml:space="preserve">
+    <value>Wiadomość otwarta</value>
+  </data>
+  <data name="Mail_Done_Message" xml:space="preserve">
+    <value>Czy wiadomość do {0} została wysłana? Oznaczyć ten alert jako powiadomiony?</value>
+  </data>
+  <data name="Mail_Done_Yes" xml:space="preserve">
+    <value>Oznacz jako powiadomiony</value>
+  </data>
+  <data name="Mail_Done_No" xml:space="preserve">
+    <value>Nie teraz</value>
+  </data>
+  <data name="EmailTemplate_VatLimit_Warning" xml:space="preserve">
+    <value>Limit VAT – blisko limitu</value>
+  </data>
+  <data name="EmailTemplate_VatLimit_Critical" xml:space="preserve">
+    <value>Limit VAT – przekroczony</value>
+  </data>
+  <data name="EmailTemplate_CashRegisterLimit_Warning" xml:space="preserve">
+    <value>Limit kasy fiskalnej – blisko limitu</value>
+  </data>
+  <data name="EmailTemplate_CashRegisterLimit_Critical" xml:space="preserve">
+    <value>Limit kasy fiskalnej – przekroczony</value>
+  </data>
+  <data name="EmailTemplate_ZusPlusLimit_Warning" xml:space="preserve">
+    <value>Limit Małego ZUS Plus – blisko limitu</value>
+  </data>
+  <data name="EmailTemplate_ZusPlusLimit_Critical" xml:space="preserve">
+    <value>Limit Małego ZUS Plus – przekroczony</value>
+  </data>
+  <data name="EmailTemplate_ReliefEnding_Start_Warning" xml:space="preserve">
+    <value>Ulga na start – kończy się</value>
+  </data>
+  <data name="EmailTemplate_ReliefEnding_Start_Critical" xml:space="preserve">
+    <value>Ulga na start – zakończona</value>
+  </data>
+  <data name="EmailTemplate_ReliefEnding_PreferentialZus_Warning" xml:space="preserve">
+    <value>ZUS preferencyjny – kończy się</value>
+  </data>
+  <data name="EmailTemplate_ReliefEnding_PreferentialZus_Critical" xml:space="preserve">
+    <value>ZUS preferencyjny – zakończony</value>
+  </data>
+  <data name="EmailTemplate_ReliefEnding_ZusPlus_Warning" xml:space="preserve">
+    <value>Mały ZUS Plus (ulga) – kończy się</value>
+  </data>
+  <data name="EmailTemplate_ReliefEnding_ZusPlus_Critical" xml:space="preserve">
+    <value>Mały ZUS Plus (ulga) – zakończona</value>
+  </data>
+
   <!-- Settings -->
   <data name="Settings_Years_Title.Text" xml:space="preserve">
     <value>Lata</value>

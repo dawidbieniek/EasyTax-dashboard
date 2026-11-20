@@ -12,7 +12,8 @@ public sealed record AlertRow(
 	string Detail,
 	string Severity,
 	string ToggleHandledLabel,
-	bool HasEmail)
+	bool HasEmail,
+	string EmailTooltip)
 {
 	public ClientAlert Alert => Item.Alert;
 

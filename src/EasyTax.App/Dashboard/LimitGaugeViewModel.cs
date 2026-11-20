@@ -2,6 +2,7 @@ using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using EasyTax.App.Clients;
 using EasyTax.App.Localization;
+using EasyTax.Core.Domain.Alerts;
 using EasyTax.Core.Domain.Limits;
 using LiveChartsCore;
 using LiveChartsCore.Defaults;
@@ -55,6 +56,13 @@ public sealed partial class LimitGaugeViewModel(ILocalizer localizer, string tit
 
 	[ObservableProperty]
 	public partial IEnumerable<ISeries> Series { get; set; } = [];
+
+	/// <summary>The alert to write to the client about, or null when there is none, the client has no email address or the year shown is not the current one.</summary>
+	[ObservableProperty]
+	[NotifyPropertyChangedFor(nameof(CanWrite))]
+	public partial ClientAlert? MailAlert { get; set; }
+
+	public bool CanWrite => MailAlert is not null;
 
 	public bool IsNotApplicable => !IsApplicable;
 

@@ -28,7 +28,7 @@ public sealed partial class SettingsViewModel : ViewModelBase
 	private readonly RestoreCoordinator _restore;
 	private readonly IPickerService _pickers;
 
-	public SettingsViewModel(ISettingsService settings, ILocalizer localizer, IAccountingYearRepository yearRepository, IClientContext context, IToastService toasts, IDialogService dialogs, DatabaseKeyService keys, BackupManager backups, RestoreCoordinator restore, IPickerService pickers)
+	public SettingsViewModel(ISettingsService settings, ILocalizer localizer, IAccountingYearRepository yearRepository, IClientContext context, IToastService toasts, IDialogService dialogs, DatabaseKeyService keys, BackupManager backups, RestoreCoordinator restore, IPickerService pickers, EmailTemplatesViewModel templates)
 	{
 		_settings = settings;
 		_yearRepository = yearRepository;
@@ -40,6 +40,7 @@ public sealed partial class SettingsViewModel : ViewModelBase
 		_backups = backups;
 		_restore = restore;
 		_pickers = pickers;
+		Templates = templates;
 
 		ScheduledBackups = settings.Current.ScheduledBackups;
 		BackupFolder = backups.Folder;
@@ -62,6 +63,9 @@ public sealed partial class SettingsViewModel : ViewModelBase
 
 		AppVersion = Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "?";
 	}
+
+	/// <summary>The email templates tab.</summary>
+	public EmailTemplatesViewModel Templates { get; }
 
 	public IReadOnlyList<ThemeOption> ThemeOptions { get; }
 
@@ -138,10 +142,14 @@ public sealed partial class SettingsViewModel : ViewModelBase
 		_backups.Finished += OnBackupFinished;
 		RefreshBackupStatus();
 
-		return LoadYearsAsync();
+		return Task.WhenAll(LoadYearsAsync(), Templates.LoadAsync());
 	}
 
-	public override void OnNavigatedFrom() => _backups.Finished -= OnBackupFinished;
+	public override void OnNavigatedFrom()
+	{
+		_backups.Finished -= OnBackupFinished;
+		_ = Templates.FlushAsync();
+	}
 
 	private bool CanAddYear() => !double.IsNaN(NewYear) && NewYear is >= FirstAllowedYear and <= LastAllowedYear && Years.All(y => y.Year != (int)NewYear);
 

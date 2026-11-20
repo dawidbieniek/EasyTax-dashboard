@@ -9,10 +9,11 @@ Program do prowadzenia klientów biura rachunkowego: pilnuje limitów, rozlicze�
 3. [Układ programu](#3-układ-programu)
 4. [Pulpit](#4-pulpit)
 5. [Klienci](#5-klienci)
-6. [Ustawienia](#6-ustawienia)
-7. [Kopie zapasowe](#7-kopie-zapasowe)
-8. [Skróty klawiaturowe](#8-skróty-klawiaturowe)
-9. [Aktualizacje i odinstalowanie](#9-aktualizacje-i-odinstalowanie)
+6. [Alerty i e-maile do klientów](#6-alerty-i-e-maile-do-klientów)
+7. [Ustawienia](#7-ustawienia)
+8. [Kopie zapasowe](#8-kopie-zapasowe)
+9. [Skróty klawiaturowe](#9-skróty-klawiaturowe)
+10. [Aktualizacje i odinstalowanie](#10-aktualizacje-i-odinstalowanie)
 
 ---
 
@@ -63,7 +64,7 @@ Kto ma klucz razem z plikiem danych, może odczytać dane klientów, więc nie w
 
 ![Pulpit](img/dashboard.png)
 
-**Lewy pasek** przełącza ekrany: **Pulpit** (`1`), **Klienci** (`2`) i **Ustawienia** (`3`, ikona zębatki na dole).
+**Lewy pasek** przełącza ekrany: **Pulpit** (`1`), **Klienci** (`2`), **Alerty** (`4`, z liczbą alertów do obsłużenia) i **Ustawienia** (`3`, ikona zębatki na dole).
 
 **Górny pasek** (widoczny na Pulpicie i, częściowo, na stronie klienta):
 
@@ -94,7 +95,7 @@ Trzy wykresy kołowe pokazują, jak daleko klient jest od limitu:
 | Kasa fiskalna | 20 000 zł |
 | Mały ZUS Plus | 120 000 zł |
 
-Od **90%** wykres robi się **żółty** („Blisko limitu”), od **100%** **czerwony** („Limit przekroczony”). Po najechaniu na kwotę zobaczysz, z jakiego okresu liczony jest przychód. Jeśli klient nie ma kasy fiskalnej albo nie jest na Małym ZUS Plus, karta mówi o tym zamiast pokazywać wykres.
+Od **90%** wykres robi się **żółty** („Blisko limitu”), od **100%** **czerwony** („Limit przekroczony”); próg ostrzeżenia zmienisz w Ustawieniach ([rozdział 6](#6-alerty-i-e-maile-do-klientów)). Gdy limit jest bliski lub przekroczony, pod kwotą pojawia się link **Napisz do klienta** (tylko dla bieżącego roku i klienta z adresem e-mail). Po najechaniu na kwotę zobaczysz, z jakiego okresu liczony jest przychód. Jeśli klient nie ma kasy fiskalnej albo nie jest na Małym ZUS Plus, karta mówi o tym zamiast pokazywać wykres.
 
 ### Wykresy
 
@@ -129,6 +130,7 @@ Edytor z pogrubieniem, kursywą, podkreśleniem i listą punktowaną. Zapisuje s
 - **Jedno kliknięcie wiersza** otwiera klienta.
 - **Prawy przycisk myszy** na wierszu: **Otwórz**, **Zawieś / Przywróć**, **Usuń…**
 - Zawieszeni klienci są wyszarzeni i mają znaczek „zawieszony”.
+- Przy nazwisku klienta, który wymaga uwagi, widać znaczek alertu (czerwony: pilne, żółty: uwaga); po najechaniu zobaczysz powód. Przycisk **Tylko z alertami** zostawia na liście samych takich klientów.
 
 ### Dodawanie klienta
 
@@ -155,9 +157,53 @@ Poniżej trzy zakładki: **Dane**, **Podatki i ulgi**, **Abonament**.
 
 ---
 
-## 6. Ustawienia
+## 6. Alerty i e-maile do klientów
 
-Ustawienia są podzielone na trzy zakładki.
+Program sam wskazuje klientów, którzy wymagają uwagi. Alerty liczone są zawsze na **dziś** (bieżący rok i dzisiejsza data), nigdy dla roku wybranego na górnym pasku. Zawieszeni klienci nie mają alertów.
+
+### Co jest alertem
+
+| Alert | Ostrzeżenie (żółty) | Pilne (czerwony) |
+|---|---|---|
+| Limit VAT, kasa fiskalna, Mały ZUS Plus | przychód od **90%** limitu | przychód **równy limitowi lub wyższy** |
+| Koniec ulgi (Ulga na start, ZUS preferencyjny, Mały ZUS Plus) | do końca ulgi zostało **7 dni lub mniej** | ulga **już się skończyła** |
+
+Klient z Pełnym ZUS nie ma alertów o ulgach. Alert o zakończonej uldze będzie widoczny, dopóki nie zmienisz klientowi rodzaju ulgi albo nie oznaczysz go jako obsłużony.
+
+### Ekran Alerty
+
+Lewy pasek, pozycja **Alerty** (`4`), z liczbą alertów do obsłużenia. Najpilniejsze są na górze. W każdym wierszu: klient, powód i liczby (np. „19 100,00 zł z 20 000,00 zł (96%)”) oraz przyciski:
+
+- **Napisz e-mail**: otwiera nową wiadomość do klienta w Twoim programie pocztowym, z wypełnionym adresem, tematem i treścią (patrz niżej). Program niczego nie wysyła, wiadomość wysyłasz sam. Przycisk jest nieaktywny, gdy klient nie ma adresu e-mail. Po otwarciu wiadomości program pyta, czy oznaczyć alert jako obsłużony.
+- **Otwórz klienta**: przechodzi do strony klienta.
+- **Oznacz jako powiadomiony**: alert przestaje być aktywny (znika z licznika i z listy). Wraca, jeśli sytuacja się pogorszy (ostrzeżenie zmieni się w pilne). Nowy rok zaczyna od zera. Przełącznik **Pokaż obsłużone** pokazuje też obsłużone alerty, z przyciskiem **Cofnij**.
+
+### Progi alertów
+
+**Ustawienia → Ogólne → Alerty**: od jakiego procentu limitu program ostrzega (50–99%, domyślnie 90%) i ile dni przed końcem ulgi (1–90, domyślnie 7). Próg limitu zmienia też kolory wykresów na Pulpicie.
+
+### Szablony e-maili
+
+**Ustawienia → Szablony e-mail**. Dla każdego rodzaju alertu (osobno „blisko” i „przekroczony”, a przy ulgach osobno dla każdej ulgi) jest szablon z tematem i treścią. Zmiany zapisują się same. **Przywróć domyślny** wraca do tekstu dostarczonego z programem.
+
+W tekście możesz użyć zmiennych w nawiasach klamrowych; program wstawia dane klienta:
+
+| Zmienna | Co wstawia |
+|---|---|
+| `{zwrot}` | „Szanowny Panie” / „Szanowna Pani” |
+| `{panPani}` `{panaPani}` `{panuPani}` `{panaPania}` | Pan / Pani, Pana / Pani, Panu / Pani, Pana / Panią (formy do zdań) |
+| `{imie}` `{nazwisko}` `{nip}` | dane klienta |
+| `{rok}` | rok alertu |
+| `{dochod}` `{limit}` `{procent}` `{pozostalo}` | przychód, limit, wykorzystany procent i kwota do limitu (alerty o limitach) |
+| `{ulga}` `{dataKoniecUlgi}` `{dniDoKoncaUlgi}` | nazwa ulgi, dzień jej końca i liczba pozostałych dni (alerty o ulgach) |
+
+Zmienna, której nie ma na liście (literówka), zostaje w tekście bez zmian, więc łatwo ją zauważyć. Pod szablonem widać podgląd dla przykładowej klientki. Treść wiadomości jest zwykłym tekstem (bez pogrubień i obrazków), a bardzo długie teksty niektóre programy pocztowe mogą ucinać, więc warto je skracać.
+
+---
+
+## 7. Ustawienia
+
+Ustawienia są podzielone na cztery zakładki.
 
 ![Ustawienia: Ogólne](img/settings.png)
 
@@ -166,12 +212,18 @@ Ustawienia są podzielone na trzy zakładki.
 - **Wygląd**: motyw (**Systemowy**, **Jasny**, **Ciemny**) i **kolor wyróżnienia**. Pierwsza kropka to kolor ustawiony w Windows, pozostałe to paleta Windows. Kolor wpływa na przyciski, podkreślenia i wykresy.
 - **Lata**: lata dostępne na górnym pasku. Dodaj rok (2000–2100) albo usuń rok, w którym nie ma żadnych danych. Rok z danymi jest oznaczony „Zawiera dane” i nie można go usunąć.
 
+- **Alerty**: progi ostrzeżeń (szczegóły w [rozdziale 6](#6-alerty-i-e-maile-do-klientów)).
+
 ### Dane
 
 ![Ustawienia: Dane](img/settings-data.png)
 
-- **Kopie zapasowe**: folder, automatyczna kopia, ręczne tworzenie i przywracanie (szczegóły w [rozdziale 7](#7-kopie-zapasowe)).
+- **Kopie zapasowe**: folder, automatyczna kopia, ręczne tworzenie i przywracanie (szczegóły w [rozdziale 8](#8-kopie-zapasowe)).
 - **Szyfrowanie danych**: **Pokaż klucz odzyskiwania** wyświetla klucz z pierwszego uruchomienia, z przyciskiem **Kopiuj**.
+
+### Szablony e-mail
+
+Treść wiadomości do klientów (opis w [rozdziale 6](#6-alerty-i-e-maile-do-klientów)).
 
 ### O programie
 
@@ -179,7 +231,7 @@ Numer wersji i link **Licencje składników zewnętrznych** (licencje bibliotek,
 
 ---
 
-## 7. Kopie zapasowe
+## 8. Kopie zapasowe
 
 Kopia to jeden plik `.zip` z zaszyfrowaną bazą danych. Domyślny folder to `Dokumenty\EasyTax\Backups`; możesz go zmienić przyciskiem **Wybierz…** (może to być też folder sieciowy).
 
@@ -191,13 +243,13 @@ Kopia otwiera się na innym komputerze dopiero po wpisaniu **klucza odzyskiwania
 
 ---
 
-## 8. Skróty klawiaturowe
+## 9. Skróty klawiaturowe
 
 Skróty jednoklawiszowe nie działają, gdy kursor jest w polu tekstowym. Wciśnij `Esc` lub kliknij puste miejsce, aby z niego wyjść. Skróty z `Ctrl` i `Alt` działają zawsze. Po najechaniu na przycisk zobaczysz jego skrót w podpowiedzi.
 
 | Gdzie | Klawisze | Działanie |
 |---|---|---|
-| Wszędzie | `1` `2` `3` | Pulpit / Klienci / Ustawienia |
+| Wszędzie | `1` `2` `3` `4` | Pulpit / Klienci / Ustawienia / Alerty |
 | Górny pasek | `/` lub `Ctrl+F` | Wybór klienta |
 | Górny pasek | `Alt+←` `Alt+→` | Poprzedni / następny klient |
 | Górny pasek | `,` `.` lub `←` `→` (w polu roku) | Poprzedni / następny miesiąc |
@@ -215,7 +267,7 @@ Skróty jednoklawiszowe nie działają, gdy kursor jest w polu tekstowym. Wciśn
 
 ---
 
-## 9. Aktualizacje i odinstalowanie
+## 10. Aktualizacje i odinstalowanie
 
 **Aktualizacje** pobierają się same. Przy każdym uruchomieniu Windows sprawdza, czy jest nowa wersja, i pobiera ją w tle. Program nie może zastąpić samego siebie, gdy działa, więc nowa wersja zacznie działać **dopiero przy kolejnym uruchomieniu**: po wydaniu aktualizacji zamknij program i otwórz go ponownie (czasem dwa razy). Bez internetu program po prostu się uruchamia.
 

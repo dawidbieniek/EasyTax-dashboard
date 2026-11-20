@@ -13,6 +13,7 @@ public sealed partial class AlertsViewModel(
 	AlertDescriber describer,
 	IClientContext context,
 	INavigationService navigation,
+	IMailService mail,
 	ILocalizer localizer) : ViewModelBase
 {
 	public ObservableCollection<AlertRow> Rows { get; } = [];
@@ -50,6 +51,9 @@ public sealed partial class AlertsViewModel(
 	}
 
 	[RelayCommand]
+	private Task WriteEmailAsync(AlertRow? row) => row is null ? Task.CompletedTask : mail.WriteAsync(row.Alert);
+
+	[RelayCommand]
 	private async Task ToggleHandledAsync(AlertRow? row)
 	{
 		if (row is null)
@@ -80,7 +84,8 @@ public sealed partial class AlertsViewModel(
 				describer.Detail(item.Alert),
 				describer.Severity(item.Alert),
 				localizer[item.IsHandled ? "Alerts_Unacknowledge" : "Alerts_Acknowledge"],
-				!string.IsNullOrWhiteSpace(client.Email)));
+				!string.IsNullOrWhiteSpace(client.Email),
+				string.IsNullOrWhiteSpace(client.Email) ? localizer["Mail_NoEmail"] : string.Empty));
 		}
 
 		IsEmpty = Rows.Count == 0;

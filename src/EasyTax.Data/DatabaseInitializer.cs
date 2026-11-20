@@ -1,5 +1,6 @@
 using EasyTax.Core.Database;
 using EasyTax.Core.Domain.Banks;
+using EasyTax.Core.Domain.Emails;
 using EasyTax.Core.Domain.Years;
 using EasyTax.Data.Banks;
 using Microsoft.Data.Sqlite;
@@ -27,6 +28,7 @@ internal sealed class DatabaseInitializer(IServiceProvider services, EasyTaxData
 		await context.Database.MigrateAsync(cancellationToken);
 
 		await SeedBanksAsync(context, cancellationToken);
+		await SeedEmailTemplatesAsync(context, cancellationToken);
 
 		// Years are user-managed afterwards, so the defaults are only added once, when the database is created.
 		if (isNewDatabase)
@@ -58,6 +60,20 @@ internal sealed class DatabaseInitializer(IServiceProvider services, EasyTaxData
 		var existing = await context.Banks.Select(b => b.Name).ToListAsync(cancellationToken);
 
 		context.Banks.AddRange(BankSeed.Names.Except(existing).Select(name => new Bank { Name = name }));
+		await context.SaveChangesAsync(cancellationToken);
+	}
+
+	// Only missing templates are added, so the user's edits are never overwritten.
+	private static async Task SeedEmailTemplatesAsync(EasyTaxDbContext context, CancellationToken cancellationToken)
+	{
+		var existing = await context.EmailTemplates.Select(t => t.Key).ToListAsync(cancellationToken);
+
+		foreach (var slot in EmailTemplateSlot.All.Where(slot => !existing.Contains(slot.Key)))
+		{
+			var (subject, body) = EmailTemplateDefaults.For(slot);
+			context.EmailTemplates.Add(new EmailTemplate { Key = slot.Key, Subject = subject, Body = body });
+		}
+
 		await context.SaveChangesAsync(cancellationToken);
 	}
 

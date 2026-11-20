@@ -20,6 +20,12 @@ public sealed partial class AlertsPage : Page
 			ViewModel.OpenClientCommand.Execute(row);
 	}
 
+	private void OnWriteEmailClick(object sender, RoutedEventArgs e)
+	{
+		if (((FrameworkElement)sender).DataContext is AlertRow row)
+			ViewModel.WriteEmailCommand.Execute(row);
+	}
+
 	private void OnToggleHandledClick(object sender, RoutedEventArgs e)
 	{
 		if (((FrameworkElement)sender).DataContext is AlertRow row)

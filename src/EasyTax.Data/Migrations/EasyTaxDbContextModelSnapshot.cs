@@ -223,6 +223,34 @@ namespace EasyTax.Data.Migrations
                     b.ToTable("DeletedClients", (string)null);
                 });
 
+            modelBuilder.Entity("EasyTax.Core.Domain.Emails.EmailTemplate", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Body")
+                        .IsRequired()
+                        .HasMaxLength(4000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Subject")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Key")
+                        .IsUnique();
+
+                    b.ToTable("EmailTemplates");
+                });
+
             modelBuilder.Entity("EasyTax.Core.Domain.Months.MonthRecord", b =>
                 {
                     b.Property<Guid>("Id")

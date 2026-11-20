@@ -4,11 +4,13 @@ using EasyTax.Data.Backups;
 using EasyTax.Core.Domain.Alerts;
 using EasyTax.Core.Domain.Banks;
 using EasyTax.Core.Domain.Clients;
+using EasyTax.Core.Domain.Emails;
 using EasyTax.Core.Domain.Months;
 using EasyTax.Core.Domain.Years;
 using EasyTax.Data.Alerts;
 using EasyTax.Data.Banks;
 using EasyTax.Data.Clients;
+using EasyTax.Data.Emails;
 using EasyTax.Data.Months;
 using EasyTax.Data.Years;
 using Microsoft.Data.Sqlite;
@@ -40,6 +42,7 @@ public static class ServiceCollectionExtensions
 			services.AddSingleton<IMonthRecordRepository, MonthRecordRepository>();
 			services.AddSingleton<IAccountingYearRepository, AccountingYearRepository>();
 			services.AddSingleton<IAlertAcknowledgementRepository, AlertAcknowledgementRepository>();
+			services.AddSingleton<IEmailTemplateRepository, EmailTemplateRepository>();
 
 			return services;
 		}

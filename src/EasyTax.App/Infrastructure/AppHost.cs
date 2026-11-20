@@ -51,6 +51,8 @@ internal static class AppHost
 		services.AddSingleton<IPickerService, PickerService>();
 		services.AddSingleton<IAlertService, AlertService>();
 		services.AddSingleton<AlertDescriber>();
+		services.AddSingleton<IMailService, MailService>();
+		services.AddTransient<EmailTemplatesViewModel>();
 		services.AddSingleton<ClientDeletionService>();
 		services.AddSingleton<BackupManager>();
 		services.AddSingleton<RestoreCoordinator>();
