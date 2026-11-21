@@ -1,3 +1,4 @@
+using EasyTax.Core.Domain.Changelog;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
@@ -20,6 +21,9 @@ public interface IDialogService
 
 	/// <summary>Shows long read-only text (for example the licences) in a scrollable dialog with one close button.</summary>
 	Task ShowTextAsync(string title, string text, string closeText);
+
+	/// <summary>Shows release notes: a heading per version with its sections (features, fixes, ...), in a scrollable dialog with one close button.</summary>
+	Task ShowChangelogAsync(string title, IReadOnlyList<ChangelogRelease> releases, string closeText);
 
 	/// <summary>Shows a custom dialog (for example the add-client form).</summary>
 	Task<ContentDialogResult> ShowAsync(ContentDialog dialog);

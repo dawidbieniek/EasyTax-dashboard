@@ -29,10 +29,14 @@ checks it every time the app starts and installs a newer version before the app 
 ## Making a release
 
 1. Raise `<Version>` in `Directory.Build.props` (for example `0.2.0`). The package version is that plus `.0`.
-2. Merge to `main`. The *Release* workflow builds the signed package and publishes release `v0.2.0` with four files:
+   Keep `Version` in `src/EasyTax.App/Package.appxmanifest` in step (`0.2.0.0`).
+2. Add the release to the top of `src/EasyTax.App/Changelog/changelog.json` (version, date, sections `features`, `improvements`,
+   `fixes`, texts in Polish). After an update the app shows every release newer than the last one the user saw, and Settings →
+   O programie shows the whole history. A version without an entry just shows no window.
+3. Merge to `main`. The *Release* workflow builds the signed package and publishes release `v0.2.0` with four files:
    `EasyTaxDashboard.msix`, `EasyTaxDashboard.appinstaller`, `EasyTaxDashboard.cer`, `Install-Certificate.ps1`.
    If a release for that version already exists the workflow does nothing, so normal pushes to `main` are harmless.
-3. Computers pick the update up in two steps: the next start downloads it in the background, the start after that runs the new version
+4. Computers pick the update up in two steps: the next start downloads it in the background, the start after that runs the new version
    (tested: 0.1.0 became 0.1.1 this way, with data, key and settings intact).
 
 To build the same files on this computer (output in `artifacts/release`):
