@@ -13,12 +13,17 @@ public sealed class JsonSettingsService(string filePath) : ISettingsService
 
 	public AppSettings Current { get; private set; } = new();
 
+	public bool IsFirstRun { get; private set; }
+
 	public event EventHandler? Changed;
 
 	public async Task LoadAsync()
 	{
 		if (!File.Exists(filePath))
+		{
+			IsFirstRun = true;
 			return;
+		}
 
 		try
 		{

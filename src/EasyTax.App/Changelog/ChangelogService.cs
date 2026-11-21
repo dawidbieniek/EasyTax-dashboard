@@ -19,6 +19,10 @@ public sealed class ChangelogService(ISettingsService settings, IDialogService d
 		// Remembered up front: a window that fails to show must not come back on every start.
 		settings.Update(s => s with { LastSeenVersion = current.ToString(3) });
 
+		// A new installation has nothing to compare with and does not need to hear what changed.
+		if (lastSeen is null && settings.IsFirstRun)
+			return;
+
 		var releases = ChangelogReader.Since(Load(), lastSeen, current);
 		if (releases.Count > 0)
 			await dialogs.ShowChangelogAsync(localizer["Changelog_Title_New"], releases, localizer["Changelog_Close"]);

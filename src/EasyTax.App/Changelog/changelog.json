@@ -1,6 +1,32 @@
 {
   "releases": [
     {
+      "version": "1.1.2",
+      "date": "2026-11-21",
+      "sections": [
+        {
+          "kind": "improvements",
+          "items": [
+            "Program uruchamia się od razu, bez okna instalatora; aktualizacja pobiera się w tle i zaczyna działać przy kolejnym uruchomieniu.",
+            "Pole notatek ma minimalną wysokość trzech linii, także gdy jest puste."
+          ]
+        },
+        {
+          "kind": "fixes",
+          "items": [
+            "Po pierwszym uruchomieniu (po zapisaniu klucza odzyskiwania) brakowało ikon w lewym pasku; pojawiały się dopiero po ponownym uruchomieniu.",
+            "Wykresy limitów nie traciły wypełnienia po zmianie miesiąca, roku lub klienta; usunięto też zbędną podpowiedź na wykresie.",
+            "Rok sprzed dołączenia klienta można teraz oglądać (miesiące są wyszarzone); wcześniej program przeskakiwał na rok dołączenia.",
+            "Nie da się już dodać klienta z NIP, który ma inny klient; program pokazuje komunikat przy polu NIP.",
+            "Lista banków jest posortowana po polsku (np. Deutsche przed DNB), a kolumna Bank na liście klientów nie ucina nazw.",
+            "Przychód i liczby faktur mają górne limity (999 999 999 zł i 99 999 faktur); zbyt duże wartości nie psują już wykresów ani procentu na wykresie limitu.",
+            "Nowa instalacja nie pokazuje okna „Co nowego”.",
+            "Dwa okna dialogowe naraz nie powodują już błędu; drugie czeka, aż pierwsze zostanie zamknięte."
+          ]
+        }
+      ]
+    },
+    {
       "version": "1.1.1",
       "date": "2026-11-21",
       "sections": [

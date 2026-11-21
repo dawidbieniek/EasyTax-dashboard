@@ -451,6 +451,9 @@
   <data name="Form_Error_Nip" xml:space="preserve">
     <value>Nieprawidłowy NIP</value>
   </data>
+  <data name="Form_Error_NipTaken" xml:space="preserve">
+    <value>Klient z tym NIP już istnieje</value>
+  </data>
   <data name="Form_Error_Phone" xml:space="preserve">
     <value>Nieprawidłowy numer telefonu</value>
   </data>

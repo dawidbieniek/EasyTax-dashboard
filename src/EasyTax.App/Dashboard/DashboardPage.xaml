@@ -32,11 +32,13 @@
 						<Grid Width="104" Height="104">
 							<lvc:PieChart
 								Background="Transparent"
+								EasingFunction="{x:Null}"
 								InitialRotation="-225"
 								MaxAngle="270"
 								MaxValue="100"
 								MinValue="0"
-								Series="{x:Bind Series, Mode=OneWay}" />
+								Series="{x:Bind Series, Mode=OneWay}"
+								TooltipPosition="Hidden" />
 							<TextBlock
 								Margin="0,0,0,6"
 								HorizontalAlignment="Center"
@@ -256,6 +258,7 @@
 									<NumberBox
 										x:Name="IncomeBox"
 										Minimum="0"
+										Maximum="999999999"
 										SpinButtonPlacementMode="Hidden"
 										IsEnabled="{x:Bind ViewModel.IsMonthEditable, Mode=OneWay}"
 										Value="{x:Bind ViewModel.IncomeInput, Mode=TwoWay}" />
@@ -269,6 +272,7 @@
 										<NumberBox
 											x:Name="SalesBox"
 											Minimum="0"
+											Maximum="99999"
 											LargeChange="5"
 							SmallChange="1"
 							SpinButtonPlacementMode="Inline"
@@ -279,6 +283,7 @@
 										<NumberBox
 											x:Name="CostBox"
 											Minimum="0"
+											Maximum="99999"
 											LargeChange="5"
 							SmallChange="1"
 							SpinButtonPlacementMode="Inline"
@@ -348,6 +353,7 @@
 
 								<RichEditBox
 									x:Name="NotesEditor"
+									MinHeight="96"
 									MaxHeight="240"
 									Grid.Row="2"
 									TextChanged="OnNotesTextChanged" />

@@ -122,7 +122,8 @@ public sealed class ClientContext(
 		if (year == Year || !Years.Contains(year))
 			return;
 
-		await ApplyAsync(SelectedClient, year, Month);
+		// Not clamped: a year before the client joined can be looked at (all its months are greyed out).
+		await ApplyAsync(SelectedClient, year, Month, clamp: false);
 	}
 
 	public async Task SelectMonthAsync(int month)
@@ -173,9 +174,10 @@ public sealed class ClientContext(
 		ClientPhotos = await photoRepository.GetAllAsync();
 	}
 
-	private async Task ApplyAsync(Client? client, int year, int month)
+	private async Task ApplyAsync(Client? client, int year, int month, bool clamp = true)
 	{
-		(year, month) = ClampToClient(client, year, month);
+		if (clamp)
+			(year, month) = ClampToClient(client, year, month);
 
 		SelectedClient = client;
 		Year = year;

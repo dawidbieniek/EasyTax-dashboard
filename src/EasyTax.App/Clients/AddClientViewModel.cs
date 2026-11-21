@@ -58,6 +58,7 @@ public sealed partial class AddClientViewModel : ObservableObject
 	public async Task InitializeAsync()
 	{
 		Banks = await _banks.GetAllAsync();
+		Form.OtherNips = new HashSet<string>((await _clients.GetAllAsync()).Select(c => c.Nip));
 		Form.Reset();
 	}
 

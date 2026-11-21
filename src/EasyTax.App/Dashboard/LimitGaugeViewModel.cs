@@ -18,11 +18,6 @@ public sealed partial class LimitGaugeViewModel(ILocalizer localizer, string tit
 {
 	private const double ArcWidth = 14;
 
-	// The arc's value is a live object: changing it animates the existing arc instead of building a new gauge.
-	private readonly ObservableValue _arcValue = new(0);
-	private SKColor? _arcFill;
-	private SKColor? _arcTrack;
-
 	public string Title { get; } = localizer[titleKey];
 
 	public string NotApplicableText { get; } = localizer[notApplicableKey];
@@ -74,7 +69,7 @@ public sealed partial class LimitGaugeViewModel(ILocalizer localizer, string tit
 		State = status.State;
 		IncomeText = ClientFormatting.Money(status.Income);
 		LimitText = string.Format(CultureInfo.CurrentCulture, localizer["Gauge_LimitOf"], ClientFormatting.Money(status.Limit));
-		PercentText = $"{Math.Round(percent):0}%";
+		PercentText = percent > 999 ? ">999%" : $"{Math.Round(percent):0}%";
 		StateText = status.State switch
 		{
 			LimitState.Warning => localizer["Gauge_State_Warning"],
@@ -101,17 +96,9 @@ public sealed partial class LimitGaugeViewModel(ILocalizer localizer, string tit
 			_ => ToUi(palette.Label),
 		};
 
-		var arcValue = Math.Min(percent, 100);
-		if (_arcValue.Value != arcValue)
-			_arcValue.Value = arcValue;
-
-		// A new arc is only built when its colours change (state or theme); otherwise the value change above animates the existing one.
-		if (_arcFill == fill && _arcTrack == palette.Track)
-			return;
-
-		_arcFill = fill;
-		_arcTrack = palette.Track;
-		Series = [.. BuildArc(_arcValue, fill, palette.Track)];
+		// A fresh arc every time, drawn straight at its value. Changing the value of the existing arc (animated) sometimes left it empty
+		// after switching month or year.
+		Series = [.. BuildArc(new ObservableValue(Math.Min(percent, 100)), fill, palette.Track)];
 	}
 
 	private static Windows.UI.Color ToUi(SKColor color) => Windows.UI.Color.FromArgb(color.Alpha, color.Red, color.Green, color.Blue);
