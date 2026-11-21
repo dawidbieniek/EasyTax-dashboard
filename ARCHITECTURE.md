@@ -151,7 +151,7 @@ Dev tip: a test run with a fresh `EASYTAX_DATA_DIR` still defaults to automatic 
 
 ## Changelog
 
-`src/EasyTax.App/Changelog/changelog.json` lists the releases (version, date, sections `features` / `improvements` / `fixes`) and is copied next to the exe. `ChangelogReader` (Core) parses it and `Since` picks what a user has not seen: releases newer than `AppSettings.LastSeenVersion` and not newer than the running version. `ChangelogService` shows them in `DialogService.ShowChangelogAsync` once at startup, after the main window loads, then stores the running version; with nothing stored (first start of 1.1.0, or a new installation) only the current release is shown. A missing or broken file is logged and ignored. Settings → O programie shows the whole history. Entries are written by hand when the version is raised (see docs/RELEASING.md).
+`src/EasyTax.App/Changelog/changelog.json` lists the releases (version, date, sections `features` / `improvements` / `fixes`) and is copied next to the exe. `ChangelogReader` (Core) parses it and `Since` picks what a user has not seen: releases newer than `AppSettings.LastSeenVersion` and not newer than the running version. `ChangelogService` shows them in `DialogService.ShowChangelogAsync` once at startup, after the main window loads, then stores the running version; with nothing stored (first start of 1.1.1, the version that introduced it, or a new installation) only the current release is shown. A missing or broken file is logged and ignored. Settings → O programie shows the whole history. Entries are written by hand when the version is raised (see docs/RELEASING.md).
 
 ## Third-party notices
 
