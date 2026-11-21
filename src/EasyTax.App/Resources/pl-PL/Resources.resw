@@ -1034,4 +1034,28 @@
   <data name="Theme_Dark" xml:space="preserve">
     <value>Ciemny</value>
   </data>
+  <data name="Settings_Changelog.Content" xml:space="preserve">
+    <value>Co nowego (historia zmian)</value>
+  </data>
+  <data name="Changelog_Title_New" xml:space="preserve">
+    <value>Co nowego</value>
+  </data>
+  <data name="Changelog_Title_All" xml:space="preserve">
+    <value>Historia zmian</value>
+  </data>
+  <data name="Changelog_Close" xml:space="preserve">
+    <value>Zamknij</value>
+  </data>
+  <data name="Changelog_Version" xml:space="preserve">
+    <value>Wersja {0}</value>
+  </data>
+  <data name="Changelog_Features" xml:space="preserve">
+    <value>Nowe funkcje</value>
+  </data>
+  <data name="Changelog_Improvements" xml:space="preserve">
+    <value>Ulepszenia</value>
+  </data>
+  <data name="Changelog_Fixes" xml:space="preserve">
+    <value>Poprawki</value>
+  </data>
 </root>

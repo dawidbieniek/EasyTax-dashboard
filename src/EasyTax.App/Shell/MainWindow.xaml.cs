@@ -1,4 +1,5 @@
 using EasyTax.App.Alerts;
+using EasyTax.App.Changelog;
 using EasyTax.App.Clients;
 using EasyTax.App.Dashboard;
 using EasyTax.App.Settings;
@@ -23,7 +24,7 @@ public sealed partial class MainWindow : Window
 	private readonly IAlertService _alerts;
 	private ViewModelBase? _currentViewModel;
 
-	public MainWindow(INavigationService navigation, IThemeService themeService, IDialogService dialogService, IShellWindow shellWindow, IToastService toastService, IAlertService alertService)
+	public MainWindow(INavigationService navigation, IThemeService themeService, IDialogService dialogService, IShellWindow shellWindow, IToastService toastService, IAlertService alertService, IChangelogService changelog)
 	{
 		_navigation = navigation;
 		_toasts = toastService;
@@ -55,6 +56,9 @@ public sealed partial class MainWindow : Window
 			// The badge follows the alert list; the first evaluation happens now that the database is ready.
 			_alerts.Changed += (_, _) => UpdateAlertsBadge();
 			_ = _alerts.RefreshAsync();
+
+			// After an update: what changed since the version the user last saw.
+			_ = changelog.ShowNewAsync();
 
 			if (Navigation.SettingsItem is NavigationViewItem settingsItem)
 				Shortcuts.Add(settingsItem, VirtualKey.Number3, () => _ = ShowAsync(typeof(SettingsViewModel)));

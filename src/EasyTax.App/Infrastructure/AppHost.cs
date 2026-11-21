@@ -1,5 +1,6 @@
 using EasyTax.App.Alerts;
 using EasyTax.App.Backups;
+using EasyTax.App.Changelog;
 using EasyTax.App.Clients;
 using EasyTax.App.Dashboard;
 using EasyTax.App.Localization;
@@ -53,6 +54,7 @@ internal static class AppHost
 		services.AddSingleton<AlertDescriber>();
 		services.AddSingleton<IMailService, MailService>();
 		services.AddTransient<EmailTemplatesViewModel>();
+		services.AddSingleton<IChangelogService, ChangelogService>();
 		services.AddSingleton<ClientDeletionService>();
 		services.AddSingleton<BackupManager>();
 		services.AddSingleton<RestoreCoordinator>();
