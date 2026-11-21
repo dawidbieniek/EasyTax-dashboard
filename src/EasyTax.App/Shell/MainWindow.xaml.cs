@@ -57,6 +57,9 @@ public sealed partial class MainWindow : Window
 			_alerts.Changed += (_, _) => UpdateAlertsBadge();
 			_ = _alerts.RefreshAsync();
 
+			// After an update: what changed since the version the user last saw.
+			_ = changelog.ShowNewAsync();
+
 			if (Navigation.SettingsItem is NavigationViewItem settingsItem)
 				Shortcuts.Add(settingsItem, VirtualKey.Number3, () => _ = ShowAsync(typeof(SettingsViewModel)));
 
