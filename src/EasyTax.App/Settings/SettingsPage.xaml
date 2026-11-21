@@ -276,6 +276,10 @@
 								<TextBlock Text="{x:Bind ViewModel.AppVersion}" />
 							</StackPanel>
 							<HyperlinkButton
+								x:Uid="Settings_Changelog"
+								Padding="0"
+								Command="{x:Bind ViewModel.ShowChangelogCommand}" />
+							<HyperlinkButton
 								x:Uid="Settings_Licenses"
 								Padding="0"
 								Command="{x:Bind ViewModel.ShowLicensesCommand}" />
