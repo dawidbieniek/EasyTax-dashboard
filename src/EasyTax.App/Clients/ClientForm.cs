@@ -192,6 +192,9 @@ public sealed partial class ClientForm(ILocalizer localizer) : ObservableObject
 		OnPropertyChanged(new PropertyChangedEventArgs(string.Empty));
 	}
 
+	/// <summary>NIPs (digits only) of the other clients, so a duplicate is caught while typing. Set by the owner of the form.</summary>
+	public IReadOnlySet<string> OtherNips { get; set; } = new HashSet<string>();
+
 	/// <summary>Checks everything, showing required-field errors too. Returns true when the form can be saved.</summary>
 	public bool Validate()
 	{
@@ -271,7 +274,8 @@ public sealed partial class ClientForm(ILocalizer localizer) : ObservableObject
 
 		NipError = string.IsNullOrWhiteSpace(Nip)
 			? _submitted ? required : string.Empty
-			: ClientValidation.IsValidNip(Nip) ? string.Empty : localizer["Form_Error_Nip"];
+			: !ClientValidation.IsValidNip(Nip) ? localizer["Form_Error_Nip"]
+				: OtherNips.Contains(ClientValidation.NormalizeNip(Nip)) ? localizer["Form_Error_NipTaken"] : string.Empty;
 		PhoneNumberError = ClientValidation.IsValidPhone(PhoneNumber) ? string.Empty : localizer["Form_Error_Phone"];
 		EmailError = ClientValidation.IsValidEmail(Email) ? string.Empty : localizer["Form_Error_Email"];
 	}

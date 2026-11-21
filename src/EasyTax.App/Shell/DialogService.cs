@@ -8,6 +8,7 @@ namespace EasyTax.App.Shell;
 
 public sealed class DialogService(ILocalizer localizer) : IDialogService
 {
+	private readonly SemaphoreSlim _one = new(1, 1);
 	private XamlRoot? _xamlRoot;
 
 	public void Attach(XamlRoot xamlRoot) => _xamlRoot = xamlRoot;
@@ -154,14 +155,24 @@ public sealed class DialogService(ILocalizer localizer) : IDialogService
 		};
 	}
 
-	public Task<ContentDialogResult> ShowAsync(ContentDialog dialog)
+	public async Task<ContentDialogResult> ShowAsync(ContentDialog dialog)
 	{
-		dialog.XamlRoot = _xamlRoot ?? throw new InvalidOperationException("DialogService is not attached to a window.");
+		var xamlRoot = _xamlRoot ?? throw new InvalidOperationException("DialogService is not attached to a window.");
+		dialog.XamlRoot = xamlRoot;
 
 		// Dialogs live in their own popup layer and do not inherit the theme chosen in the app, only the system one.
-		if (_xamlRoot.Content is FrameworkElement root)
+		if (xamlRoot.Content is FrameworkElement root)
 			dialog.RequestedTheme = root.RequestedTheme;
 
-		return dialog.ShowAsync().AsTask();
+		// WinUI allows one dialog at a time and throws when a second is shown; a second request waits for the first to close.
+		await _one.WaitAsync();
+		try
+		{
+			return await dialog.ShowAsync();
+		}
+		finally
+		{
+			_one.Release();
+		}
 	}
 }

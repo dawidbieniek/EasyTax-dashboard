@@ -15,6 +15,9 @@ public sealed record AlertRow(
 	bool HasEmail,
 	string EmailTooltip)
 {
+	/// <summary>The name screen readers announce for the row (instead of the generated record text).</summary>
+	public override string ToString() => $"{ClientName}: {Title}. {Detail}";
+
 	public ClientAlert Alert => Item.Alert;
 
 	public bool IsHandled => Item.IsHandled;

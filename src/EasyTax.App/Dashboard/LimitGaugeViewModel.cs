@@ -69,7 +69,7 @@ public sealed partial class LimitGaugeViewModel(ILocalizer localizer, string tit
 		State = status.State;
 		IncomeText = ClientFormatting.Money(status.Income);
 		LimitText = string.Format(CultureInfo.CurrentCulture, localizer["Gauge_LimitOf"], ClientFormatting.Money(status.Limit));
-		PercentText = $"{Math.Round(percent):0}%";
+		PercentText = percent > 999 ? ">999%" : $"{Math.Round(percent):0}%";
 		StateText = status.State switch
 		{
 			LimitState.Warning => localizer["Gauge_State_Warning"],

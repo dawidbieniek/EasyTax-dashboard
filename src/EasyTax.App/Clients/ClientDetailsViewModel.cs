@@ -308,6 +308,7 @@ public sealed partial class ClientDetailsViewModel : ViewModelBase
 		}
 
 		Display = ClientDisplay.From(_client, _localizer);
+		Form.OtherNips = new HashSet<string>((await _clients.GetAllAsync()).Where(c => c.Id != _client.Id).Select(c => c.Nip));
 		Form.Load(_client);
 	}
 

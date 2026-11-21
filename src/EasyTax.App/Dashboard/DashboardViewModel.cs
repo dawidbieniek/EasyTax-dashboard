@@ -466,9 +466,12 @@ public sealed partial class DashboardViewModel : ViewModelBase
 
 	private static DateTime? Toggled(DateTime? value) => value is null ? DateTime.Now : null;
 
-	private static decimal ToAmount(double value) => double.IsNaN(value) ? 0 : Math.Round((decimal)Math.Max(value, 0), 2);
+	private const double MaxIncome = 999_999_999;
+	private const double MaxInvoices = 99_999;
 
-	private static int ToCount(double value) => double.IsNaN(value) ? 0 : (int)Math.Max(Math.Round(value), 0);
+	private static decimal ToAmount(double value) => double.IsNaN(value) ? 0 : Math.Round((decimal)Math.Clamp(value, 0, MaxIncome), 2);
+
+	private static int ToCount(double value) => double.IsNaN(value) ? 0 : (int)Math.Clamp(Math.Round(value), 0, MaxInvoices);
 
 	private static string Capitalize(string text) => text.Length == 0 ? text : char.ToUpper(text[0], ClientFormatting.Culture) + text[1..];
 }

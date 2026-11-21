@@ -167,7 +167,7 @@
 
 				<tv:TableViewTemplateColumn
 					x:Uid="List_Column_Bank"
-					Width="160"
+					Width="210"
 					SortMemberPath="BankName">
 					<tv:TableViewTemplateColumn.CellTemplate>
 						<DataTemplate x:DataType="local:ClientRow">

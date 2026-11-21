@@ -258,6 +258,7 @@
 									<NumberBox
 										x:Name="IncomeBox"
 										Minimum="0"
+										Maximum="999999999"
 										SpinButtonPlacementMode="Hidden"
 										IsEnabled="{x:Bind ViewModel.IsMonthEditable, Mode=OneWay}"
 										Value="{x:Bind ViewModel.IncomeInput, Mode=TwoWay}" />
@@ -271,6 +272,7 @@
 										<NumberBox
 											x:Name="SalesBox"
 											Minimum="0"
+											Maximum="99999"
 											LargeChange="5"
 							SmallChange="1"
 							SpinButtonPlacementMode="Inline"
@@ -281,6 +283,7 @@
 										<NumberBox
 											x:Name="CostBox"
 											Minimum="0"
+											Maximum="99999"
 											LargeChange="5"
 							SmallChange="1"
 							SpinButtonPlacementMode="Inline"
