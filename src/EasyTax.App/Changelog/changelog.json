@@ -1,6 +1,27 @@
 {
   "releases": [
     {
+      "version": "1.1.2",
+      "date": "2026-11-21",
+      "sections": [
+        {
+          "kind": "improvements",
+          "items": [
+            "Program uruchamia się od razu, bez okna instalatora; aktualizacja pobiera się w tle i zaczyna działać przy kolejnym uruchomieniu.",
+            "Pole notatek ma minimalną wysokość trzech linii, także gdy jest puste."
+          ]
+        },
+        {
+          "kind": "fixes",
+          "items": [
+            "Po pierwszym uruchomieniu (po zapisaniu klucza odzyskiwania) brakowało ikon w lewym pasku; pojawiały się dopiero po ponownym uruchomieniu.",
+            "Wykresy limitów nie traciły wypełnienia po zmianie miesiąca, roku lub klienta; usunięto też zbędną podpowiedź na wykresie.",
+            "Rok sprzed dołączenia klienta można teraz oglądać (miesiące są wyszarzone); wcześniej program przeskakiwał na rok dołączenia."
+          ]
+        }
+      ]
+    },
+    {
       "version": "1.1.1",
       "date": "2026-11-21",
       "sections": [

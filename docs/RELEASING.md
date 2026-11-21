@@ -1,7 +1,7 @@
 # Releasing EasyTax Dashboard
 
 The app is installed from a signed MSIX package. Updates come from GitHub Releases through an `.appinstaller` file: Windows
-checks it every time the app starts and installs a newer version before the app opens.
+checks it every time the app starts and downloads a newer version in the background. The app opens at once (no installer window).
 
 ## One-time setup
 
@@ -48,7 +48,8 @@ powershell tools/Build-Package.ps1
 ## Rules that keep updates working
 
 - Versions only go up. A bad release is fixed with a higher version, not by deleting or replacing the old one.
-- The database schema only moves forward, which is why the app updates before it opens (`UpdateBlocksActivation`). Until the first
+- The database schema only moves forward. An update is applied between runs, so an old version never starts after a newer one has run
+  (the `.appinstaller` sets `ShowPrompt="false"` and `UpdateBlocksActivation="false"`, see `tools/Build-Package.ps1`). Until the first
   public release the single `Initial` migration may still be regenerated (see ARCHITECTURE.md, "Migrations"); after that, only
   add incremental migrations.
 - The file names of the release assets must not change; the `.appinstaller` links to them by name.

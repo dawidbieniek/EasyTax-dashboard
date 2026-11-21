@@ -94,9 +94,10 @@ $appInstaller = @"
 <AppInstaller xmlns="http://schemas.microsoft.com/appx/appinstaller/2018" Version="$packageVersion" Uri="$base/EasyTaxDashboard.appinstaller">
   <MainPackage Name="$($identity.Name)" Publisher="$($identity.Publisher)" Version="$packageVersion" ProcessorArchitecture="x64" Uri="$base/EasyTaxDashboard.msix" />
   <UpdateSettings>
-    <!-- Checks at every start and installs a newer version before the app opens: everyone runs the same version, which matters
-         because the database schema only moves forward. Offline, the app simply starts. -->
-    <OnLaunch HoursBetweenUpdateChecks="0" ShowPrompt="true" UpdateBlocksActivation="true" />
+    <!-- Checks at every start and downloads a newer version in the background; the app opens at once, without an installer
+         window, and the new version runs from the next start. The database schema only moves forward and an old version never
+         starts after a newer one has been installed, so nothing needs to block the start. Offline, the app simply starts. -->
+    <OnLaunch HoursBetweenUpdateChecks="0" ShowPrompt="false" UpdateBlocksActivation="false" />
     <AutomaticBackgroundTask />
   </UpdateSettings>
 </AppInstaller>

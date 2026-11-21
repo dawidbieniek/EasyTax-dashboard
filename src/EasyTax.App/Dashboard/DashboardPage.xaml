@@ -32,11 +32,13 @@
 						<Grid Width="104" Height="104">
 							<lvc:PieChart
 								Background="Transparent"
+								EasingFunction="{x:Null}"
 								InitialRotation="-225"
 								MaxAngle="270"
 								MaxValue="100"
 								MinValue="0"
-								Series="{x:Bind Series, Mode=OneWay}" />
+								Series="{x:Bind Series, Mode=OneWay}"
+								TooltipPosition="Hidden" />
 							<TextBlock
 								Margin="0,0,0,6"
 								HorizontalAlignment="Center"
@@ -348,6 +350,7 @@
 
 								<RichEditBox
 									x:Name="NotesEditor"
+									MinHeight="96"
 									MaxHeight="240"
 									Grid.Row="2"
 									TextChanged="OnNotesTextChanged" />

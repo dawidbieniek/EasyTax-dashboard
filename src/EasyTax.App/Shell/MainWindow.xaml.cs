@@ -53,6 +53,14 @@ public sealed partial class MainWindow : Window
 		{
 			dialogService.Attach(Content.XamlRoot);
 
+			// After the key window of a first start the rail came up empty (no icons until the next start); making the pane
+			// lay itself out again once the window is up fixes it.
+			DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () =>
+			{
+				Navigation.PaneDisplayMode = NavigationViewPaneDisplayMode.Left;
+				Navigation.PaneDisplayMode = NavigationViewPaneDisplayMode.LeftCompact;
+			});
+
 			// The badge follows the alert list; the first evaluation happens now that the database is ready.
 			_alerts.Changed += (_, _) => UpdateAlertsBadge();
 			_ = _alerts.RefreshAsync();
