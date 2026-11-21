@@ -17,6 +17,38 @@ namespace EasyTax.Data.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.14");
 
+            modelBuilder.Entity("EasyTax.Core.Domain.Alerts.AlertAcknowledgement", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("AcknowledgedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("ClientId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Kind")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Level")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClientId", "Kind", "Year")
+                        .IsUnique();
+
+                    b.ToTable("AlertAcknowledgements");
+                });
+
             modelBuilder.Entity("EasyTax.Core.Domain.Banks.Bank", b =>
                 {
                     b.Property<Guid>("Id")
@@ -191,6 +223,34 @@ namespace EasyTax.Data.Migrations
                     b.ToTable("DeletedClients", (string)null);
                 });
 
+            modelBuilder.Entity("EasyTax.Core.Domain.Emails.EmailTemplate", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Body")
+                        .IsRequired()
+                        .HasMaxLength(4000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Subject")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Key")
+                        .IsUnique();
+
+                    b.ToTable("EmailTemplates");
+                });
+
             modelBuilder.Entity("EasyTax.Core.Domain.Months.MonthRecord", b =>
                 {
                     b.Property<Guid>("Id")
@@ -236,6 +296,15 @@ namespace EasyTax.Data.Migrations
                     b.HasKey("Year");
 
                     b.ToTable("AccountingYears");
+                });
+
+            modelBuilder.Entity("EasyTax.Core.Domain.Alerts.AlertAcknowledgement", b =>
+                {
+                    b.HasOne("EasyTax.Core.Domain.Clients.Client", null)
+                        .WithMany()
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("EasyTax.Core.Domain.Clients.Client", b =>

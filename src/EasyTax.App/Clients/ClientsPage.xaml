@@ -22,6 +22,7 @@
 				<ColumnDefinition Width="320" />
 				<ColumnDefinition Width="*" />
 				<ColumnDefinition Width="Auto" />
+				<ColumnDefinition Width="Auto" />
 			</Grid.ColumnDefinitions>
 
 			<TextBox
@@ -33,10 +34,14 @@
 				VerticalAlignment="Center"
 				Foreground="{ThemeResource TextFillColorSecondaryBrush}"
 				Text="{x:Bind ViewModel.Summary, Mode=OneWay}" />
+			<ToggleButton
+				x:Uid="List_OnlyAlerts"
+				Grid.Column="2"
+				IsChecked="{x:Bind ViewModel.OnlyWithAlerts, Mode=TwoWay}" />
 			<Button
 				x:Name="AddButton"
 				x:Uid="List_Add"
-				Grid.Column="2"
+				Grid.Column="3"
 				Click="OnAddClientClick"
 				Style="{StaticResource AccentButtonStyle}" />
 		</Grid>
@@ -100,11 +105,31 @@
 									Height="28"
 									DisplayName="{x:Bind FullName}"
 									ProfilePicture="{x:Bind Photo, Converter={StaticResource PhotoImageConverter}}" />
-								<TextBlock
+								<StackPanel
 									Grid.Column="1"
 									VerticalAlignment="Center"
-									Text="{x:Bind FullName}"
-									TextTrimming="CharacterEllipsis" />
+									Orientation="Horizontal"
+									Spacing="6">
+									<TextBlock
+										VerticalAlignment="Center"
+										Text="{x:Bind FullName}"
+										TextTrimming="CharacterEllipsis" />
+									<!-- Alert marker: red when something is critical, amber for a warning; the tooltip says what. -->
+									<FontIcon
+										VerticalAlignment="Center"
+										FontSize="14"
+										Foreground="{ThemeResource SystemFillColorCriticalBrush}"
+										Glyph="&#xE7BA;"
+										ToolTipService.ToolTip="{x:Bind AlertTooltip}"
+										Visibility="{x:Bind HasCriticalAlert}" />
+									<FontIcon
+										VerticalAlignment="Center"
+										FontSize="14"
+										Foreground="{ThemeResource SystemFillColorCautionBrush}"
+										Glyph="&#xE7BA;"
+										ToolTipService.ToolTip="{x:Bind AlertTooltip}"
+										Visibility="{x:Bind HasWarningAlert}" />
+								</StackPanel>
 								<!-- A tinted chip that is never cut off: the name gives way (ellipsis) before the chip does. -->
 								<Border
 									Grid.Column="2"

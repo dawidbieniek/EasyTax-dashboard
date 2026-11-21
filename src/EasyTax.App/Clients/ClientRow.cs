@@ -17,8 +17,14 @@ public sealed record ClientRow(
 	bool IsSuspended,
 	DateTime? SuspendedAt,
 	string SuspendLabel,
-	byte[]? Photo)
+	byte[]? Photo,
+	bool HasCriticalAlert,
+	bool HasWarningAlert,
+	string AlertTooltip)
 {
+	/// <summary>True when the client has an alert that is not handled yet.</summary>
+	public bool HasAlert => HasCriticalAlert || HasWarningAlert;
+
 	/// <summary>Suspended clients are shown dimmed.</summary>
 	public double RowOpacity => IsSuspended ? 0.5 : 1;
 }

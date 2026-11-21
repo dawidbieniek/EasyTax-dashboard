@@ -175,6 +175,7 @@ internal sealed partial class BackupService(EasyTaxDataOptions options) : IBacku
 			var batchIds = batch.ToList();
 			await context.MonthRecords.Where(m => batchIds.Contains(m.ClientId)).ExecuteDeleteAsync(cancellationToken);
 			await context.ClientPhotos.Where(p => batchIds.Contains(p.ClientId)).ExecuteDeleteAsync(cancellationToken);
+			await context.AlertAcknowledgements.Where(a => batchIds.Contains(a.ClientId)).ExecuteDeleteAsync(cancellationToken);
 			removed += await context.Clients.Where(c => batchIds.Contains(c.Id)).ExecuteDeleteAsync(cancellationToken);
 		}
 

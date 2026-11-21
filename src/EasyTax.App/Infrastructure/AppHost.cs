@@ -1,3 +1,4 @@
+using EasyTax.App.Alerts;
 using EasyTax.App.Backups;
 using EasyTax.App.Clients;
 using EasyTax.App.Dashboard;
@@ -48,6 +49,10 @@ internal static class AppHost
 		services.AddSingleton<IToastService, ToastService>();
 		services.AddSingleton<IShellWindow, ShellWindow>();
 		services.AddSingleton<IPickerService, PickerService>();
+		services.AddSingleton<IAlertService, AlertService>();
+		services.AddSingleton<AlertDescriber>();
+		services.AddSingleton<IMailService, MailService>();
+		services.AddTransient<EmailTemplatesViewModel>();
 		services.AddSingleton<ClientDeletionService>();
 		services.AddSingleton<BackupManager>();
 		services.AddSingleton<RestoreCoordinator>();
@@ -63,6 +68,7 @@ internal static class AppHost
 		services.AddSingleton<IPageRegistry>(pages);
 		services.AddPage<DashboardPage, DashboardViewModel>(pages);
 		services.AddPage<ClientsPage, ClientsViewModel>(pages);
+		services.AddPage<AlertsPage, AlertsViewModel>(pages);
 		services.AddPage<ClientDetailsPage, ClientDetailsViewModel>(pages);
 		services.AddPage<SettingsPage, SettingsViewModel>(pages);
 

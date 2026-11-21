@@ -14,17 +14,17 @@ public static class LimitCalculator
 	public const decimal CashRegisterLimit = 20_000m;
 	public const decimal ZusPlusLimit = 120_000m;
 
-	/// <summary>Fraction of a limit at which the status turns to a warning.</summary>
-	public const decimal WarningThreshold = 0.9m;
+	/// <summary>Fraction of a limit at which the status turns to a warning, unless the caller passes its own.</summary>
+	public const decimal DefaultWarningThreshold = 0.9m;
 
-	public static IReadOnlyList<LimitStatus> CalculateAll(Client client, IReadOnlyCollection<MonthRecord> months, int year)
-		=> [CalculateVat(client, months, year), CalculateCashRegister(client, months, year), CalculateZusPlus(client, months, year)];
+	public static IReadOnlyList<LimitStatus> CalculateAll(Client client, IReadOnlyCollection<MonthRecord> months, int year, decimal warningThreshold = DefaultWarningThreshold)
+		=> [CalculateVat(client, months, year, warningThreshold), CalculateCashRegister(client, months, year, warningThreshold), CalculateZusPlus(client, months, year, warningThreshold)];
 
 	/// <summary>
 	/// VAT exemption limit. In the join year it is counted from the join month and the limit is prorated
 	/// by the days left in the year from the join date.
 	/// </summary>
-	public static LimitStatus CalculateVat(Client client, IEnumerable<MonthRecord> months, int year)
+	public static LimitStatus CalculateVat(Client client, IEnumerable<MonthRecord> months, int year, decimal warningThreshold = DefaultWarningThreshold)
 	{
 		var yearStart = new DateOnly(year, 1, 1);
 		var yearEnd = new DateOnly(year, 12, 31);
@@ -35,11 +35,11 @@ public static class LimitCalculator
 			? Math.Round(VatBaseLimit * client.JoinDate.DaysUntilEndOfYear / client.JoinDate.DaysInYear, 2)
 			: VatBaseLimit;
 
-		return new(LimitType.Vat, true, SumIncome(months, countedFrom, yearEnd), limit, countedFrom, yearEnd);
+		return new(LimitType.Vat, true, SumIncome(months, countedFrom, yearEnd), limit, countedFrom, yearEnd, warningThreshold);
 	}
 
 	/// <summary>Cash register limit. Counted from the month of the first fiscal transaction; only for clients who use a cash register.</summary>
-	public static LimitStatus CalculateCashRegister(Client client, IEnumerable<MonthRecord> months, int year)
+	public static LimitStatus CalculateCashRegister(Client client, IEnumerable<MonthRecord> months, int year, decimal warningThreshold = DefaultWarningThreshold)
 	{
 		var yearStart = new DateOnly(year, 1, 1);
 		var yearEnd = new DateOnly(year, 12, 31);
@@ -50,11 +50,11 @@ public static class LimitCalculator
 		// Years before the first use start after their own end, so nothing is counted.
 		var countedFrom = firstUse.Year >= year ? firstUse.FirstDayOfMonth : yearStart;
 
-		return new(LimitType.CashRegister, true, SumIncome(months, countedFrom, yearEnd), CashRegisterLimit, countedFrom, yearEnd);
+		return new(LimitType.CashRegister, true, SumIncome(months, countedFrom, yearEnd), CashRegisterLimit, countedFrom, yearEnd, warningThreshold);
 	}
 
 	/// <summary>Mały ZUS Plus limit. Whole calendar year; only for clients on that relief with a known start date.</summary>
-	public static LimitStatus CalculateZusPlus(Client client, IEnumerable<MonthRecord> months, int year)
+	public static LimitStatus CalculateZusPlus(Client client, IEnumerable<MonthRecord> months, int year, decimal warningThreshold = DefaultWarningThreshold)
 	{
 		var yearStart = new DateOnly(year, 1, 1);
 		var yearEnd = new DateOnly(year, 12, 31);
@@ -64,7 +64,7 @@ public static class LimitCalculator
 
 		var countedFrom = since.Year > year ? since.FirstDayOfYear : yearStart;
 
-		return new(LimitType.ZusPlus, true, SumIncome(months, countedFrom, yearEnd), ZusPlusLimit, countedFrom, yearEnd);
+		return new(LimitType.ZusPlus, true, SumIncome(months, countedFrom, yearEnd), ZusPlusLimit, countedFrom, yearEnd, warningThreshold);
 	}
 
 	private static decimal SumIncome(IEnumerable<MonthRecord> months, DateOnly from, DateOnly to)

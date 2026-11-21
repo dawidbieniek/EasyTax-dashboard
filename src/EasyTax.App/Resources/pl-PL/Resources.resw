@@ -786,6 +786,157 @@
     <value>Liczba klientów: {0}</value>
   </data>
 
+  <!-- Alerts -->
+  <data name="Nav_Alerts.Content" xml:space="preserve">
+    <value>Alerty</value>
+  </data>
+  <data name="Alerts_ShowHandled.Header" xml:space="preserve">
+    <value>Pokaż obsłużone</value>
+  </data>
+  <data name="Alerts_Empty.Text" xml:space="preserve">
+    <value>Żaden klient nie wymaga teraz uwagi.</value>
+  </data>
+  <data name="Alerts_Open.Content" xml:space="preserve">
+    <value>Otwórz klienta</value>
+  </data>
+  <data name="Alerts_Acknowledge" xml:space="preserve">
+    <value>Oznacz jako powiadomiony</value>
+  </data>
+  <data name="Alerts_Unacknowledge" xml:space="preserve">
+    <value>Cofnij</value>
+  </data>
+  <data name="Alerts_Summary" xml:space="preserve">
+    <value>Wymaga uwagi: {0}</value>
+  </data>
+  <data name="Alert_Severity_Warning" xml:space="preserve">
+    <value>Uwaga</value>
+  </data>
+  <data name="Alert_Severity_Critical" xml:space="preserve">
+    <value>Pilne</value>
+  </data>
+  <data name="Alert_Vat_Title" xml:space="preserve">
+    <value>Limit zwolnienia z VAT</value>
+  </data>
+  <data name="Alert_CashRegister_Title" xml:space="preserve">
+    <value>Limit kasy fiskalnej</value>
+  </data>
+  <data name="Alert_ZusPlus_Title" xml:space="preserve">
+    <value>Limit Małego ZUS Plus</value>
+  </data>
+  <data name="Alert_Relief_Title" xml:space="preserve">
+    <value>Koniec ulgi: {0}</value>
+  </data>
+  <data name="Alert_Limit_Detail" xml:space="preserve">
+    <value>{0} z {1} ({2}%)</value>
+  </data>
+  <data name="Alert_Relief_Soon" xml:space="preserve">
+    <value>Ulga kończy się {0} (za {1} dni)</value>
+  </data>
+  <data name="Alert_Relief_Tomorrow" xml:space="preserve">
+    <value>Ulga kończy się jutro ({0})</value>
+  </data>
+  <data name="Alert_Relief_Today" xml:space="preserve">
+    <value>Ulga kończy się dzisiaj ({0})</value>
+  </data>
+  <data name="Alert_Relief_Ended" xml:space="preserve">
+    <value>Ulga zakończyła się {0}</value>
+  </data>
+  <data name="List_OnlyAlerts.Content" xml:space="preserve">
+    <value>Tylko z alertami</value>
+  </data>
+
+  <!-- Email -->
+  <data name="Settings_Tab_Templates.Text" xml:space="preserve">
+    <value>Szablony e-mail</value>
+  </data>
+  <data name="Settings_Templates_Title.Text" xml:space="preserve">
+    <value>Szablony e-maili do klientów</value>
+  </data>
+  <data name="Settings_Templates_Description.Text" xml:space="preserve">
+    <value>Treść wiadomości, które otwierają się w programie pocztowym po kliknięciu „Napisz e-mail” przy alercie. Zmiany zapisują się automatycznie.</value>
+  </data>
+  <data name="Settings_Templates_Select.Header" xml:space="preserve">
+    <value>Szablon</value>
+  </data>
+  <data name="Settings_Templates_Subject.Header" xml:space="preserve">
+    <value>Temat</value>
+  </data>
+  <data name="Settings_Templates_Body.Header" xml:space="preserve">
+    <value>Treść</value>
+  </data>
+  <data name="Settings_Templates_Tokens.Text" xml:space="preserve">
+    <value>Zmienne (zostaną zastąpione danymi klienta): {zwrot} – „Szanowny Panie” / „Szanowna Pani”; {panPani} – Pan / Pani; {panaPani} – Pana / Pani; {panuPani} – Panu / Pani; {panaPania} – Pana / Panią; {imie}; {nazwisko}; {nip}; {rok}; {dochod}; {limit}; {procent}; {pozostalo} – kwota do limitu; {ulga}; {dataKoniecUlgi}; {dniDoKoncaUlgi}.</value>
+  </data>
+  <data name="Settings_Templates_Preview.Text" xml:space="preserve">
+    <value>Podgląd (przykładowa klientka)</value>
+  </data>
+  <data name="Settings_Templates_Reset.Content" xml:space="preserve">
+    <value>Przywróć domyślny</value>
+  </data>
+  <data name="Alerts_Email.Content" xml:space="preserve">
+    <value>Napisz e-mail</value>
+  </data>
+  <data name="Gauge_WriteToClient.Content" xml:space="preserve">
+    <value>Napisz do klienta</value>
+  </data>
+  <data name="Mail_NoEmail" xml:space="preserve">
+    <value>Klient nie ma adresu e-mail.</value>
+  </data>
+  <data name="Mail_NoTemplate" xml:space="preserve">
+    <value>Brak szablonu wiadomości.</value>
+  </data>
+  <data name="Mail_OpenFailed" xml:space="preserve">
+    <value>Nie udało się otworzyć programu pocztowego.</value>
+  </data>
+  <data name="Mail_Done_Title" xml:space="preserve">
+    <value>Wiadomość otwarta</value>
+  </data>
+  <data name="Mail_Done_Message" xml:space="preserve">
+    <value>Czy wiadomość do {0} została wysłana? Oznaczyć ten alert jako powiadomiony?</value>
+  </data>
+  <data name="Mail_Done_Yes" xml:space="preserve">
+    <value>Oznacz jako powiadomiony</value>
+  </data>
+  <data name="Mail_Done_No" xml:space="preserve">
+    <value>Nie teraz</value>
+  </data>
+  <data name="EmailTemplate_VatLimit_Warning" xml:space="preserve">
+    <value>Limit VAT – blisko limitu</value>
+  </data>
+  <data name="EmailTemplate_VatLimit_Critical" xml:space="preserve">
+    <value>Limit VAT – przekroczony</value>
+  </data>
+  <data name="EmailTemplate_CashRegisterLimit_Warning" xml:space="preserve">
+    <value>Limit kasy fiskalnej – blisko limitu</value>
+  </data>
+  <data name="EmailTemplate_CashRegisterLimit_Critical" xml:space="preserve">
+    <value>Limit kasy fiskalnej – przekroczony</value>
+  </data>
+  <data name="EmailTemplate_ZusPlusLimit_Warning" xml:space="preserve">
+    <value>Limit Małego ZUS Plus – blisko limitu</value>
+  </data>
+  <data name="EmailTemplate_ZusPlusLimit_Critical" xml:space="preserve">
+    <value>Limit Małego ZUS Plus – przekroczony</value>
+  </data>
+  <data name="EmailTemplate_ReliefEnding_Start_Warning" xml:space="preserve">
+    <value>Ulga na start – kończy się</value>
+  </data>
+  <data name="EmailTemplate_ReliefEnding_Start_Critical" xml:space="preserve">
+    <value>Ulga na start – zakończona</value>
+  </data>
+  <data name="EmailTemplate_ReliefEnding_PreferentialZus_Warning" xml:space="preserve">
+    <value>ZUS preferencyjny – kończy się</value>
+  </data>
+  <data name="EmailTemplate_ReliefEnding_PreferentialZus_Critical" xml:space="preserve">
+    <value>ZUS preferencyjny – zakończony</value>
+  </data>
+  <data name="EmailTemplate_ReliefEnding_ZusPlus_Warning" xml:space="preserve">
+    <value>Mały ZUS Plus (ulga) – kończy się</value>
+  </data>
+  <data name="EmailTemplate_ReliefEnding_ZusPlus_Critical" xml:space="preserve">
+    <value>Mały ZUS Plus (ulga) – zakończona</value>
+  </data>
+
   <!-- Settings -->
   <data name="Settings_Years_Title.Text" xml:space="preserve">
     <value>Lata</value>
@@ -801,6 +952,18 @@
   </data>
   <data name="Settings_AddYear.Content" xml:space="preserve">
     <value>Dodaj rok</value>
+  </data>
+  <data name="Settings_Alerts_Title.Text" xml:space="preserve">
+    <value>Alerty</value>
+  </data>
+  <data name="Settings_Alerts_Description.Text" xml:space="preserve">
+    <value>Kiedy klient jest oznaczany jako wymagający uwagi. Próg limitu dotyczy też kolorów wskaźników na pulpicie.</value>
+  </data>
+  <data name="Settings_Alerts_LimitPercent.Header" xml:space="preserve">
+    <value>Ostrzegaj od (% limitu, 50–99)</value>
+  </data>
+  <data name="Settings_Alerts_ReliefDays.Header" xml:space="preserve">
+    <value>Ostrzegaj o końcu ulgi (dni przed, 1–90)</value>
   </data>
   <data name="Settings_Accent_Header.Text" xml:space="preserve">
     <value>Kolor wyróżnienia</value>

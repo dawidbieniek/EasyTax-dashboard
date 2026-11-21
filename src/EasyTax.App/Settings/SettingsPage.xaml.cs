@@ -24,6 +24,7 @@ public sealed partial class SettingsPage : Page
 
 		GeneralPanel.Visibility = tab == "General" ? Visibility.Visible : Visibility.Collapsed;
 		DataPanel.Visibility = tab == "Data" ? Visibility.Visible : Visibility.Collapsed;
+		TemplatesPanel.Visibility = tab == "Templates" ? Visibility.Visible : Visibility.Collapsed;
 		AboutPanel.Visibility = tab == "About" ? Visibility.Visible : Visibility.Collapsed;
 	}
 

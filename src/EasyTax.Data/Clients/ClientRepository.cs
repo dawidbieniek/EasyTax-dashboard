@@ -54,6 +54,7 @@ internal sealed class ClientRepository(IDbContextFactory<EasyTaxDbContext> conte
 
 		await context.MonthRecords.Where(m => m.ClientId == id).ExecuteDeleteAsync(cancellationToken);
 		await context.ClientPhotos.Where(p => p.ClientId == id).ExecuteDeleteAsync(cancellationToken);
+		await context.AlertAcknowledgements.Where(a => a.ClientId == id).ExecuteDeleteAsync(cancellationToken);
 		var removed = await context.Clients.Where(c => c.Id == id).ExecuteDeleteAsync(cancellationToken);
 		if (removed == 0)
 			return null;

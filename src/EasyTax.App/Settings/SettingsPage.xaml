@@ -37,6 +37,7 @@
 			SelectionChanged="OnTabChanged">
 			<SelectorBarItem x:Uid="Settings_Tab_General" IsSelected="True" Tag="General" />
 			<SelectorBarItem x:Uid="Settings_Tab_Data" Tag="Data" />
+			<SelectorBarItem x:Uid="Settings_Tab_Templates" Tag="Templates" />
 			<SelectorBarItem x:Uid="Settings_Tab_About" Tag="About" />
 		</SelectorBar>
 
@@ -125,6 +126,35 @@
 							</StackPanel>
 						</StackPanel>
 					</Border>
+
+					<!-- Alerts: when a client is flagged. The same limit threshold colours the gauges. -->
+					<Border Style="{StaticResource SettingsCardStyle}">
+						<StackPanel Spacing="12">
+							<TextBlock x:Uid="Settings_Alerts_Title" Style="{StaticResource SubtitleTextBlockStyle}" />
+							<TextBlock
+								x:Uid="Settings_Alerts_Description"
+								Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+								TextWrapping="Wrap" />
+							<NumberBox
+								x:Uid="Settings_Alerts_LimitPercent"
+								Width="320"
+								HorizontalAlignment="Left"
+								Maximum="99"
+								Minimum="50"
+								SmallChange="1"
+								SpinButtonPlacementMode="Inline"
+								Value="{x:Bind ViewModel.LimitWarningPercent, Mode=TwoWay}" />
+							<NumberBox
+								x:Uid="Settings_Alerts_ReliefDays"
+								Width="320"
+								HorizontalAlignment="Left"
+								Maximum="90"
+								Minimum="1"
+								SmallChange="1"
+								SpinButtonPlacementMode="Inline"
+								Value="{x:Bind ViewModel.ReliefWarningDays, Mode=TwoWay}" />
+						</StackPanel>
+					</Border>
 				</StackPanel>
 
 				<!-- Data: backups and encryption. -->
@@ -175,6 +205,57 @@
 								Foreground="{ThemeResource TextFillColorSecondaryBrush}"
 								TextWrapping="Wrap" />
 							<Button x:Uid="Settings_ShowKey" Command="{x:Bind ViewModel.ShowRecoveryKeyCommand}" />
+						</StackPanel>
+					</Border>
+				</StackPanel>
+
+				<!-- Templates: the text of the emails written from alerts. -->
+				<StackPanel
+					x:Name="TemplatesPanel"
+					Spacing="12"
+					Visibility="Collapsed">
+					<Border Style="{StaticResource SettingsCardStyle}">
+						<StackPanel Spacing="12">
+							<TextBlock x:Uid="Settings_Templates_Title" Style="{StaticResource SubtitleTextBlockStyle}" />
+							<TextBlock
+								x:Uid="Settings_Templates_Description"
+								Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+								TextWrapping="Wrap" />
+							<ComboBox
+								x:Uid="Settings_Templates_Select"
+								HorizontalAlignment="Stretch"
+								DisplayMemberPath="Title"
+								ItemsSource="{x:Bind ViewModel.Templates.Options}"
+								SelectedItem="{x:Bind ViewModel.Templates.SelectedOption, Mode=TwoWay}" />
+							<TextBox x:Uid="Settings_Templates_Subject" Text="{x:Bind ViewModel.Templates.Subject, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+							<TextBox
+								x:Uid="Settings_Templates_Body"
+								MinHeight="240"
+								AcceptsReturn="True"
+								Text="{x:Bind ViewModel.Templates.Body, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+								TextWrapping="Wrap" />
+							<TextBlock
+								x:Uid="Settings_Templates_Tokens"
+								Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+								IsTextSelectionEnabled="True"
+								Style="{StaticResource CaptionTextBlockStyle}"
+								TextWrapping="Wrap" />
+							<Button x:Uid="Settings_Templates_Reset" Command="{x:Bind ViewModel.Templates.ResetCommand}" />
+						</StackPanel>
+					</Border>
+
+					<Border Style="{StaticResource SettingsCardStyle}">
+						<StackPanel Spacing="8">
+							<TextBlock x:Uid="Settings_Templates_Preview" Style="{StaticResource SubtitleTextBlockStyle}" />
+							<TextBlock
+								FontWeight="SemiBold"
+								IsTextSelectionEnabled="True"
+								Text="{x:Bind ViewModel.Templates.PreviewSubject, Mode=OneWay}"
+								TextWrapping="Wrap" />
+							<TextBlock
+								IsTextSelectionEnabled="True"
+								Text="{x:Bind ViewModel.Templates.PreviewBody, Mode=OneWay}"
+								TextWrapping="Wrap" />
 						</StackPanel>
 					</Border>
 				</StackPanel>

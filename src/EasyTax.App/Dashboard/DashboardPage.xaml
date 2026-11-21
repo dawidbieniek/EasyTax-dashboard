@@ -57,6 +57,11 @@
 								Foreground="{x:Bind StateColor, Mode=OneWay, Converter={StaticResource ColorBrush}}"
 								Text="{x:Bind StateText, Mode=OneWay}"
 								Visibility="{x:Bind controls:FormField.ShowWhenText(StateText), Mode=OneWay}" />
+							<HyperlinkButton
+								x:Uid="Gauge_WriteToClient"
+								Padding="0"
+								Click="OnWriteToClientClick"
+								Visibility="{x:Bind CanWrite, Mode=OneWay}" />
 						</StackPanel>
 					</StackPanel>
 

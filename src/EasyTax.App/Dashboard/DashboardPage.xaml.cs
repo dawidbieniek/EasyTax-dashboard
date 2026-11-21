@@ -74,6 +74,12 @@ public sealed partial class DashboardPage : Page
 		_ => VirtualKey.V,
 	};
 
+	private void OnWriteToClientClick(object sender, RoutedEventArgs e)
+	{
+		if (((FrameworkElement)sender).DataContext is LimitGaugeViewModel gauge)
+			ViewModel.WriteToClientCommand.Execute(gauge);
+	}
+
 	private async void OnChecklistClick(object sender, RoutedEventArgs e)
 	{
 		if (sender is not ToggleButton { Tag: ChecklistKey key } toggle)

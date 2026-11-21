@@ -2,10 +2,12 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using EasyTax.App.Alerts;
 using EasyTax.App.Backups;
 using EasyTax.App.Infrastructure;
 using EasyTax.App.Localization;
 using EasyTax.App.Shell;
+using EasyTax.Core.Domain.Alerts;
 using EasyTax.Core.Domain.Clients;
 using EasyTax.Core.Domain.Months;
 using Microsoft.Extensions.Logging;
@@ -21,6 +23,8 @@ public sealed partial class ClientsViewModel(
 	ILocalizer localizer,
 	IToastService toasts,
 	ClientDeletionService deletion,
+	IAlertService alerts,
+	AlertDescriber alertDescriber,
 	ILogger<ClientsViewModel> logger) : ViewModelBase
 {
 	private IReadOnlyList<ClientRow> _allRows = [];
@@ -29,6 +33,10 @@ public sealed partial class ClientsViewModel(
 
 	[ObservableProperty]
 	public partial string SearchText { get; set; } = string.Empty;
+
+	/// <summary>Show only the clients that have an alert that is not handled yet.</summary>
+	[ObservableProperty]
+	public partial bool OnlyWithAlerts { get; set; }
 
 	[ObservableProperty]
 	public partial string Summary { get; set; } = string.Empty;
@@ -72,7 +80,10 @@ public sealed partial class ClientsViewModel(
 		var monthRecords = await months.GetForMonthAsync(currentMonth);
 		var recordsByClient = monthRecords.ToLookup(r => r.ClientId);
 
-		_allRows = [.. allClients.Select(client => ToRow(client, currentMonth, recordsByClient[client.Id], context.ClientPhotos.GetValueOrDefault(client.Id)))];
+		await alerts.RefreshAsync();
+		var alertsByClient = alerts.Items.Where(item => !item.IsHandled).ToLookup(item => item.Alert.Client.Id, item => item.Alert);
+
+		_allRows = [.. allClients.Select(client => ToRow(client, currentMonth, recordsByClient[client.Id], context.ClientPhotos.GetValueOrDefault(client.Id), [.. alertsByClient[client.Id]]))];
 		Summary = string.Format(CultureInfo.CurrentCulture, localizer["Clients_Count"], _allRows.Count);
 
 		ApplyFilter();
@@ -86,6 +97,8 @@ public sealed partial class ClientsViewModel(
 	}
 
 	partial void OnSearchTextChanged(string value) => ApplyFilter();
+
+	partial void OnOnlyWithAlertsChanged(bool value) => ApplyFilter();
 
 	[RelayCommand]
 	private async Task OpenAsync(ClientRow? row)
@@ -135,7 +148,7 @@ public sealed partial class ClientsViewModel(
 		toasts.Success(string.Format(CultureInfo.CurrentCulture, localizer["Toast_ClientDeleted"], row.FullName));
 	}
 
-	private ClientRow ToRow(Client client, DateOnly month, IEnumerable<MonthRecord> records, byte[]? photo)
+	private ClientRow ToRow(Client client, DateOnly month, IEnumerable<MonthRecord> records, byte[]? photo, IReadOnlyList<ClientAlert> clientAlerts)
 	{
 		var monthState = client.GetMonthState(month, records);
 
@@ -153,16 +166,20 @@ public sealed partial class ClientsViewModel(
 			client.IsSuspended,
 			client.SuspendedAt,
 			localizer[client.IsSuspended ? "List_Unsuspend" : "List_Suspend"],
-			photo);
+			photo,
+			clientAlerts.Any(alert => alert.Severity == AlertSeverity.Critical),
+			clientAlerts.Count > 0 && clientAlerts.All(alert => alert.Severity == AlertSeverity.Warning),
+			string.Join("\n\n", clientAlerts.Select(alertDescriber.Summary)));
 	}
 
 	private void ApplyFilter()
 	{
 		var text = SearchText.Trim();
 
-		var matching = string.IsNullOrEmpty(text)
-			? _allRows
-			: [.. _allRows.Where(row => Matches(row, text))];
+		var matching = _allRows
+			.Where(row => !OnlyWithAlerts || row.HasAlert)
+			.Where(row => string.IsNullOrEmpty(text) || Matches(row, text))
+			.ToList();
 
 		Rows.Clear();
 		foreach (var row in matching)

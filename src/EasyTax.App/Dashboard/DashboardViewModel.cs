@@ -2,11 +2,13 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using EasyTax.App.Alerts;
 using EasyTax.App.Clients;
 using EasyTax.App.Infrastructure;
 using EasyTax.App.Localization;
 using EasyTax.App.Settings;
 using EasyTax.App.Shell;
+using EasyTax.Core.Domain.Alerts;
 using EasyTax.Core.Domain.Clients;
 using EasyTax.Core.Domain.Limits;
 using EasyTax.Core.Domain.Months;
@@ -30,6 +32,8 @@ public sealed partial class DashboardViewModel : ViewModelBase
 	private readonly INavigationService _navigation;
 	private readonly ILocalizer _localizer;
 	private readonly ISettingsService _settings;
+	private readonly IAlertService _alerts;
+	private readonly IMailService _mail;
 
 	private readonly Debouncer _notesDebouncer = new(TimeSpan.FromMilliseconds(800));
 	private readonly ObservableCollection<double> _incomeValues = new(new double[MonthsInYear]);
@@ -39,19 +43,23 @@ public sealed partial class DashboardViewModel : ViewModelBase
 
 	private AppTheme _theme;
 	private AppAccent _accent;
+	private int _warningPercent;
 	private ChartPalette _palette;
 	private bool _refreshing;
 	private Guid? _notesClientId;
 
-	public DashboardViewModel(IClientContext context, INavigationService navigation, ILocalizer localizer, ISettingsService settings)
+	public DashboardViewModel(IClientContext context, INavigationService navigation, ILocalizer localizer, ISettingsService settings, IAlertService alerts, IMailService mail)
 	{
 		_context = context;
 		_navigation = navigation;
 		_localizer = localizer;
 		_settings = settings;
+		_alerts = alerts;
+		_mail = mail;
 
 		_theme = settings.Current.Theme;
 		_accent = settings.Current.Accent;
+		_warningPercent = settings.Current.LimitWarningPercent;
 		_palette = ChartPalette.Create(_theme, _accent);
 		_monthLabels = [.. Enumerable.Range(1, MonthsInYear).Select(month => localizer[$"Month_{month}"])];
 
@@ -66,6 +74,7 @@ public sealed partial class DashboardViewModel : ViewModelBase
 
 		_context.Changed += OnContextChanged;
 		_settings.Changed += OnSettingsChanged;
+		_alerts.Changed += OnAlertsChanged;
 		Refresh();
 	}
 
@@ -157,6 +166,7 @@ public sealed partial class DashboardViewModel : ViewModelBase
 	{
 		_context.Changed -= OnContextChanged;
 		_settings.Changed -= OnSettingsChanged;
+		_alerts.Changed -= OnAlertsChanged;
 	}
 
 	partial void OnIncomeInputChanged(double value) => SaveInputs();
@@ -240,9 +250,26 @@ public sealed partial class DashboardViewModel : ViewModelBase
 
 	private void OnContextChanged(object? sender, EventArgs e) => Refresh();
 
+	// The alert list lags the data by a moment, so the "write to client" buttons are updated when it changes.
+	private void OnAlertsChanged(object? sender, EventArgs e)
+	{
+		if (_context.SelectedClient is { } client)
+			UpdateMailAlerts(client);
+	}
+
+	[RelayCommand]
+	private Task WriteToClientAsync(LimitGaugeViewModel? gauge)
+		=> gauge?.MailAlert is { } alert ? _mail.WriteAsync(alert) : Task.CompletedTask;
+
 	private void OnSettingsChanged(object? sender, EventArgs e)
 	{
-		// Settings also change when the selection is remembered; only a different theme or accent needs new chart colours.
+		// Settings also change when the selection is remembered; only a different warning threshold, theme or accent changes what is shown.
+		if (_settings.Current.LimitWarningPercent != _warningPercent)
+		{
+			_warningPercent = _settings.Current.LimitWarningPercent;
+			Refresh();
+		}
+
 		if (_settings.Current.Theme == _theme && _settings.Current.Accent == _accent)
 			return;
 
@@ -291,7 +318,7 @@ public sealed partial class DashboardViewModel : ViewModelBase
 
 	private void RefreshGauges(Client client)
 	{
-		foreach (var status in LimitCalculator.CalculateAll(client, _context.YearRecords.ToList(), _context.Year))
+		foreach (var status in LimitCalculator.CalculateAll(client, _context.YearRecords.ToList(), _context.Year, _settings.Current.Alerts.LimitWarningThreshold))
 		{
 			var gauge = status.Type switch
 			{
@@ -302,6 +329,29 @@ public sealed partial class DashboardViewModel : ViewModelBase
 
 			gauge.Update(status, _palette);
 		}
+
+		UpdateMailAlerts(client);
+	}
+
+	// Writing about a limit only makes sense for this year: the alerts are always about today, never about a year picked in the past or future.
+	private void UpdateMailAlerts(Client client)
+	{
+		var canWrite = _context.Year == DateTime.Today.Year && !string.IsNullOrWhiteSpace(client.Email);
+
+		SetMailAlert(VatGauge, AlertKind.VatLimit, client, canWrite);
+		SetMailAlert(CashRegisterGauge, AlertKind.CashRegisterLimit, client, canWrite);
+		SetMailAlert(ZusPlusGauge, AlertKind.ZusPlusLimit, client, canWrite);
+	}
+
+	private void SetMailAlert(LimitGaugeViewModel gauge, AlertKind kind, Client client, bool canWrite)
+	{
+		var alert = canWrite
+			? _alerts.Items.Select(item => item.Alert).FirstOrDefault(a => a.Client.Id == client.Id && a.Kind == kind)
+			: null;
+
+		// Same alert as before: leave it, so nothing is notified or redrawn.
+		if (!Equals(gauge.MailAlert, alert))
+			gauge.MailAlert = alert;
 	}
 
 	private void RefreshCharts()
