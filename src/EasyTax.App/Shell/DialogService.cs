@@ -1,4 +1,5 @@
 using EasyTax.App.Localization;
+using EasyTax.Core.Domain.Changelog;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml.Controls;
@@ -71,6 +72,64 @@ public sealed class DialogService(ILocalizer localizer) : IDialogService
 
 		// The standard dialog is narrower than this content, which clipped the right edge of long lines.
 		dialog.Resources["ContentDialogMaxWidth"] = 760d;
+
+		return ShowAsync(dialog);
+	}
+
+	public Task ShowChangelogAsync(string title, IReadOnlyList<ChangelogRelease> releases, string closeText)
+	{
+		var secondary = (Microsoft.UI.Xaml.Media.Brush)Application.Current.Resources["TextFillColorSecondaryBrush"];
+		var list = new StackPanel { Spacing = 20, Margin = new Thickness(0, 0, 16, 0) };
+
+		foreach (var release in releases)
+		{
+			var chapter = new StackPanel { Spacing = 8 };
+			var heading = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 12 };
+			heading.Children.Add(new TextBlock
+			{
+				Text = string.Format(System.Globalization.CultureInfo.CurrentCulture, localizer["Changelog_Version"], release.Version.ToString(3)),
+				Style = (Style)Application.Current.Resources["SubtitleTextBlockStyle"],
+			});
+			if (release.Date is { } date)
+			{
+				heading.Children.Add(new TextBlock
+				{
+					Text = date.ToString("d", System.Globalization.CultureInfo.CurrentCulture),
+					Foreground = secondary,
+					VerticalAlignment = VerticalAlignment.Bottom,
+				});
+			}
+
+			chapter.Children.Add(heading);
+
+			foreach (var section in release.Sections)
+			{
+				chapter.Children.Add(new TextBlock { Text = localizer[$"Changelog_{section.Kind}"], FontWeight = FontWeights.SemiBold, Margin = new Thickness(0, 6, 0, 0) });
+				foreach (var item in section.Items)
+				{
+					// A hanging bullet: the text wraps under itself, not under the dot.
+					var row = new Grid { ColumnSpacing = 8, Margin = new Thickness(8, 0, 0, 0) };
+					row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+					row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+					row.Children.Add(new TextBlock { Text = "\u2022" });
+					var text = new TextBlock { Text = item, TextWrapping = TextWrapping.Wrap, IsTextSelectionEnabled = true };
+					Grid.SetColumn(text, 1);
+					row.Children.Add(text);
+					chapter.Children.Add(row);
+				}
+			}
+
+			list.Children.Add(chapter);
+		}
+
+		var dialog = new ContentDialog
+		{
+			Title = title,
+			Content = new ScrollViewer { Content = list, MinWidth = 560, MaxHeight = 460, VerticalScrollBarVisibility = ScrollBarVisibility.Auto },
+			CloseButtonText = closeText,
+			DefaultButton = ContentDialogButton.Close,
+		};
+		dialog.Resources["ContentDialogMaxWidth"] = 720d;
 
 		return ShowAsync(dialog);
 	}

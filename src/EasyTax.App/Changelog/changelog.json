@@ -1,0 +1,41 @@
+{
+  "releases": [
+    {
+      "version": "1.1.0",
+      "date": "2026-11-21",
+      "sections": [
+        {
+          "kind": "features",
+          "items": [
+            "Ekran Alerty: program wskazuje klientów, którym kończy się ulga albo którzy zbliżają się do limitu (VAT, kasa fiskalna, Mały ZUS Plus), z licznikiem w lewym pasku (skrót 4).",
+            "Znaczki alertów i przycisk „Tylko z alertami” na liście klientów.",
+            "„Napisz e-mail” do klienta jednym kliknięciem: wiadomość otwiera się w Twoim programie pocztowym, z wypełnionym adresem, tematem i treścią. Alert można oznaczyć jako obsłużony.",
+            "Szablony e-maili w Ustawieniach, ze zmiennymi (imię, kwota, limit, data końca ulgi…) i podglądem.",
+            "Okno „Co nowego” po aktualizacji oraz historia zmian w Ustawieniach → O programie."
+          ]
+        },
+        {
+          "kind": "improvements",
+          "items": [
+            "Progi alertów (procent limitu i liczba dni przed końcem ulgi) ustawiasz w Ustawieniach; próg limitu zmienia też kolory wykresów na Pulpicie.",
+            "Link „Napisz do klienta” na Pulpicie, gdy limit jest bliski lub przekroczony."
+          ]
+        }
+      ]
+    },
+    {
+      "version": "1.0.0",
+      "date": "2026-11-08",
+      "sections": [
+        {
+          "kind": "features",
+          "items": [
+            "Pierwsze wydanie: klienci, Pulpit z limitami i wykresami, rozliczenia miesięczne, listy kontrolne i notatki.",
+            "Zaszyfrowane dane, klucz odzyskiwania i kopie zapasowe.",
+            "Automatyczne aktualizacje."
+          ]
+        }
+      ]
+    }
+  ]
+}

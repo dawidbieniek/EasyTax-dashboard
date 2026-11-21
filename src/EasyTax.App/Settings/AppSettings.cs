@@ -39,6 +39,9 @@ public sealed record AppSettings
 	[JsonIgnore]
 	public AlertOptions Alerts => new(LimitWarningPercent, ReliefWarningDays);
 
+	/// <summary>The newest app version whose "what's new" window was shown (null before the first one). Compared with the running version at startup.</summary>
+	public string? LastSeenVersion { get; init; }
+
 	// Selection restored on the next start (see ClientContext).
 	public Guid? LastClientId { get; init; }
 

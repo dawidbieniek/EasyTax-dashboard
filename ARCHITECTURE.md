@@ -149,6 +149,10 @@ In code, `PackageInfo.IsPackaged` tells the two modes apart. It decides the data
 
 Dev tip: a test run with a fresh `EASYTAX_DATA_DIR` still defaults to automatic backups into your real `Documents\EasyTax\Backups`. Put `{"ScheduledBackups": false, "BackupFolder": "<temp>"}` into the test folder's `settings.json` before the first start.
 
+## Changelog
+
+`src/EasyTax.App/Changelog/changelog.json` lists the releases (version, date, sections `features` / `improvements` / `fixes`) and is copied next to the exe. `ChangelogReader` (Core) parses it and `Since` picks what a user has not seen: releases newer than `AppSettings.LastSeenVersion` and not newer than the running version. `ChangelogService` shows them in `DialogService.ShowChangelogAsync` once at startup, after the main window loads, then stores the running version; with nothing stored (first start of 1.1.0, or a new installation) only the current release is shown. A missing or broken file is logged and ignored. Settings → O programie shows the whole history. Entries are written by hand when the version is raised (see docs/RELEASING.md).
+
 ## Third-party notices
 
 `THIRD-PARTY-NOTICES.txt` (repo root) is generated: build, then run `powershell tools/Update-ThirdPartyNotices.ps1`, and commit the result. It lists every shipped package with its copyright and licence and holds the licence texts; the build copies it next to the exe and Settings shows it. Re-run it after adding, removing or updating a package.
